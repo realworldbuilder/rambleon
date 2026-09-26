@@ -1,0 +1,135 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>How Rambleon Birdsong leveled 8–15 on Forever</title><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
+h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
+figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+
+body.guide{max-width:1040px}
+.guide-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:36px;align-items:start}
+.toc{position:sticky;top:16px;font-size:14px}.toc ol{list-style:none;margin:0;padding:0}.toc li{margin:0 0 8px}
+.toc a{display:flex;gap:10px;text-decoration:none;color:var(--soft)}.toc a:hover{color:var(--link)}
+.toc b{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;min-width:20px}.toc small{display:block;color:var(--faint)}
+p.intro{font-size:19px;color:var(--soft);margin:0 0 28px}
+section.stretch{margin:0 0 40px}section.stretch h2{margin-top:0}section.stretch h2 .n{color:var(--gold);margin-right:8px}
+section.stretch h2 .lv{font-size:14px;color:var(--faint);margin-left:10px;letter-spacing:1px;text-transform:uppercase}
+.where,.from{color:var(--soft);font-size:15px}.prose{margin:14px 0}.prose p{margin:0 0 14px}
+.facts{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:14px 0}
+.facts dt{color:var(--faint);font-size:13px;text-transform:uppercase;letter-spacing:1px}.facts dd{margin:0}
+ul.notes li{font-style:italic}
+@media(max-width:760px){.guide-layout{grid-template-columns:1fr}.toc{position:static}.facts{grid-template-columns:1fr;gap:2px}}
+</style></head><body id='top' class='guide'>
+<nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='index.html'>All chapters</a><a href='../'>About Rambleon</a></nav>
+<h1>How Rambleon Birdsong leveled 8–15 on Forever</h1>
+<div class='meta'>Night Elf Hunter · 6 nights, September 21, 2026 – September 26, 2026 · 18h 46m in Azeroth · 10 stretches · the road his feet actually took, not the best one · a night is still in progress</div>
+<div class='guide-layout'><aside class='toc'><ol>
+<li><a href='#ch-1'><b>1</b><span>Teldrassil<small>Level 8–9</small></span></a></li>
+<li><a href='#ch-2'><b>2</b><span>Darnassus<small>Level 9</small></span></a></li>
+<li><a href='#ch-3'><b>3</b><span>Teldrassil<small>Level 9–11</small></span></a></li>
+<li><a href='#ch-4'><b>4</b><span>Darnassus<small>Level 11</small></span></a></li>
+<li><a href='#ch-5'><b>5</b><span>Teldrassil<small>Level 11–13</small></span></a></li>
+<li><a href='#ch-6'><b>6</b><span>Darnassus<small>Level 13</small></span></a></li>
+<li><a href='#ch-7'><b>7</b><span>Teldrassil<small>Level 13</small></span></a></li>
+<li><a href='#ch-8'><b>8</b><span>Darkshore<small>Level 13–15</small></span></a></li>
+<li><a href='#ch-9'><b>9</b><span>Teldrassil<small>Level 15</small></span></a></li>
+<li><a href='#ch-10'><b>10</b><span>Darkshore<small>Level 15</small></span></a></li>
+</ol></aside><main>
+<p class='intro'>This is the record of six nights with Rambleon Birdsong, a night elf hunter of Teldrassil, from the evening he stood at level eight to the night, six chapters and sixteen hours and twenty-seven minutes later, that he crossed into level fifteen at Ameth&#x27;Aran. It follows the road exactly as he walked it — Teldrassil to Darnassus and back, and at the end, the crossing to Darkshore — no shortcuts, no better path, only his.</p>
+<section class='stretch' id='ch-1'><h2><span class='n'>1</span>Teldrassil<span class='lv'>Level 8–9</span></h2>
+<div class='where'>Dolanaar · Starbreeze Village · Lake Al&#x27;Ameth · The Cleft</div>
+<div class='from'>From <a href='2026-09-21-rambleon-birdsong.html'>Chapter 1 — Alone at the Lake</a> · September 21, 2026 · 1h 04m</div>
+<div class='prose'><p>He began that first night at level eight, walking into Dolanaar with quests to settle. At Starbreeze Village he turned in A Troubling Breeze, and out along Lake Al&#x27;Ameth he closed out Denalan&#x27;s Earth, Timberling Sprouts, and Timberling Seeds, the timberlings themselves rising to meet him along with lashers and a stray webwood lurker. He picked up Rellian Greenspyre and The Relics of Wakening before the night was through, and fought past gnarlpine gardeners, warriors, and an ursa, and once a nightsaber crossed his path. Hazardelf and Tiamaat rode with him for stretches, but for the worst of it, at the lake, he was on his own — &quot;alone at the lake slayin timberlings,&quot; he wrote. It was there, among the fronds, that he crossed into level nine. He closed the night finishing Gnarlpine Corruption, Twisted Hatred, and a bounty on the Gnarlpine furbolg back at Dolanaar.</p></div>
+<dl class='facts'><dt>Picked up</dt><dd>Seek Redemption!, Gnarlpine Corruption, Timberling Sprouts, Timberling Seeds, Rellian Greenspyre, The Relics of Wakening</dd><dt>Turned in</dt><dd>Zenn&#x27;s Bidding (level 8), A Troubling Breeze (Starbreeze Village, level 8), Denalan&#x27;s Earth (Lake Al&#x27;Ameth, level 8), Timberling Sprouts (Lake Al&#x27;Ameth, level 8), Timberling Seeds (Lake Al&#x27;Ameth, level 8), Seek Redemption! (level 9), Gnarlpine Corruption (Dolanaar, level 9), Twisted Hatred (Dolanaar, level 9), Bounty: Gnarlpine Furbolg (level 9)</dd><dt>Reached</dt><dd>level 9 (Lake Al&#x27;Ameth)</dd><dt>First met in combat</dt><dd>Nightsaber, Webwood Lurker, Gnarlpine Gardener, Gnarlpine Warrior, Gnarlpine Ursa, Timberling, Lasher Sproutling, Befouled Webwood, Xethorr the Wicked</dd><dt>Company</dt><dd>Hazardelf, Tiamaat</dd></dl>
+<ul class='notes'><li>“alone at the lake slayin timberlings” <span class='faint'>(Chapter 1)</span></li></ul>
+</section>
+<section class='stretch' id='ch-2'><h2><span class='n'>2</span>Darnassus<span class='lv'>Level 9</span></h2>
+<div class='where'>Warrior&#x27;s Terrace · Cenarion Enclave · Temple of the Moon · Craftsmen&#x27;s Terrace · passing through Teldrassil</div>
+<div class='from'>From <a href='2026-09-21-rambleon-birdsong.html'>Chapter 1 — Alone at the Lake</a>, <a href='2026-09-22-rambleon-birdsong.html'>Chapter 2 — The Oracle Glade</a> · September 21, 2026 – September 22, 2026 · 2h 40m</div>
+<div class='prose'><p>The path from Teldrassil led him into Darnassus for the first time in the record, and he crossed the Warrior&#x27;s Terrace and the Craftsmen&#x27;s Terrace before finding his way to the Cenarion Enclave, where he turned in Rellian Greenspyre. He passed by the Temple of the Moon as well, and picked up a new task called Tumors before the night closed. Tiamaat was still beside him for this quiet errand into the city, a small stop between longer stretches in the wood.</p></div>
+<dl class='facts'><dt>Picked up</dt><dd>Tumors</dd><dt>Turned in</dt><dd>Rellian Greenspyre (Cenarion Enclave, level 9)</dd><dt>Company</dt><dd>Tiamaat</dd></dl>
+</section>
+<section class='stretch' id='ch-3'><h2><span class='n'>3</span>Teldrassil<span class='lv'>Level 9–11</span></h2>
+<div class='where'>The Oracle Glade · Wellspring River · Wellspring Lake · Dolanaar · Lake Al&#x27;Ameth · passing through Darnassus</div>
+<div class='from'>From <a href='2026-09-22-rambleon-birdsong.html'>Chapter 2 — The Oracle Glade</a>, <a href='2026-09-23-rambleon-birdsong.html'>Chapter 3 — The Calm of Darnassus</a> · September 22, 2026 – September 23, 2026 · 2h 53m</div>
+<div class='prose'><p>Back in Teldrassil, Rambleon returned to the Oracle Glade to close out The Lost Runner, and picked up The Enchanted Glade there as well, a task he finished at level ten. Along Wellspring River he tamed his beasts — three times over, the record shows — and by the time he reached that river&#x27;s edge he had climbed to level ten himself, though the bloodfeather harpies and a Lady Sathrah among the Wellspring reeds cost him his life more than once; he died three times between the Oracle Glade and the river before it was done. Dolanaar absorbed the aftermath: Not Dead Yet, Camping 101: Cooking, and Recipe of the Kaldorei all turned in there, and it was in Dolanaar, with Bird at his side, that he reached level eleven, a moment he thought worth a picture. At Lake Al&#x27;Ameth he closed The Shimmering Frond and The Sprouted Fronds before the night was out.</p></div>
+<figure><img src='2026-09-23-rambleon-birdsong/2026-09-23-rambleon-birdsong-01.jpg' alt='Reached Level 11 in Dolanaar'><figcaption>10:16 PM — Reached Level 11 in Dolanaar</figcaption></figure>
+<dl class='facts'><dt>Picked up</dt><dd>Not Dead Yet, The Enchanted Glade, Darkness in the Glade, Taming the Beast ×3, The Great Tree Provides, The Shimmering Frond, Recipe of the Kaldorei, Training the Beast</dd><dt>Turned in</dt><dd>The Lost Runner (The Oracle Glade, level 9), The Enchanted Glade (The Oracle Glade, level 10), Not Dead Yet (Dolanaar, level 10), Taming the Beast ×3 (Dolanaar, level 10), Camping 101: Cooking (Dolanaar, level 10), Recipe of the Kaldorei (Dolanaar, level 10), The Shimmering Frond (Lake Al&#x27;Ameth, level 10), The Sprouted Fronds (Lake Al&#x27;Ameth, level 10)</dd><dt>Reached</dt><dd>level 10 (Wellspring River), level 11 (Dolanaar)</dd><dt>First met in combat</dt><dd>Strigid Hunter, Elder Nightsaber, Timberling Trampler, Timberling Mire Beast, Bloodfeather Rogue, Bloodfeather Sorceress, Bloodfeather Harpy, Webwood Silkspinner, Blooming Lasher, Elder Timberling, Lady Sathrah, Feral Nightsaber</dd><dt>Deaths</dt><dd>3 (Wellspring River, The Oracle Glade)</dd><dt>Company</dt><dd>Bird</dd></dl>
+</section>
+<section class='stretch' id='ch-4'><h2><span class='n'>4</span>Darnassus<span class='lv'>Level 11</span></h2>
+<div class='where'>Warrior&#x27;s Terrace · Cenarion Enclave · Craftsmen&#x27;s Terrace · Temple of the Moon · Tradesmen&#x27;s Terrace</div>
+<div class='from'>From <a href='2026-09-23-rambleon-birdsong.html'>Chapter 3 — The Calm of Darnassus</a>, <a href='2026-09-24-rambleon-birdsong.html'>Chapter 4 — The Barrow Den</a> · September 23, 2026 – September 24, 2026 · 18m</div>
+<div class='prose'><p>He came back to Darnassus at level eleven, and this time lingered — a picture marks his entry into the city, and another a quiet moment in the Cenarion Enclave, where he finally closed out Tumors. He also turned in Training the Beast and, at the Temple of the Moon, Tears of the Moon. Walking the Warrior&#x27;s Terrace, the Craftsmen&#x27;s Terrace, and the Tradesmen&#x27;s Terrace, he picked up new business for later — Nessa Shadowsong, Return to Denalan, Sathrah&#x27;s Sacrifice — but for now the city itself was the point. &quot;i really like darnassus,&quot; he wrote, &quot;very calm. never overcrowded.&quot; It was the shortest stop of the record, eighteen minutes, and he seemed glad enough to spend them there before moving on.</p></div>
+<figure><img src='2026-09-23-rambleon-birdsong/2026-09-23-rambleon-birdsong-02.jpg' alt='Entered Darnassus'><figcaption>10:23 PM — Entered Darnassus</figcaption></figure>
+<dl class='facts'><dt>Picked up</dt><dd>Nessa Shadowsong, Return to Denalan, Sathrah&#x27;s Sacrifice</dd><dt>Turned in</dt><dd>Tumors (Cenarion Enclave, level 11), Training the Beast (level 11), Tears of the Moon (Temple of the Moon, level 11)</dd></dl>
+<ul class='notes'><li>“i really like darnassus... very calm. never overcrowded” <span class='faint'>(Chapter 3)</span></li></ul>
+</section>
+<section class='stretch' id='ch-5'><h2><span class='n'>5</span>Teldrassil<span class='lv'>Level 11–13</span></h2>
+<div class='where'>Dolanaar · Starbreeze Village · Shadowglen · Aldrassil · Shadowthread Cave · Lake Al&#x27;Ameth · Ban&#x27;ethil Hollow · Ban&#x27;ethil Barrow Den · Pools of Arlithrien · Gnarlpine Hold · Wellspring Lake · The Oracle Glade · passing through Darnassus</div>
+<div class='from'>From <a href='2026-09-24-rambleon-birdsong.html'>Chapter 4 — The Barrow Den</a>, <a href='2026-09-25-rambleon-birdsong.html'>Chapter 5 — The Shores of Darkshore</a> · September 24, 2026 – September 25, 2026 · 5h 39m</div>
+<div class='prose'><p>The longest stretch of the whole record ran back through Teldrassil, from Dolanaar down through Shadowglen and Aldrassil, where he closed Fang of Githyiss and Tenaron&#x27;s Summons, out to the Ban&#x27;ethil Barrow Den, where the Sleeping Druid and Druid of the Claw quests waited and where, fighting past gnarlpine shamans and a creature called Rageclaw, he died twice before reaching level twelve. Crown of the Earth, turned in four times over at Dolanaar, and Oakenscowl and The Great Tree Provides at Lake Al&#x27;Ameth filled out the middle hours. He was rarely alone here — Cassidy, Aurel, Vamshi, Titania, Kaeds, Dread, Abbey, Lepoof, and Highlord all crossed his path in company at one point or another. Ferocitas the Dream Eater fell to him at Dolanaar, and at the Oracle Glade he closed Darkness in the Glade and The Oracle Tree, reaching level thirteen there. &quot;turning in a couple quests then turning in for the night,&quot; he wrote.</p></div>
+<figure><img src='2026-09-24-rambleon-birdsong/2026-09-24-rambleon-birdsong-01.jpg' alt='Entered Teldrassil'><figcaption>6:26 PM — Entered Teldrassil</figcaption></figure>
+<dl class='facts'><dt>Picked up</dt><dd>Fang of Githyiss, Tenaron&#x27;s Summons, Crown of the Earth ×5, Oakenscowl, Easing Suffering, The Sleeping Druid, Druid of the Claw, Ursal the Mauler, Ferocitas the Dream Eater, The Glowing Fruit, The Oracle Tree, Teldrassil</dd><dt>Turned in</dt><dd>Webwood Egg (Aldrassil, level 11), Fang of Githyiss (Aldrassil, level 11), Tenaron&#x27;s Summons (Aldrassil, level 11), Crown of the Earth ×4 (Dolanaar, level 12), Return to Denalan (Lake Al&#x27;Ameth, level 11), Oakenscowl (Lake Al&#x27;Ameth, level 11), The Great Tree Provides (Dolanaar, level 11), The Sleeping Druid (Ban&#x27;ethil Barrow Den, level 12), Druid of the Claw (Ban&#x27;ethil Barrow Den, level 12), The Relics of Wakening (Dolanaar, level 12), The Emerald Dreamcatcher (Dolanaar, level 12), Ferocitas the Dream Eater (Dolanaar, level 12), The Glowing Fruit (Lake Al&#x27;Ameth, level 12), Ursal the Mauler (Dolanaar, level 12), Darkness in the Glade (The Oracle Glade, level 12), The Oracle Tree (The Oracle Glade, level 13), Easing Suffering (The Oracle Glade, level 13)</dd><dt>Reached</dt><dd>level 12 (Ban&#x27;ethil Barrow Den), level 13 (The Oracle Glade)</dd><dt>First met in combat</dt><dd>Webwood Venomfang, Timberling Trampler, Oakenscowl, Timberling Bark Ripper, Lasher Sproutling, Nightsaber Stalker, Gnarlpine Shaman, Gnarlpine Defender, Gnarlpine Augur, Rageclaw, Ferocitas the Dream Eater, Gnarlpine Mystic</dd><dt>Deaths</dt><dd>2 (Ban&#x27;ethil Barrow Den)</dd><dt>Company</dt><dd>Cassidy, Aurel, Vamshi, Titania, Kaeds, Dread, Abbey, Lepoof, Highlord</dd></dl>
+<ul class='notes'><li>“turning in a couple quests then turning in for the night” <span class='faint'>(Chapter 4)</span></li></ul>
+</section>
+<section class='stretch' id='ch-6'><h2><span class='n'>6</span>Darnassus<span class='lv'>Level 13</span></h2>
+<div class='where'>Warrior&#x27;s Terrace · Craftsmen&#x27;s Terrace · Cenarion Enclave</div>
+<div class='from'>From <a href='2026-09-25-rambleon-birdsong.html'>Chapter 5 — The Shores of Darkshore</a> · September 25, 2026 · 10m</div>
+<div class='prose'><p>A brief return to Darnassus followed, ten minutes only, the kind of stop that exists to clear the ledger before moving on. It was the shortest visit to the city yet. He crossed the Warrior&#x27;s Terrace and Craftsmen&#x27;s Terrace to reach the Cenarion Enclave, where he turned in the quest simply called Teldrassil, and picked up Grove of the Ancients to carry with him. A picture marks his entry into the city once more — by now a familiar doorway rather than a discovery.</p></div>
+<figure><img src='2026-09-25-rambleon-birdsong/2026-09-25-rambleon-birdsong-02.jpg' alt='Entered Darnassus'><figcaption>9:07 PM — Entered Darnassus</figcaption></figure>
+<dl class='facts'><dt>Picked up</dt><dd>Grove of the Ancients</dd><dt>Turned in</dt><dd>Teldrassil (Cenarion Enclave, level 13)</dd></dl>
+</section>
+<section class='stretch' id='ch-7'><h2><span class='n'>7</span>Teldrassil<span class='lv'>Level 13</span></h2>
+<div class='where'>Rut&#x27;theran Village · The Veiled Sea</div>
+<div class='from'>From <a href='2026-09-25-rambleon-birdsong.html'>Chapter 5 — The Shores of Darkshore</a> · September 25, 2026 · 1m</div>
+<div class='prose'><p>Barely a minute passed at Rut&#x27;theran Village, but it mattered: he turned in Nessa Shadowsong and The Bounty of Teldrassil there, at the edge of the Veiled Sea, and picked up Flight to Auberdine in the same breath. It was less a stretch than a threshold — the last errand of the island before the water carried him somewhere else entirely, the record barely pausing long enough to note it. If you take the same road, that dock is where Teldrassil ends and the sea begins.</p></div>
+<dl class='facts'><dt>Picked up</dt><dd>The Bounty of Teldrassil, Flight to Auberdine</dd><dt>Turned in</dt><dd>Nessa Shadowsong (Rut&#x27;theran Village, level 13), The Bounty of Teldrassil (Rut&#x27;theran Village, level 13)</dd></dl>
+</section>
+<section class='stretch' id='ch-8'><h2><span class='n'>8</span>Darkshore<span class='lv'>Level 13–15</span></h2>
+<div class='where'>The Veiled Sea · Mist&#x27;s Edge · Auberdine · The Long Wash · Twilight Shore · Twilight Vale · Wildbend River · Grove of the Ancients · The Master&#x27;s Glaive · Remtravel&#x27;s Excavation · Bashal&#x27;Aran · Ameth&#x27;Aran · Cliffspring River · Tower of Althalaxx · Ruins of Mathystra</div>
+<div class='from'>From <a href='2026-09-25-rambleon-birdsong.html'>Chapter 5 — The Shores of Darkshore</a>, <a href='2026-09-26-rambleon-birdsong.html'>Chapter 6 — The Lay of Ameth&#x27;Aran</a> · September 25, 2026 – September 26, 2026 · 8h 02m</div>
+<div class='prose'><p>The sea carried him to Darkshore, and Auberdine became his anchor for the last long stretch of the record — seven hours and more, the longest of any night. He turned in Washed Ashore twice over, Buzzbox 827, Beached Sea Turtle, How Big a Threat?, and Thundris Windweaver there, with Buzzbox 411 closed at Mist&#x27;s Edge and the Bashal&#x27;Aran tasks settled at Bashal&#x27;Aran itself, where greymist raiders and seers, moonstalkers, and thistle bears met him along the shore. Grove of the Ancients he closed near where he&#x27;d picked it up, and level fourteen came somewhere in Darkshore&#x27;s turning. Strafhe, Banne, and Cassidy shared parts of the road with him, which mattered, for the road was hard: fifteen deaths across Twilight Vale, Remtravel&#x27;s Excavation, Mist&#x27;s Edge, and Bashal&#x27;Aran, more than the rest of the record combined. Still he pressed on, closing The Fall of Ameth&#x27;Aran and Tools of the Highborne, reached level fifteen at Ameth&#x27;Aran — six nights out from Dolanaar.</p></div>
+<figure><img src='2026-09-25-rambleon-birdsong/2026-09-25-rambleon-birdsong-03.jpg' alt='Entered Darkshore'><figcaption>9:25 PM — Entered Darkshore</figcaption></figure>
+<dl class='facts'><dt>Picked up</dt><dd>Washed Ashore ×2, Return to Nessa, WANTED: Jai&#x27;vhanel, Cave Mushrooms, The Red Crystal, Buzzbox 827, For Love Eternal, The Family and the Fishing Pole, Beached Sea Turtle, Buzzbox 411, Plagued Lands, How Big a Threat? ×2, The Tower of Althalaxx ×3, Deep Ocean, Vast Sea, Bashal&#x27;Aran ×4, Tools of the Highborne, Expanding Horizons, Thundris Windweaver, The Cliffspring River, Beached Sea Creature, Buzzbox 323, As Water Cascades, The Fall of Ameth&#x27;Aran, WANTED: Murkdeep!, Fruit of the Sea, The Absent Minded Prospector, The Blackwood Corrupted</dd><dt>Turned in</dt><dd>Flight to Auberdine (Auberdine, level 13), Washed Ashore ×2 (Auberdine, level 13), Grove of the Ancients (Grove of the Ancients, level 13), Buzzbox 827 (Auberdine, level 13), Beached Sea Turtle (Auberdine, level 13), How Big a Threat? (Auberdine, level 13), Thundris Windweaver (Auberdine, level 13), Buzzbox 411 (Mist&#x27;s Edge, level 14), Deep Ocean, Vast Sea (Auberdine, level 14), Beached Sea Creature (Auberdine, level 14), Bashal&#x27;Aran ×3 (Bashal&#x27;Aran, level 14), The Red Crystal (Auberdine, level 14), The Fall of Ameth&#x27;Aran (Twilight Vale, level 15), Tools of the Highborne (Auberdine, level 15), The Tower of Althalaxx ×2 (level 15), The Cliffspring River (Auberdine, level 15)</dd><dt>Reached</dt><dd>level 14 (Darkshore), level 15 (Ameth&#x27;Aran)</dd><dt>First met in combat</dt><dd>Greymist Raider, Greymist Coastrunner, Pygmy Tide Crawler, Young Reef Crawler, Greymist Seer, Moonstalker, Rabid Thistle Bear, Grizzled Thistle Bear, Blackwood Windtalker, Blackwood Pathfinder, Darkshore Thresher, Moonstalker Runt</dd><dt>Deaths</dt><dd>17 (Twilight Vale, Remtravel&#x27;s Excavation, Mist&#x27;s Edge, Bashal&#x27;Aran, Tower of Althalaxx)</dd><dt>Company</dt><dd>Strafhe, Banne, Cassidy</dd></dl>
+</section>
+<section class='stretch' id='ch-9'><h2><span class='n'>9</span>Teldrassil<span class='lv'>Level 15</span></h2>
+<div class='where'>The Veiled Sea · Rut&#x27;theran Village · passing through Darnassus</div>
+<div class='from'>From <a href='2026-09-26-rambleon-birdsong.html'>Chapter 6 — The Lay of Ameth&#x27;Aran</a> · September 26, 2026 · 19m</div>
+<figure><img src='2026-09-26-rambleon-birdsong/2026-09-26-rambleon-birdsong-02.jpg' alt='Entered Teldrassil'><figcaption>3:39 PM — Entered Teldrassil</figcaption></figure>
+<dl class='facts'><dt>Turned in</dt><dd>Return to Nessa (Rut&#x27;theran Village, level 15)</dd></dl>
+</section>
+<section class='stretch' id='ch-10'><h2><span class='n'>10</span>Darkshore<span class='lv'>Level 15</span></h2>
+<div class='where'>The Veiled Sea · Mist&#x27;s Edge · Auberdine · The Long Wash · Twilight Shore · Twilight Vale · The Master&#x27;s Glaive · Grove of the Ancients · Wildbend River · Remtravel&#x27;s Excavation</div>
+<div class='from'>From <a href='2026-09-26-rambleon-birdsong.html'>Chapter 6 — The Lay of Ameth&#x27;Aran</a> · September 26, 2026 · 55m</div>
+<dl class='facts'><dt>Picked up</dt><dd>Beached Sea Creature ×2, Beached Sea Turtle</dd><dt>Turned in</dt><dd>Beached Sea Creature ×2 (Auberdine, level 15), Beached Sea Turtle (Auberdine, level 15), WANTED: Murkdeep! (Auberdine, level 15)</dd><dt>First met in combat</dt><dd>Tide Crawler, Greymist Seer, Greymist Netter, Reef Crawler, Greymist Warrior, Murkdeep, Greymist Hunter, Greymist Tidehunter</dd><dt>Deaths</dt><dd>9 (Twilight Shore)</dd><dt>Company</dt><dd>Caerwyn, Reighna, Elentria</dd></dl>
+</section>
+<a class='totop' href='#top'>↑ Back to top</a></main></div>
+<footer>Recorded by Rambleon · 6 nights</footer></body></html>
