@@ -91,15 +91,23 @@ def share(archive: Archive, paths: Any, refs: list[str], all_nights: bool = Fals
     example = checkout / EXAMPLE_DIR
     html_dir = paths.exports_dir / "html"
 
-    # 1. Fresh pages, with late screenshots paired.
-    for night in nights_:
+    # What the site will hold afterwards: pages already there plus tonight's (a whole-site replace only with --all).
+    wanted = {export_filename(n).replace(".md", ".html") for n in nights_}
+    present = set() if all_nights or not example.is_dir() else {p.name for p in example.glob("*.html") if p.name != "index.html"}
+    present |= wanted
+
+    # 1. Fresh pages, with late screenshots paired. Neighbouring chapters already on the site are re-rendered too,
+    #    so their previous/next links pick up tonight's chapter.
+    refresh = list(nights_) + [n for n in list_nights(archive)
+                               if export_filename(n).replace(".md", ".html") in present - wanted]
+    for night in refresh:
         ids = night.get("sessionIds") or []
         if refresh_session_screenshots(archive, paths, ids):
             night = resolve_night(archive, night["id"]) or night
-        page = export_html(night, archive, paths.exports_dir)
+        page = export_html(night, archive, paths.exports_dir, siblings=present)
         result.pages.append(page.name)
 
-    # 2. Copy into site/example (a whole-site replace only with --all).
+    # 2. Copy into site/example.
     plan: list[tuple[Path, Path]] = []
     for name in result.pages:
         page = html_dir / name
@@ -107,10 +115,6 @@ def share(archive: Archive, paths: Any, refs: list[str], all_nights: bool = Fals
         images = page.with_suffix("")
         if images.is_dir():
             plan.append((images, example / images.name))
-    present = {p.name for p in example.glob("*.html") if p.name != "index.html"} if example.is_dir() else set()
-    present |= set(result.pages)
-    if all_nights:
-        present = set(result.pages)
     tmp_index = Path(tempfile.mkdtemp(prefix="rambleon-share-")) / "index.html"
     index_src = write_html_index(archive, paths.exports_dir, only=present, out=tmp_index)
     plan.append((index_src, example / "index.html"))
@@ -121,7 +125,7 @@ def share(archive: Archive, paths: Any, refs: list[str], all_nights: bool = Fals
     result.commands = [["git", "add", str(EXAMPLE_DIR)],
                        ["git", "commit", "-m", _message(nights_)],
                        ["git", "push", "origin", "HEAD"]]
-    urls = [pages_url(remote, name) for name in result.pages]
+    urls = [pages_url(remote, export_filename(n).replace(".md", ".html")) for n in nights_]
     result.urls = [u for u in urls if u]
     if dry_run:
         result.message = "dry run: nothing copied, committed or pushed"

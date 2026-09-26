@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Site: one slim top bar on every page, previous/next chapter links, jump links (Story · Recap · Journey · Notes)
+  and a foldable timeline on story pages, a card list on the chapter index, a how-it-works strip and a tabbed Quick Start
+  (terminal, a paste-into-Claude-Code prompt, from source) on the landing page.
+  `ramble share` re-renders the neighbouring chapters already on the site so their links pick up the new one.
 - `[share] auto = true` in `rambleon.local.toml` makes the watcher push every finished chapter to GitHub Pages
   (off by default; the file is gitignored, so it is a per-Mac choice). `docs/invite-prompt.md`: a paste-ready
   message that installs Rambleon for a friend through Claude Code.

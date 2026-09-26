@@ -1,33 +1,58 @@
-<!doctype html><html><head><meta charset='utf-8'><title>Chapter 3 — Cooking Fires and Quiet Streets — Rambleon Birdsong</title>
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Chapter 3 — The Calm of Darnassus — Rambleon Birdsong</title>
 <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
-body{max-width:720px;margin:40px auto;padding:0 20px;font:17px/1.6 Georgia,'Times New Roman',serif;color:#2b1d0e;background:#f5ecd8}
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
 h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
-h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,#b08d4c,rgba(176,141,76,0))}
-h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid #c9b48a;padding-bottom:4px}
-.meta{color:#6b5233;margin-bottom:24px}.recap{white-space:pre-line;background:#efe3c6;border-left:4px solid #b08d4c;padding:12px 16px;margin:20px 0}
-.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid #c9b48a;border-radius:4px}
-figcaption{font-size:14px;color:#6b5233;margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
-.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:#6b5233;text-transform:uppercase;letter-spacing:1px}
-footer{margin-top:48px;font-size:13px;color:#8a7250}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
 figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
-.thumb{width:96px;height:54px;object-fit:cover;border:1px solid #c9b48a;border-radius:3px;vertical-align:middle;margin-right:10px}
-</style></head><body>
-<h1>Chapter 3 — Cooking Fires and Quiet Streets</h1>
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head><body id='top'>
+<nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='index.html'>All chapters</a><a href='../'>About Rambleon</a></nav>
+<h1>Chapter 3 — The Calm of Darnassus</h1>
 <div class='meta'>Rambleon Birdsong · September 23, 2026 · 1h 51m in Azeroth</div>
+<div class='jump'><a href='#story'>Story</a><a href='#recap'>Recap</a><a href='#journey'>Journey</a><a href='#notes'>Notes</a></div>
+<div class='pager'><a class='prev' href='2026-09-22-rambleon-birdsong.html'>← Chapter 2 — The Oracle Glade</a><a class='next' href='2026-09-24-rambleon-birdsong.html'>Chapter 4 — The Barrow Den →</a></div>
 <figure class='hero'><img src='2026-09-23-rambleon-birdsong/2026-09-23-rambleon-birdsong-01.jpg' alt='Reached Level 11 in Dolanaar'><figcaption>10:16 PM — Reached Level 11 in Dolanaar</figcaption></figure>
-<div class='journal'><p>Rambleon found Bird waiting near Dolanaar before nine, and the two of them fell in together the way old traveling companions do, without much ceremony. They spent the next hour and more working the paths and glades between Wellspring Lake and the Oracle Glade, thinning out webwood spiders and timberlings and the strange, agitated dryads of the Bloodfeather aviary. Witchmother Arysa fell to them in the glade, her amulet a small, hard-won thing tucked away after. It was steady work, the kind that asked more of patience than of glory, and by the time they turned back toward Dolanaar the two had been at each other&#x27;s side for the better part of two hours.</p>
-<p>Back in the village Rambleon picked up the makings of a hunter&#x27;s more settled life — Zarrin taught him the beginnings of cooking over a proper fire, and he found himself gathering spider legs and shimmering fronds for Denalan and the others who kept Teldrassil&#x27;s small errands moving. Taming the Beast asked to be learned twice more before the lesson held, an old frustration turned mild by then, more habit than sting. Around Lake Al&#x27;Ameth he thinned the Gnarlpine camps and the last of the nightsabers, and it was there, near the water, that the eleventh level found him — not with fanfare, just a familiar warmth settling into his limbs, worth pausing to mark with a picture before moving on.</p>
-<p>Training the Beast finished not long after, and then Bird was beside him again for the walk into Darnassus. The city opened around them the way it always did, terraced and unhurried, and Rambleon let himself slow down in it. He picked up word from Nessa Shadowsong, saw the tumors dealt with, and stood in the Temple of the Moon long enough to see Tears of the Moon through to its end before taking up Sathrah&#x27;s Sacrifice in its place. In the Cenarion Enclave he stopped long enough to mark the moment properly — a picture, and a thought he wanted to keep. He wrote it down plainly: he really liked Darnassus. Calm. Never overcrowded. It was true standing there, and it stayed true through the last hour, wandering between the Craftsmen&#x27;s and Tradesmen&#x27;s terraces on small errands that mattered less than the walking itself.</p>
-<p>He and Bird parted ways somewhere in that unhurried circuit, the night winding down not with an ending but simply a last, easy lap through streets that asked nothing of him.</p></div>
-<div class='recap'>1h 51m in Azeroth tonight.
+<div class='journal' id='story'><p>Rambleon met Bird at Dolanaar a little before nine, and the druid fell into step beside him as easily as if they had always hunted together. They pushed out through Teldrassil into the green hush around Wellspring Lake and the river that fed it, and the night&#x27;s work began in earnest — webwood spiders, nightsabers, timberlings breaking apart under his arrows, the first of each kind falling in that particular way a hunter remembers, if only because it was the first. At the Oracle Glade the fighting turned graver: Lady Sathrah, then the Bloodfeather harpies in their fury and their witchery, and at last Witchmother Arysa herself, whose amulet he claimed for what the glade&#x27;s keepers called darkness set right. He picked up a shimmering frond there too, a small green errand tucked inside a larger one, meant for a man named Denalan by the water.</p>
+<p>Back through Dolanaar the night grew busier with small kindnesses and small tasks — a beast tamed, a fire built, cooking learned at Zarrin&#x27;s hands, a recipe of the Kaldorei gathered thread by spider-leg thread out along Lake Al&#x27;Ameth. Rambleon liked the rhythm of it, quest folding into quest, Bird&#x27;s steady company at his shoulder through Gnarlpine camps and nightsaber dens. When the eleventh level came to him near Dolanaar&#x27;s lamps, it arrived quietly, the way most true things do — no fanfare, just a settling-in, a sense of having grown a little more sure of his bow.</p>
+<p>It was Darnassus that stayed with him longest. He and Bird crossed into the city near half past ten, through the Warrior&#x27;s Terrace and the Cenarion Enclave, and something about the moonlit quiet of the place made him stop and mark it, take a picture he&#x27;d want later. Standing there he found himself thinking, and wrote it down before the thought could wander off: he really did like Darnassus — calm, he called it, never overcrowded, and he meant it as praise for the whole tree-lit city after a night spent in animal dens and glades that answered violence with violence. He carried word of tears shed for the moon up to the Temple, and came away with a new charge, Sathrah&#x27;s sacrifice weighing on him now the way unfinished things do. The last stretch of the night he spent simply walking Darnassus&#x27;s terraces with Bird, in and out of the tradesmen&#x27;s stalls, in no hurry at all, before he finally logged out among the lamplight.</p></div>
+<div class='recap' id='recap'>1h 51m in Azeroth tonight.
 1 level(s).
 10 quests.
 12 new places.
 0 deaths.
-Traveled with Bird (Druid) for most of the night.
+Traveled with Bird the Druid for most of the night.
 Ramble on.</div>
 <div class='stats'><div class='stat'><b>10</b><span>Quests</span></div><div class='stat'><b>12</b><span>Places</span></div><div class='stat'><b>61</b><span>Enemies slain</span></div><div class='stat'><b>0</b><span>Loot</span></div><div class='stat'><b>0</b><span>Deaths</span></div><div class='stat'><b>1</b><span>People</span></div><div class='stat'><b>9,574</b><span>XP</span></div></div>
-<h2>The Journey</h2><ul>
+<h2 id='journey'>The Journey</h2><details class='journey' open><summary>118 moments, in order · fold</summary><ul>
 <li>8:51 PM — Began the adventure</li>
 <li>8:51 PM — Entered Dolanaar (Teldrassil)</li>
 <li>8:59 PM — Joined forces with Bird (Druid)</li>
@@ -145,6 +170,7 @@ Ramble on.</div>
 <li>10:41 PM — Entered Darnassus</li>
 <li>10:41 PM — Entered Tradesmen&#x27;s Terrace (Darnassus)</li>
 <li>10:41 PM — Entered Darnassus</li>
-</ul>
-<h2>Notes</h2><ul><li>i really like darnassus... very calm. never overcrowded</li></ul>
+</ul></details><a class='totop' href='#top'>↑ Back to top</a>
+<h2 id='notes'>Notes</h2><ul><li>i really like darnassus... very calm. never overcrowded</li></ul>
+<div class='pager bottom'><a class='prev' href='2026-09-22-rambleon-birdsong.html'>← Chapter 2 — The Oracle Glade</a><a class='next' href='2026-09-24-rambleon-birdsong.html'>Chapter 4 — The Barrow Den →</a></div>
 <footer>Recorded by Rambleon · session night-2026-09-23-rambleon-birdsong</footer></body></html>

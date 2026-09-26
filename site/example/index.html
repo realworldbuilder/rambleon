@@ -1,13 +1,35 @@
-<!doctype html><html><head><meta charset='utf-8'><title>Rambleon Birdsong — Adventure Journal</title><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
-body{max-width:720px;margin:40px auto;padding:0 20px;font:17px/1.6 Georgia,'Times New Roman',serif;color:#2b1d0e;background:#f5ecd8}
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Rambleon Birdsong — Adventure Journal</title><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
 h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
-h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,#b08d4c,rgba(176,141,76,0))}
-h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid #c9b48a;padding-bottom:4px}
-.meta{color:#6b5233;margin-bottom:24px}.recap{white-space:pre-line;background:#efe3c6;border-left:4px solid #b08d4c;padding:12px 16px;margin:20px 0}
-.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid #c9b48a;border-radius:4px}
-figcaption{font-size:14px;color:#6b5233;margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
-.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:#6b5233;text-transform:uppercase;letter-spacing:1px}
-footer{margin-top:48px;font-size:13px;color:#8a7250}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
 figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
-.thumb{width:96px;height:54px;object-fit:cover;border:1px solid #c9b48a;border-radius:3px;vertical-align:middle;margin-right:10px}
-li{margin:10px 0}.m{color:#6b5233;font-size:14px}</style></head><body><h1>Rambleon Birdsong</h1><div class='meta'>Adventure journal · 4 chapters</div><ul><li><img class='thumb' src='2026-09-24-rambleon-birdsong/2026-09-24-rambleon-birdsong-02.jpg' alt=''><a href='2026-09-24-rambleon-birdsong.html'>Chapter 4 — The Barrow Den</a><span class='m'> — September 24, 2026 · 4h 48m · 14 quests · 94 kills · 7 people</span></li><li><img class='thumb' src='2026-09-23-rambleon-birdsong/2026-09-23-rambleon-birdsong-01.jpg' alt=''><a href='2026-09-23-rambleon-birdsong.html'>Chapter 3 — The Calm of Darnassus</a><span class='m'> — September 23, 2026 · 1h 51m · 10 quests · 61 kills · 1 people</span></li><li><a href='2026-09-22-rambleon-birdsong.html'>Chapter 2 — The Oracle Glade</a><span class='m'> — September 22, 2026 · 2h 21m · 3 quests · 26 kills · 0 people</span></li><li><a href='2026-09-21-rambleon-birdsong.html'>Chapter 1 — Alone at the Lake</a><span class='m'> — September 21, 2026 · 1h 47m · 10 quests · 63 kills · 2 people</span></li></ul><footer>Recorded by Rambleon</footer></body></html>
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head><body><nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='../'>About Rambleon</a><a href='https://github.com/realworldbuilder/rambleon'>GitHub</a></nav><h1>Rambleon Birdsong</h1><div class='meta'>Adventure journal · 4 chapters · newest first</div><ul class='chapters'><li><a class='card' href='2026-09-24-rambleon-birdsong.html'><img class='thumb' src='2026-09-24-rambleon-birdsong/2026-09-24-rambleon-birdsong-02.jpg' alt=''><span class='body'><span class='n'>Chapter 4</span><span class='t'>The Barrow Den</span><span class='m'>September 24, 2026 · 4h 48m · 14 quests · 94 kills · 7 companions</span></span></a></li><li><a class='card' href='2026-09-23-rambleon-birdsong.html'><img class='thumb' src='2026-09-23-rambleon-birdsong/2026-09-23-rambleon-birdsong-01.jpg' alt=''><span class='body'><span class='n'>Chapter 3</span><span class='t'>The Calm of Darnassus</span><span class='m'>September 23, 2026 · 1h 51m · 10 quests · 61 kills · 1 companion</span></span></a></li><li><a class='card' href='2026-09-22-rambleon-birdsong.html'><span class='noshot'></span><span class='body'><span class='n'>Chapter 2</span><span class='t'>The Oracle Glade</span><span class='m'>September 22, 2026 · 2h 21m · 3 quests · 26 kills · 0 companions</span></span></a></li><li><a class='card' href='2026-09-21-rambleon-birdsong.html'><span class='noshot'></span><span class='body'><span class='n'>Chapter 1</span><span class='t'>Alone at the Lake</span><span class='m'>September 21, 2026 · 1h 47m · 10 quests · 63 kills · 2 companions</span></span></a></li></ul><footer>Recorded by Rambleon</footer></body></html>

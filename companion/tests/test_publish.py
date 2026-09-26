@@ -162,3 +162,46 @@ def test_tga_without_sips_is_skipped_not_broken(tmp_path, monkeypatch):
     s = {"events": [], "screenshots": [{"path": str(src), "file": src.name, "takenAt": 1}]}
     assert pub.prepare_images(s, tmp_path / "web" / "p") == []
     assert not (tmp_path / "web" / "p").exists() or not list((tmp_path / "web" / "p").iterdir())
+
+
+def two_nights(tmp_path):
+    import copy
+    archive = Archive(tmp_path / "archive")
+    db = to_python(parse((FIXTURES / "Rambleon_simulated.lua").read_bytes()))["RambleonDB"]
+    first = sessions_from_db(db)[0]
+    raw_second = copy.deepcopy(db["sessions"][0])
+    raw_second["id"] += "_2"
+    day = 86400
+    raw_second["startedAt"] += day; raw_second["endedAt"] += day; raw_second["lastSeen"] += day
+    for ev in raw_second["events"]:
+        ev["t"] += day
+    second = sessions_from_db({"sessions": [raw_second]})[0]
+    cap = {"capturedAt": int(time.time()), "rawSnapshot": "x", "sourceHash": "h"}
+    archive.upsert_session(first, cap); archive.upsert_session(second, cap)
+    archive.rebuild_index()
+    return archive
+
+
+def test_story_pages_link_to_neighbouring_chapters(tmp_path):
+    from rambleon.nights import nights
+    archive = two_nights(tmp_path)
+    n1, n2 = nights(archive)
+    p1 = export_html(n1, archive, tmp_path / "exports")
+    p2 = export_html(n2, archive, tmp_path / "exports")
+    t1, t2 = p1.read_text(), p2.read_text()
+    assert "<nav class='top'>" in t1 and "href='index.html'>All chapters" in t1
+    assert "<div class='jump'>" in t1 and "href='#journey'" in t1 and "<details class='journey' open>" in t1
+    assert t1.count("<div class='pager") == 2 and f"class='next' href='{p2.name}'" in t1 and "class='prev'" not in t1
+    assert f"class='prev' href='{p1.name}'" in t2 and "class='next'" not in t2
+    # Only pages that will sit next to it on the site are linked.
+    alone = export_html(n1, archive, tmp_path / "exports", siblings={p1.name}).read_text()
+    assert "class='pager" not in alone and "class='next'" not in alone
+
+
+def test_index_is_a_list_of_cards(tmp_path):
+    import rambleon.publish as pub
+    archive = two_nights(tmp_path)
+    text = pub.write_html_index(archive, tmp_path / "exports").read_text()
+    assert text.count("<a class='card'") == 2 and "<span class='n'>Chapter 2</span>" in text
+    assert text.index("Chapter 2</span>") < text.index("Chapter 1</span>")      # newest first
+    assert "<nav class='top'>" in text and "1 companion<" in text and "companions" not in text.split("Chapter 2")[1].split("</li>")[0]

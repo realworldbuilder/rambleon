@@ -1,22 +1,127 @@
-<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<!doctype html><html lang='en'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
 <title>Rambleon — Your Azeroth adventure journal</title>
-<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
-<link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
-body{max-width:720px;margin:40px auto;padding:0 20px;font:17px/1.6 Georgia,'Times New Roman',serif;color:#2b1d0e;background:#f5ecd8}
-h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,#b08d4c,rgba(176,141,76,0))}
-a{color:#7a4f14}
-.meta{color:#6b5233;margin-bottom:24px}blockquote{background:#efe3c6;border-left:4px solid #b08d4c;padding:12px 16px;margin:20px 0}
-footer{margin-top:48px;font-size:13px;color:#8a7250}
+<meta name='description' content='A personal memory layer for World of Warcraft. Play; it remembers; at the end of the night you get a timeline, a log and a journal chapter.'>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
+h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
+figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+
+.lede{font-size:19px;line-height:1.55;margin:0 0 20px}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin:24px 0 8px}
+.btn{display:inline-block;padding:10px 18px;border-radius:6px;text-decoration:none;font-size:16px;border:1px solid var(--gold);color:#5a3510;background:var(--card)}
+.btn.primary{background:#5a3510;color:#fff6e0;border-color:#5a3510}.btn:hover{filter:brightness(1.06)}
+.steps{list-style:none;padding:0;margin:8px 0 0;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.steps li{margin:0;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:6px;font-size:15px;line-height:1.5}
+.steps b{display:block;font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;margin-bottom:4px}
+.not{color:var(--soft);font-size:15px}
+.qs{margin:32px 0 8px}.qs .head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px}
+.qs .head b{font:700 14px/1 Cinzel,Georgia,serif;letter-spacing:2px;color:#5a3510}.qs .head a{font-size:14px;color:var(--soft)}
+.qs .panel{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.qs .tabs{display:flex;gap:4px;padding:6px 8px 0;border-bottom:1px solid var(--line);background:rgba(90,53,16,.05)}
+.qs .tabs button{font:inherit;font-size:15px;padding:8px 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--soft);cursor:pointer;margin-bottom:-1px}
+.qs .tabs button:hover{color:var(--link)}.qs .tabs button[aria-selected=true]{color:#5a3510;border-color:var(--gold);font-weight:bold}
+.qs .pane{display:none;padding:18px 18px 8px}.qs .pane.on{display:block}.qs .pane p{margin:0 0 12px;font-size:15px;color:var(--soft)}
+.qs pre{position:relative;margin:0 0 12px;padding:12px 110px 12px 14px;background:#2b1d0e;color:#f5ecd8;border-radius:5px;font:14px/1.6 ui-monospace,Menlo,monospace;overflow:auto;white-space:pre-wrap;word-break:break-word}
+.qs pre.prompt{max-height:220px;font-family:Georgia,serif;font-size:14px;line-height:1.5}
+.qs .copy{position:absolute;top:8px;right:8px;font:12px/1 Georgia,serif;padding:6px 10px;border:1px solid rgba(245,236,216,.35);border-radius:4px;background:rgba(245,236,216,.08);color:#f5ecd8;cursor:pointer}
+.qs .copy:hover{background:rgba(245,236,216,.18)}.qs .req{display:flex;flex-wrap:wrap;gap:6px 16px;margin:0 0 14px;font-size:13px;color:var(--faint);text-transform:uppercase;letter-spacing:.5px}
+.qs ol{padding-left:20px;font-size:15px;margin:0 0 12px}.qs ol li{margin:4px 0}
+@media(max-width:520px){.qs .tabs button{padding:8px 8px;font-size:14px}.qs .head{flex-direction:column;gap:4px}.qs pre{padding:40px 14px 12px}}
+code{font-size:.9em;background:rgba(176,141,76,.18);padding:0 4px;border-radius:3px}
+@media(max-width:520px){.steps{grid-template-columns:1fr}}
 </style></head><body>
+<nav class='top'><a class='brand' href='./'>Rambleon</a><a href='example/'>Example journal</a><a href='https://github.com/realworldbuilder/rambleon'>GitHub</a></nav>
 <h1>Rambleon</h1>
 <div class='meta'>Your Azeroth adventure journal</div>
-<p>Play World of Warcraft normally. Rambleon quietly remembers the night. When you log out, it hands you a permanent
+<p class='lede'>Play World of Warcraft normally. Rambleon quietly remembers the night. When you log out, it hands you a permanent
 record: a timeline, a factual log, a story page, and a journal chapter written from what actually happened, readable
 in game and ready to paste anywhere.</p>
-<p>It is a memory layer, not a meter: it never automates anything, never reads protected combat data, and keeps your
+<p class='not'>It is a memory layer, not a meter: it never automates anything, never reads protected combat data, and keeps your
 history on your own Mac.</p>
-<blockquote><a href='example/'>Read an example journal →</a><br>
-The real, unedited chapters of Rambleon Birdsong, Night Elf Hunter, on World of Warcraft: Forever.</blockquote>
-<p><a href='https://github.com/realworldbuilder/rambleon'>Get Rambleon on GitHub</a> · free and open (MIT)</p>
+<div class='cta'><a class='btn primary' href='example/'>Read an example journal</a><a class='btn' href='#quick-start'>Install in three commands</a></div>
+<p class='not'>The example is the real, unedited journal of Rambleon Birdsong, Night Elf Hunter, on World of Warcraft: Forever.</p>
+<section class='qs' id='quick-start'>
+<div class='head'><b>QUICK START</b><a href='https://github.com/realworldbuilder/rambleon#install-macos'>All install options →</a></div>
+<div class='panel'>
+<div class='tabs' role='tablist'>
+<button role='tab' aria-selected='true' data-pane='terminal'>Terminal</button>
+<button role='tab' aria-selected='false' data-pane='claude'>Ask Claude Code</button>
+<button role='tab' aria-selected='false' data-pane='source'>From source</button>
+</div>
+<div class='pane on' id='pane-terminal' role='tabpanel'>
+<div class='req'><span>macOS</span><span>World of Warcraft: Forever</span><span>Homebrew</span><span>Claude Code, optional, for AI chapters</span></div>
+<p>Three commands. The last one finds your WoW folder, links the AddOn in, starts the background watcher and opens your empty journal.</p>
+<pre><button class='copy'>Copy</button>brew install uv
+uv tool install "git+https://github.com/realworldbuilder/rambleon#subdirectory=companion"
+ramble setup</pre>
+<p>Then play. In game <code>/ramble</code> opens the panel and <code>/ramble note &lt;text&gt;</code> adds your own words. Logging out is the save. Add <code>--no-ai</code> to <code>ramble setup</code> if you do not want the Claude step.</p>
+</div>
+<div class='pane' id='pane-claude' role='tabpanel'>
+<p>Not a terminal person? Paste this into Claude Code on your Mac and it walks you through the install, explaining each step and stopping when it needs a decision.</p>
+<pre class='prompt'><button class='copy'>Copy prompt</button>I want to set up **Rambleon** on this Mac. It is a free, open-source &quot;personal memory layer&quot; for World of Warcraft: a small AddOn quietly records my adventure while I play (places, levels, quests, deaths, people I grouped with, my own notes, screenshots at big moments), and a Mac companion turns each evening into a chapter I can read in game and as a web page. Repo and README: https://github.com/realworldbuilder/rambleon. Please read the README first, then do the following, telling me what each step does before you run it, and stopping to ask me if anything needs a decision.
+
+1. Check the ground: this must be macOS with World of Warcraft installed (Rambleon was built on WoW: Forever, the Classic-beta client, and expects the mainline-style 12.x AddOn API). Tell me which WoW folders you find.
+2. Install the companion:
+   - `brew install uv` if `uv` is missing (install Homebrew first if that is missing too, and tell me).
+   - `uv tool install &quot;git+https://github.com/realworldbuilder/rambleon#subdirectory=companion&quot;`
+   - `ramble setup` — it finds my WoW folder, links the AddOn into `Interface/AddOns`, installs a background watcher that survives reboots, and opens my empty journal. If it cannot find WoW, ask me for the path and set `RAMBLEON_WOW_DIR`. Run `ramble doctor` afterwards and show me the result.
+3. AI-written chapters are optional. If I have Claude Code installed and logged in (`claude`, then `/login`), the companion uses it to write the chapter at the end of the night. If not, tell me I still get the timeline, the factual log, the story page and a prompt file I can paste anywhere, and offer `ramble setup --no-ai`.
+4. Explain the in-game side in a few lines: start WoW (or relog so it sees the AddOn), `/ramble` opens the panel, `/ramble note &lt;text&gt;` adds my own words (the best thing I can give the writer), `/ramble mark` remembers a moment and takes a picture, `/ramble chapters` shows past chapters, and logging out is the save. There is no end button.
+5. Tell me what Rambleon never does: no DPS meter, no automation, no combat log, nothing leaves my Mac except, when AI is on, the prompt for the chapter.
+6. Sharing is manual: `ramble share tonight` puts a chapter on a GitHub Pages site, but only from a git checkout of my own fork with Pages enabled. Leave that for later unless I ask.
+
+When you are done, give me a short checklist of what is installed and where, and what to do after my first night (`ramble nights`, `ramble page tonight`).</pre>
+</div>
+<div class='pane' id='pane-source' role='tabpanel'>
+<p>For hacking on the AddOn or the companion. Everything is editable in place and <code>ramble</code> points at your checkout.</p>
+<pre><button class='copy'>Copy</button>git clone https://github.com/realworldbuilder/rambleon.git
+cd rambleon
+scripts/bootstrap
+ramble setup</pre>
+<p><code>scripts/test</code> runs the Lua check, a simulated session and the Python tests, the same as CI.</p>
+</div>
+</div>
+</section>
+<script>
+(function(){var tabs=document.querySelectorAll('.qs [role=tab]');tabs.forEach(function(t){t.addEventListener('click',function(){tabs.forEach(function(o){o.setAttribute('aria-selected',o===t)});document.querySelectorAll('.qs .pane').forEach(function(p){p.classList.toggle('on',p.id==='pane-'+t.dataset.pane)})})});
+document.querySelectorAll('.qs .copy').forEach(function(b){b.addEventListener('click',function(){var pre=b.parentNode,text=pre.textContent.replace(/^Copy( prompt)?/,'').trim();navigator.clipboard.writeText(text).then(function(){var was=b.textContent;b.textContent='Copied';setTimeout(function(){b.textContent=was},1500)})})})})();
+</script>
+<h2>How it works</h2>
+<ul class='steps'>
+<li><b>1. Play</b>A small AddOn notes quests, places, level ups, deaths, companions and your own <code>/ramble note</code> remarks. Nothing else.</li>
+<li><b>2. Log out</b>A watcher on your Mac picks up the night, stitches every session into one chapter and archives it for good.</li>
+<li><b>3. Read</b>A story page with pictures, a timeline, and a journal chapter you can read in game with <code>/ramble chapters</code> or share like this site.</li>
+</ul>
+<p>Free and open (MIT). Your data never leaves the Mac unless you run the optional AI step, and even then only the night's prompt does.</p>
 <footer>Recorded by Rambleon</footer>
 </body></html>
