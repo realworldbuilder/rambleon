@@ -10,8 +10,9 @@ from pathlib import Path
 from typing import Any
 
 from .archive import Archive, atomic_write_bytes, atomic_write_json
-from .config import character_overrides
+from .config import character_overrides, people_notes
 from .export import clock, describe, duration, export_filename, long_date, render_recap
+from .memory import build_memory, companion_suffix, render_memory
 from .screenshots import caption
 
 RULES_PATH = Path(__file__).parent / "prompts" / "journal.md"
@@ -35,7 +36,10 @@ SYSTEM_PROMPT = ("You are a careful writer helping a player keep a personal jour
                  "adventures. Follow the instructions in the message exactly. Output only the requested text.")
 
 
-def build_prompt(session: dict[str, Any], chapter: int, voice: str | None = None) -> str:
+def build_prompt(session: dict[str, Any], chapter: int, voice: str | None = None,
+                 memory: dict[str, Any] | None = None) -> str:
+    """`memory` is memory.build_memory() output: what earlier chapters may lend tonight's. None for chapter 1
+    or a lone session record; then the prompt is exactly what it was before memory existed."""
     c = dict(session.get("character", {}))
     for k, v in character_overrides(c.get("slug", "")).items():   # rambleon.local.toml wins over old sessions
         if isinstance(v, (str, int, float, bool)) and k not in ("name", "slug"):
@@ -58,6 +62,9 @@ def build_prompt(session: dict[str, Any], chapter: int, voice: str | None = None
               f"- Duration: {duration(session.get('playedSeconds'))}",
               f"- Chapter number: {chapter}",
               f"- Ended formally: {'yes' if session.get('endReason') == 'end_chapter' else 'no (' + str(session.get('endReason')) + ')'}"]
+    story = render_memory(memory)
+    if story:
+        lines += [""] + story
     lines += ["", "## Chronological events (the only facts you may use)", ""]
     for ev in session.get("events", []):
         if ev.get("type") == "RESUMED":
@@ -89,10 +96,13 @@ def build_prompt(session: dict[str, Any], chapter: int, voice: str | None = None
     else:
         lines.append("- none")
     lines += ["", "## People met", ""]
+    notes_about = people_notes()
+    history = memory.get("history") if memory else None
     if people:
         for p in people:
             mins = int(round((p.get("seconds") or 0) / 60))
-            lines.append(f"- {p.get('name')}{' (' + p['class'] + ')' if p.get('class') else ''} — about {mins} minutes together")
+            extra = companion_suffix(p.get("name") or "", history, notes_about.get(p.get("name") or ""))
+            lines.append(f"- {p.get('name')}{' (' + p['class'] + ')' if p.get('class') else ''} — about {mins} minutes together{extra}")
     else:
         lines.append("- none")
     lines += ["", "## Player notes (verbatim, most important evidence)", ""]
@@ -166,9 +176,15 @@ def split_output(text: str) -> tuple[str, str | None]:
 
 def summarize(session: dict[str, Any], archive: Archive, exports_dir: Path, use_ai: bool = True,
               model: str = DEFAULT_MODEL, log=print, voice: str | None = None) -> dict[str, Path | None]:
-    from .nights import chapter_number
-    chapter = chapter_number(archive, session) if session.get("kind") == "night" else archive.chapter_number(session)
-    prompt = build_prompt(session, chapter, voice)
+    from .nights import earlier_nights
+    memory = None
+    if session.get("kind") == "night":
+        prior = earlier_nights(archive, session)          # one nights() pass: chapter number and memory together
+        chapter = len(prior) + 1
+        memory = build_memory(prior, session, exports_dir)
+    else:
+        chapter = archive.chapter_number(session)
+    prompt = build_prompt(session, chapter, voice, memory)
     prompt_path = exports_dir / "prompts" / export_filename(session, "-prompt")
     atomic_write_bytes(prompt_path, prompt.encode("utf-8"))
     result: dict[str, Path | None] = {"prompt": prompt_path, "journal": None, "recap": None}

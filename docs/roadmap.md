@@ -58,14 +58,19 @@ help from us.
 - [ ] **Recap card.** A PNG share card (title, date, stats, one line) generated from the story page for socials.
 - [x] **Screenshots on the timeline** in the story page, captioned by the moment (auto shots at level ups, marks, new
       zones; hero picture; `ramble share`). Done 2026-09-22; in-game verification pending.
-- [ ] **Chapter continuity.** Give the writer the previous chapter's title and one-line summary so a season reads
-      as one story, without letting it re-narrate old nights.
+- [x] **Chapter continuity.** The writer gets the last three chapters as one factual line each, the previous chapter's
+      text, and each companion's history (familiar or new, first met when and where, hours before tonight), with a rule
+      against re-narrating old nights. `memory.py`. Done 2026-09-26.
 
 ## Phase C — Memory over time (a month out)
 
 - [ ] Character timeline page (level curve, nights, places, companions, deaths) from the index alone.
 - [ ] People page: first met, last seen, hours together, nights shared.
-- [ ] Weekly recap and season grouping (levels 1–10, 10–20 …).
+- [x] **Route guide** (`ramble guide`): the nights cut into zone stretches with the level range reached there, one page
+      per character, facts always and prose per stretch from a *mode* prompt (`route` for another player, `season` for
+      the player, or your own file). The season-grouping idea, done as the player's own path, never as advice. `guide.py`.
+      Done 2026-09-26.
+- [ ] Weekly recap (a mode over the last seven nights, once the guide's stretches can be windowed).
 - [ ] Adventure map: `ZONE_ENTER` coordinates plotted on the client's own map images (no asset bundling).
 - [ ] `ramble ask "when did I first meet Tiamaat?"`: answers grounded in the archive.
 

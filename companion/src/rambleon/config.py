@@ -31,3 +31,25 @@ def share_auto(repo_root: Path | None = None) -> bool:
     machine's rambleon.local.toml says so; the file is gitignored, so it never travels with the repo."""
     share = load_local_config(repo_root).get("share", {})
     return bool(share.get("auto")) if isinstance(share, dict) else False
+
+
+def guide_mode(repo_root: Path | None = None) -> str | None:
+    """`[guide] mode = "season"`: which prompt the watcher uses for the route guide (a bundled mode or a path
+    to your own .md). None means the default `route`."""
+    guide = load_local_config(repo_root).get("guide", {})
+    mode = guide.get("mode") if isinstance(guide, dict) else None
+    return mode.strip() if isinstance(mode, str) and mode.strip() else None
+
+
+def people_notes(repo_root: Path | None = None) -> dict[str, str]:
+    """`[people."Cassidy"] note = "my friend from work"`: the player's own words about a companion, handed to
+    the writer as evidence on every chapter. Names match the roster name the game shows."""
+    people = load_local_config(repo_root).get("people", {})
+    if not isinstance(people, dict):
+        return {}
+    out: dict[str, str] = {}
+    for name, entry in people.items():
+        note = entry.get("note") if isinstance(entry, dict) else None
+        if isinstance(note, str) and note.strip():
+            out[str(name)] = note.strip()
+    return out

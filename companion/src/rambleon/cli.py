@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from datetime import datetime
@@ -14,15 +15,17 @@ from rich.table import Table
 from . import __version__
 from .archive import Archive
 from .doctor import apply_fixes, run_doctor
-from .export import duration, export_session, render_markdown
+from .archive import atomic_write_bytes
+from .export import carried_over, duration, export_filename, export_session, render_catchup, render_markdown
 from .install import install_addon
 from .paths import resolve_paths
 from . import service as svc
-from .nights import nights as list_nights, resolve_night
+from .nights import earlier_nights, nights as list_nights, resolve_night
 from .notify import notify
 from .publish import export_html, publish_chapters, write_html_index
 from .screenshots import refresh_session_screenshots
 from .config import share_auto
+from .guide import available_modes, default_mode, write_guide
 from .share import ShareError, share as run_share
 from .watch import Finalizer
 from .wowstate import logged_out_since
@@ -169,6 +172,12 @@ def _finish_night(archive: Archive, paths, use_ai: bool, model: str, voice: str 
         log(f"exported {md.name}")
         if use_ai:
             run_summarize(night, archive, paths.exports_dir, use_ai=True, model=model, log=log, voice=voice)
+        try:   # the route guide: facts every time, prose only when this night is new to it; the story page links to it
+            g = write_guide(archive, paths.exports_dir, night["character"].get("slug", "unknown"), use_ai=use_ai,
+                            model=model, voice=voice, log=log, only_if_new=True)
+            log(f"route guide {g['html']}")
+        except Exception as e:  # noqa: BLE001 — the chapter must still be written and published
+            log(f"route guide skipped: {e}")
         page = export_html(night, archive, paths.exports_dir)
         log(f"story page {page}")
         write_html_index(archive, paths.exports_dir)
@@ -387,6 +396,76 @@ def export(ref: str = typer.Argument("latest"), all_nights: bool = typer.Option(
     for night in targets:
         out = export_session(night, paths.exports_dir)
         console.print(f"exported {out}")
+
+
+def _copy_to_clipboard(text: str) -> bool:
+    if sys.platform != "darwin":
+        return False
+    try:
+        env = {**os.environ, "LANG": "en_US.UTF-8"}  # pbcopy reads its input in the locale's encoding
+        return subprocess.run(["pbcopy"], input=text.encode("utf-8"), check=False, env=env).returncode == 0
+    except OSError:
+        return False
+
+
+@app.command()
+def catchup(ref: str = typer.Argument("latest", help="tonight | latest | YYYY-MM-DD | night id"),
+            copy: bool = typer.Option(False, "--copy/--no-copy", help="Also put the text on the clipboard (macOS).")) -> None:
+    """A plain-text list of the quests turned in one night, grouped by zone, to paste to a friend who wants to catch up."""
+    archive, paths = _archive()
+    night = _night(ref)
+    text = render_catchup(night, carried_over(earlier_nights(archive, night), night))
+    out = paths.exports_dir / "social" / export_filename(night, "-catchup").replace(".md", ".txt")
+    atomic_write_bytes(out, text.encode("utf-8"))
+    console.print(text, markup=False, highlight=False, soft_wrap=True)
+    console.print(f"[dim]saved {out}[/dim]", soft_wrap=True)
+    if copy:
+        console.print("copied to the clipboard." if _copy_to_clipboard(text) else "[yellow]could not copy (pbcopy unavailable).[/yellow]")
+
+
+def _slug(archive: Archive, ref: str) -> str:
+    """A character slug from `latest` (the character who played last) or a slug seen in the archive."""
+    if ref in ("latest", "tonight", "last", ""):
+        night = resolve_night(archive, "latest")
+        if night is None:
+            console.print("[red]no nights archived yet[/red] — play a session first, or run `ramble ingest`")
+            raise typer.Exit(1)
+        return night["character"].get("slug", "unknown")
+    known = sorted({n["character"].get("slug") for n in list_nights(archive) if n["character"].get("slug")})
+    if ref in known:
+        return ref
+    console.print(f"[red]no character matches {ref!r}[/red] — known: {', '.join(known) or 'none yet'}")
+    raise typer.Exit(1)
+
+
+@app.command()
+def guide(ref: str = typer.Argument("latest", help="character slug | latest"),
+          no_ai: bool = typer.Option(False, "--no-ai", help="Only the factual guide and the prompt; do not call the Claude CLI."),
+          model: str = typer.Option(DEFAULT_MODEL, "--model"),
+          voice: str = typer.Option(None, "--voice", help="Tone profile (see `ramble voices`)."),
+          mode: str = typer.Option(None, "--mode", help="What to write from the facts: a bundled mode (--list) or a path to your own .md prompt."),
+          list_modes: bool = typer.Option(False, "--list", help="List the bundled guide modes and exit."),
+          open_it: bool = typer.Option(False, "--open", help="Open the guide page in the browser.")) -> None:
+    """The route guide of a character: how they actually leveled, one zone stretch per chapter, across every night."""
+    if list_modes:
+        for m in available_modes():
+            console.print(f"{m}{'  (default)' if m == default_mode() else ''}")
+        console.print("Or --mode /path/to/your-prompt.md; placeholders: {voice} {name} {pronouns} {startLevel} {endLevel} {nights}.",
+                      markup=False, highlight=False)
+        return
+    archive, paths = _archive()
+    slug = _slug(archive, ref)
+    try:
+        result = write_guide(archive, paths.exports_dir, slug, use_ai=not no_ai, model=model, voice=voice, mode=mode, log=log)
+    except ValueError as e:
+        console.print(f"[red]{e}[/red]")
+        raise typer.Exit(1)
+    for k, v in result.items():
+        if v:
+            console.print(f"{k}: {v}")
+    write_html_index(archive, paths.exports_dir)
+    if open_it and sys.platform == "darwin":
+        subprocess.run(["open", str(result["html"])], check=False)
 
 
 @app.command()

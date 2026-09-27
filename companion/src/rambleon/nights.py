@@ -126,7 +126,15 @@ def resolve_night(archive: Archive, ref: str) -> dict[str, Any] | None:
     return matches[0] if len(matches) == 1 else None
 
 
-def chapter_number(archive: Archive, night: dict[str, Any]) -> int:
+def earlier_nights(archive: Archive, night: dict[str, Any]) -> list[dict[str, Any]]:
+    """Nights of the same character strictly before this one, oldest first: index k-1 is chapter k.
+    The night itself is never in the list, so re-writing a chapter never treats an earlier run of the
+    same night as memory."""
     slug = night.get("character", {}).get("slug")
-    earlier = [n for n in nights(archive, slug) if (n.get("startedAt") or 0) < (night.get("startedAt") or 0)]
-    return len(earlier) + 1
+    started = night.get("startedAt") or 0
+    return [n for n in nights(archive, slug)
+            if (n.get("startedAt") or 0) < started and n.get("id") != night.get("id")]
+
+
+def chapter_number(archive: Archive, night: dict[str, Any]) -> int:
+    return len(earlier_nights(archive, night)) + 1

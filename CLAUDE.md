@@ -14,7 +14,8 @@ Goal: something to *offer* other players (free, open), not primarily something t
 ## What Rambleon is NOT
 
 - not a DPS meter, not a combat assistant, not a rotation helper
-- not a leveling guide or quest helper
+- not a leveling guide or quest helper: no advice, no optimal route, no help in game. Your own path, retold
+  (`ramble guide`), is memory, not guidance.
 - not a general WoW database
 - not automation of any kind (no movement, no ability use, no interaction with other players)
 
@@ -44,11 +45,23 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
   Reloads and relogs are continuity, not breaks (the AddOn resumes a session seen < 10 min ago).
 - **Finalization**: the watcher writes the chapter the moment the player leaves (WoW quit, or `Logs/Client.log`
   shows a logout after the last save), ten minutes after the last write as fallback, or at once after `/ramble save`.
-  Then: export → AI journal (if the Claude CLI is logged in) → story page + index → publish to the game → macOS notification.
+  Then: export → AI journal (if the Claude CLI is logged in) → route guide (facts always; prose only when a night is new to it)
+  → story page + index → publish to the game → macOS notification.
+- **Route guide**: one page per character, `exports/html/guide-<slug>.html`, linked from every story page and the index,
+  and copied by `ramble share`. `guide.py` cuts the nights into zone stretches (a visit stands alone when a quest was
+  turned in, a level reached, a death or a note happened there, or 20+ minutes with something done; anything else folds
+  into its neighbour as "passing through"; stretches span nights) and lists what was picked up, turned in, first fought,
+  looted, where the deaths were, and the player's notes. A **mode** is the prompt that says what to write from those facts:
+  `prompts/guides/route.md` (default, for another player), `season.md` (the story so far, for the player), or
+  `--mode /your/file.md`. `RAMBLEON_GUIDE_MODE` or `[guide] mode = "..."` in `rambleon.local.toml` sets the watcher's.
+  Sidecar `exports/guide/<slug>-<mode>.json` remembers which nights the prose covers.
 - **Voices**: `companion/src/rambleon/prompts/voices/*.md`. Default `golden` (warm, close third person, Christie
   Golden-like); `field-journal` (dry, observational). `--voice`, `RAMBLEON_VOICE`, `ramble voices`.
 - **Local facts**: `rambleon.local.toml` (gitignored) overrides character fields for sessions recorded before the
-  AddOn captured them (e.g. gender).
+  AddOn captured them (e.g. gender), and `[people."Name"] note = "..."` gives the writer your own words about a companion.
+- **Memory between chapters**: `memory.py` builds what the writer may remember (last three chapters as facts, the
+  previous chapter's text, each companion's history) from earlier nights and their journal sidecars. Rule 6 in
+  `prompts/journal.md` says how it may be used: continue the story, never retell it.
 
 ## Layout
 
@@ -58,12 +71,13 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
 - `companion/` — Python ≥ 3.11, uv, typer. `src/rambleon/`: `paths` (find WoW/WTF), `luaparse` (safe SV parser),
   `normalize`, `archive`, `watch` (+ `Finalizer`), `wowstate` (logout detection), `nights`, `export`, `summarize`,
   `publish` (Chapters.lua, HTML), `service` (launchd), `notify`, `config`, `doctor`, `install`, `cli`,
-  `model` (schema constants), `screenshots` (pairs files with SCREENSHOT events, captions), `share` (GitHub Pages).
+  `model` (schema constants), `screenshots` (pairs files with SCREENSHOT events, captions), `share` (GitHub Pages),
+  `memory` (what earlier chapters lend the prompt), `guide` (the route guide: stretches, modes, page).
 - The companion wheel **bundles the AddOn** via an explicit per-file `force-include` list in `companion/pyproject.toml`.
   Adding a file to `addon/Rambleon/` means adding it there too, or `uv tool install` users get a broken AddOn.
   Without a checkout, `install.py` seeds `~/Rambleon/addon/Rambleon` from the bundled copy.
 - `archive/` — **source of truth**, gitignored. Raw snapshots never edited; normalized sessions never shrink.
-- `exports/` — regenerable, gitignored: `markdown/`, `prompts/`, `journal/` (sidecars), `html/`, `social/`.
+- `exports/` — regenerable, gitignored: `markdown/`, `prompts/`, `journal/` (sidecars), `guide/` (guide sidecars), `html/`, `social/`.
 - `site/` — GitHub Pages (`.github/workflows/pages.yml`): landing page + `example/`, a committed snapshot of
   Rambleon Birdsong's story pages. Refresh with `ramble share`; pushing makes the journal public.
 - `docs/` — `environment.md` (this Mac), `addon-api.md` (Forever facts + the SV bug), `data-model.md`,
@@ -130,7 +144,8 @@ Keybindings under AddOns: Open Adventure Log, Mark Moment.
 
 Mac: `ramble setup [--no-ai]` · `doctor [--fix]` · `uninstall` · `install [--copy]` · `service install|uninstall|status` · `watch [--no-ai] [--no-auto] [--voice]`
 · `ingest` · `reprocess` · `status` · `sessions` · `nights` · `show latest` · `export tonight|YYYY-MM-DD|--all`
-· `summarize tonight [--voice] [--no-ai]` · `page tonight` · `publish` · `share [tonight|date|--all] [--yes] [--dry-run]` · `voices`.
+· `summarize tonight [--voice] [--no-ai]` · `page tonight` · `publish` · `share [tonight|date|--all] [--yes] [--dry-run]` · `voices`
+· `catchup [tonight|date] [--copy]` · `guide [slug|latest] [--no-ai] [--voice] [--mode route|season|file.md] [--list] [--open]`.
 
 ## Where this is going
 

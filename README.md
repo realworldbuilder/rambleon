@@ -66,7 +66,8 @@ To remove it: `ramble uninstall` (your archive stays unless you ask for it to go
 - Log out when you are done. That is the save. A few seconds later the chapter is written on your Mac.
 
 On the Mac: `ramble nights` lists chapters, `ramble page tonight` opens the story page, `ramble summarize tonight
---voice field-journal` rewrites a chapter in another voice, `ramble share tonight` puts a chapter (pictures included) on
+--voice field-journal` rewrites a chapter in another voice, `ramble guide --open` shows the route guide (how you actually leveled, stretch by stretch; `--mode season` retells it
+for you instead of for a stranger), `ramble share tonight` puts a chapter (pictures included) on
 your GitHub Pages site after asking, `ramble doctor --fix` repairs a broken link or a stopped watcher. `ramble --help`
 has the rest.
 

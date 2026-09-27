@@ -190,6 +190,152 @@ def render_recap(session: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _quest_label(ev: dict[str, Any]) -> str:
+    return ev.get("title") or "quest " + str(ev.get("questID"))
+
+
+def _qkey(ev: dict[str, Any]) -> Any:
+    """One quest = one questID; a quest whose id was never captured is keyed by its title."""
+    return ev.get("questID") if ev.get("questID") is not None else ("title", ev.get("title"))
+
+
+def quest_summary(night: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
+    """Quests of a night as lists, not counts.
+
+    `completed`: QUEST_COMPLETED events in order, one per questID (sessions of one night can overlap).
+    `open`: QUEST_ACCEPTED events (one per questID) whose quest was not turned in that night.
+    """
+    completed: list[dict[str, Any]] = []
+    accepted: list[dict[str, Any]] = []
+    seen_done: set[Any] = set()
+    seen_acc: set[Any] = set()
+    for ev in night.get("events", []):
+        t = ev.get("type")
+        key = _qkey(ev)
+        if t == "QUEST_COMPLETED" and key not in seen_done:
+            seen_done.add(key)
+            completed.append(ev)
+        elif t == "QUEST_ACCEPTED" and key not in seen_acc:
+            seen_acc.add(key)
+            accepted.append(ev)
+    open_quests = [ev for ev in accepted if _qkey(ev) not in seen_done]
+    return {"completed": completed, "open": open_quests}
+
+
+def carried_over(prior: list[dict[str, Any]], night: dict[str, Any]) -> list[tuple[dict[str, Any], int]]:
+    """Quests accepted on an earlier night and never turned in, up to the end of `night`.
+
+    Returns (the first QUEST_ACCEPTED event, the chapter it was accepted in), oldest first. `prior` is
+    nights.earlier_nights() output, so chapter k is prior[k-1]. A quest accepted again in `night` is not
+    carried: it shows under that night's own "picked up". Abandoned quests are not recorded by the AddOn,
+    so this is what Rambleon knows, not the quest log.
+    """
+    carrying: dict[Any, tuple[dict[str, Any], int]] = {}
+    for k, earlier in enumerate(prior, start=1):
+        for ev in earlier.get("events", []):
+            t = ev.get("type")
+            if t == "QUEST_ACCEPTED":
+                carrying.setdefault(_qkey(ev), (ev, k))
+            elif t == "QUEST_COMPLETED":
+                carrying.pop(_qkey(ev), None)
+    for ev in night.get("events", []):
+        if ev.get("type") in ("QUEST_ACCEPTED", "QUEST_COMPLETED"):
+            carrying.pop(_qkey(ev), None)
+    return list(carrying.values())
+
+
+def _by_zone(events: list[dict[str, Any]]) -> list[tuple[str, list[dict[str, Any]]]]:
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for ev in events:
+        groups.setdefault(ev.get("zone") or "Elsewhere", []).append(ev)
+    return list(groups.items())
+
+
+def _collapse_titles(events: list[dict[str, Any]]) -> list[tuple[dict[str, Any], int]]:
+    """Chain quests share a title ("Bashal'Aran" parts 1-4 are four questIDs): one line with a count, last part's details."""
+    out: list[tuple[dict[str, Any], int]] = []
+    index: dict[str, int] = {}
+    for ev in events:
+        label = _quest_label(ev)
+        if label in index:
+            i = index[label]
+            out[i] = (ev, out[i][1] + 1)
+        else:
+            index[label] = len(out)
+            out.append((ev, 1))
+    return out
+
+
+def _times(n: int) -> str:
+    return f" ×{n}" if n > 1 else ""
+
+
+def _collapse_carried(carried: list[tuple[dict[str, Any], int]]) -> list[tuple[dict[str, Any], int, int]]:
+    """_collapse_titles for carried_over() output: (event, count, chapter first accepted in)."""
+    chapter = {id(ev): k for ev, k in carried}
+    out = []
+    for ev, n in _collapse_titles([ev for ev, _ in carried]):
+        first = min(chapter[id(e)] for e, _ in carried if _quest_label(e) == _quest_label(ev))
+        out.append((ev, n, first))
+    return out
+
+
+def render_catchup(night: dict[str, Any], carried: list[tuple[dict[str, Any], int]] | None = None) -> str:
+    """A plain-text quest list to paste to a friend: what was turned in tonight, where, what is still open,
+    and (`carried`, from carried_over()) what is still being carried from earlier chapters."""
+    c = night.get("character", {})
+    started = night.get("startedAt")
+    when = datetime.fromtimestamp(started).strftime("%A, %B %-d") if started else "Unknown date"
+    start, end = c.get("startLevel"), c.get("endLevel")
+    if start and end and start != end:
+        level = f"Level {start} → {end}"
+    elif end:
+        level = f"Level {end}"
+    else:
+        level = ""
+    header = " — ".join(x for x in (c.get("displayName", "Unknown"), when, level) if x)
+    lines = [header]
+    if night.get("state") not in ("ended",):
+        lines.append("(night still open — captured as last seen)")
+    q = quest_summary(night)
+    lines.append("")
+    if not q["completed"] and not q["open"]:
+        lines.append("No quests turned in tonight.")
+    if q["completed"]:
+        lines.append(f"Quests turned in ({len(q['completed'])})")
+        for zone, evs in _by_zone(q["completed"]):
+            lines.append(zone)
+            for ev, n in _collapse_titles(evs):
+                detail = [d for d in (ev.get("subzone"), f"lv {ev['level']}" if ev.get("level") else None) if d]
+                lines.append(f"  - {_quest_label(ev)}{_times(n)}" + (f" ({', '.join(detail)})" if detail else ""))
+    if q["open"]:
+        if q["completed"]:
+            lines.append("")
+        lines.append(f"Picked up, not finished yet ({len(q['open'])})")
+        for ev, n in _collapse_titles(q["open"]):
+            where = place(ev)
+            lines.append(f"  - {_quest_label(ev)}{_times(n)}" + (f" ({where})" if where else ""))
+    if carried:
+        if q["completed"] or q["open"]:
+            lines.append("")
+        lines.append(f"Still carrying from earlier chapters ({len(carried)})")
+        for ev, n, k in _collapse_carried(carried):
+            detail = [d for d in (place(ev), f"since Chapter {k}") if d]
+            lines.append(f"  - {_quest_label(ev)}{_times(n)} ({', '.join(detail)})")
+    places = _by_zone([z for z in night.get("zones", []) if z.get("subzone")])
+    if places:
+        lines.append("")
+        parts = []
+        for zone, zs in places:
+            names: list[str] = []
+            for z in zs:
+                if z["subzone"] not in names:
+                    names.append(z["subzone"])
+            parts.append(f"{', '.join(names)} ({zone})")
+        lines.append("Places: " + "; ".join(parts))
+    return "\n".join(lines) + "\n"
+
+
 def export_filename(session: dict[str, Any], suffix: str = "") -> str:
     started = session.get("startedAt") or 0
     day = session.get("nightDate") or datetime.fromtimestamp(started).strftime("%Y-%m-%d")

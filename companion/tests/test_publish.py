@@ -6,7 +6,7 @@ from rambleon.luaparse import parse, to_python
 from rambleon.normalize import sessions_from_db
 from rambleon.publish import build_chapters, export_html, lua_string, write_chapters_lua
 from rambleon.summarize import build_prompt
-from rambleon.export import render_recap
+from rambleon.export import carried_over, quest_summary, render_catchup, render_recap
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -205,3 +205,141 @@ def test_index_is_a_list_of_cards(tmp_path):
     assert text.count("<a class='card'") == 2 and "<span class='n'>Chapter 2</span>" in text
     assert text.index("Chapter 2</span>") < text.index("Chapter 1</span>")      # newest first
     assert "<nav class='top'>" in text and "1 companion<" in text and "companions" not in text.split("Chapter 2")[1].split("</li>")[0]
+
+
+def _fixture_session():
+    db = to_python(parse((FIXTURES / "Rambleon_simulated.lua").read_bytes()))["RambleonDB"]
+    return sessions_from_db(db)[0]
+
+
+def test_catchup_lists_quests_by_zone():
+    text = render_catchup(_fixture_session())
+    lines = text.splitlines()
+    assert lines[0].startswith("Rambleon Birdsong — ") and "Level 10 → 12" in lines[0]
+    assert "Quests turned in (1)" in lines
+    i = lines.index("Teldrassil")
+    assert lines[i + 1] == '  - The Emerald Dreamcatcher (Dolanaar, lv 10)'
+    assert "Picked up, not finished yet (1)" in lines
+    assert any(l.startswith("  - Precious Waters") for l in lines)
+    assert any(l.startswith("Places: ") and "(Teldrassil)" in l for l in lines)
+    assert "*" not in text and "#" not in text
+
+
+def test_catchup_dedupes_across_sessions():
+    from rambleon.nights import build_night
+    a = _fixture_session()
+    b = dict(a, id=a["id"] + "-later", startedAt=a["startedAt"] + 3600, endedAt=a["endedAt"] + 3600,
+             events=[dict(e, t=e["t"] + 3600) for e in a["events"]])
+    night = build_night([a, b])
+    q = quest_summary(night)
+    assert [e["questID"] for e in q["completed"]] == [123]
+    assert [e["questID"] for e in q["open"]] == [124]
+    assert render_catchup(night).count("The Emerald Dreamcatcher") == 1
+
+
+def test_catchup_missing_title_and_empty_night():
+    s = _fixture_session()
+    bare = dict(s, events=[{"type": "QUEST_COMPLETED", "questID": 999, "t": s["startedAt"], "level": 12}], zones=[])
+    text = render_catchup(bare)
+    assert "Elsewhere" in text and "  - quest 999 (lv 12)" in text
+    chain = dict(s, zones=[], events=[{"type": "QUEST_COMPLETED", "questID": i, "title": "Bashal'Aran", "zone": "Darkshore",
+                                        "level": 14, "t": s["startedAt"] + i} for i in (1, 2, 3)])
+    text = render_catchup(chain)
+    assert "Quests turned in (3)" in text and text.count("Bashal'Aran") == 1 and "Bashal'Aran ×3 (lv 14)" in text
+    empty = dict(s, events=[], zones=[])
+    assert "No quests turned in tonight." in render_catchup(empty)
+
+
+def _quest_ev(kind, qid, title, t, zone="Darkshore", subzone="Auberdine"):
+    return {"type": kind, "questID": qid, "title": title, "t": t, "level": 14, "zone": zone, "subzone": subzone}
+
+
+def _night_with(base, events, offset):
+    from rambleon.nights import build_night
+    s = dict(base, id=f"{base['id']}-{offset}", startedAt=base["startedAt"] + offset, endedAt=base["endedAt"] + offset,
+             events=[dict(e, t=e["t"] + offset) for e in events])
+    return build_night([s])
+
+
+def test_carried_over_quests():
+    base = _fixture_session()
+    day, t0 = 86400, base["startedAt"]
+    quiet = [e for e in base["events"] if not e["type"].startswith("QUEST_")]
+    n1 = _night_with(base, quiet + [_quest_ev("QUEST_ACCEPTED", 200, "Fruit of the Sea", t0 + 10),
+                                    _quest_ev("QUEST_ACCEPTED", 201, "WANTED: Murkdeep!", t0 + 20),
+                                    _quest_ev("QUEST_COMPLETED", 201, "WANTED: Murkdeep!", t0 + 30)], 0)
+    n2 = _night_with(base, quiet, day)
+    assert [(ev["questID"], k) for ev, k in carried_over([n1], n2)] == [(200, 1)]
+    done = _night_with(base, quiet + [_quest_ev("QUEST_COMPLETED", 200, "Fruit of the Sea", t0 + 5)], day)
+    assert carried_over([n1], done) == []
+    again = _night_with(base, quiet + [_quest_ev("QUEST_ACCEPTED", 200, "Fruit of the Sea", t0 + 5)], day)
+    assert carried_over([n1], again) == []      # tonight's own "picked up" covers it
+    n3 = _night_with(base, quiet, 2 * day)
+    assert [(ev["questID"], k) for ev, k in carried_over([n1, n2], n3)] == [(200, 1)]
+    assert carried_over([], n1) == []
+    text = render_catchup(n2, carried_over([n1], n2))
+    assert "Still carrying from earlier chapters (1)" in text and "  - Fruit of the Sea (Auberdine, since Chapter 1)" in text
+    assert "Still carrying" not in render_catchup(n2)
+
+
+def _page(tmp_path, *nights_):
+    archive = Archive(tmp_path / "archive")
+    cap = {"capturedAt": int(time.time()), "rawSnapshot": "x", "sourceHash": "h"}
+    for n in nights_:
+        archive.upsert_session(n, cap)
+    archive.rebuild_index()
+    from rambleon.nights import nights
+    return archive, nights(archive)
+
+
+def test_story_page_lists_quests_turned_in_and_still_open(tmp_path):
+    s = _fixture_session()
+    text = export_html(s, Archive(tmp_path / "a"), tmp_path / "exports").read_text()
+    assert "href='#quests'>Quests</a>" in text and "<h2 id='quests'>Quests</h2>" in text
+    assert text.index("href='#recap'") < text.index("href='#quests'") < text.index("href='#journey'")
+    assert text.index("<div class='stats'>") < text.index("<h2 id='quests'>") < text.index("<h2 id='journey'>")
+    assert "<div class='quests'><div class='tabs' role='tablist'>" in text
+    assert "<button role='tab' aria-selected='true' data-pane='done'>Turned in<span class='n'>1</span></button>" in text
+    assert "<button role='tab' aria-selected='false' data-pane='open'>Still open<span class='n'>1</span></button>" in text
+    assert ("<div class='pane on' id='qpane-done' role='tabpanel'><table><thead><tr><th>Quest</th><th>Turned in at</th><th>Lv</th></tr></thead>"
+            "<tbody><tr class='zone'><th colspan='3'>Teldrassil</th></tr><tr><td class='quest'>The Emerald Dreamcatcher</td>"
+            "<td class='where'>Dolanaar</td><td class='lv'>10</td></tr></tbody></table></div>") in text
+    assert "<div class='pane' id='qpane-open' role='tabpanel'><table>" in text and "<td class='quest'>Precious Waters</td><td class='where'>Dolanaar</td>" in text
+    assert "data-pane='carried'" not in text and "class='caveat'" not in text and "<script>" in text
+    quiet = dict(s, events=[e for e in s["events"] if not e["type"].startswith("QUEST_")])
+    text = export_html(quiet, Archive(tmp_path / "b"), tmp_path / "exports2").read_text()
+    assert "#quests" not in text and "<h2 id='quests'>" not in text
+
+
+def test_story_page_carries_open_quests_forward(tmp_path):
+    base = _fixture_session()
+    quiet = [e for e in base["events"] if not e["type"].startswith("QUEST_")]
+    t0 = base["startedAt"]
+    first = _night_with(base, quiet + [_quest_ev("QUEST_ACCEPTED", 200, "Fruit of the Sea", t0 + 10)], 0)
+    second = _night_with(base, quiet + [_quest_ev("QUEST_ACCEPTED", 300, "The Tower of Althalaxx", t0 + 10),
+                                        _quest_ev("QUEST_COMPLETED", 300, "The Tower of Althalaxx", t0 + 20)], 86400)
+    archive, (n1, n2) = _page(tmp_path, first, second)
+    t1 = export_html(n1, archive, tmp_path / "exports").read_text()
+    t2 = export_html(n2, archive, tmp_path / "exports").read_text()
+    assert "data-pane='carried'" not in t1 and "data-pane='open'>Still open<span class='n'>1</span>" in t1
+    assert "<button role='tab' aria-selected='false' data-pane='carried'>Carrying<span class='n'>1</span></button>" in t2
+    assert ("<tr><td class='quest'>Fruit of the Sea</td><td class='where'>Auberdine</td><td class='since'>Chapter 1</td></tr></tbody></table>"
+            "<p class='caveat'>") in t2
+    assert "data-pane='open'" not in t2 and "aria-selected='true' data-pane='done'>Turned in<span class='n'>1</span>" in t2
+
+
+def test_index_and_story_pages_link_to_the_guide_only_when_it_is_there(tmp_path, monkeypatch):
+    import rambleon.publish as pub
+    from rambleon.guide import write_guide
+    from test_memory import three_nights
+    monkeypatch.setattr("rambleon.config.find_repo_root", lambda: tmp_path)
+    monkeypatch.delenv("RAMBLEON_GUIDE_MODE", raising=False)
+    archive, exports, n1, n2, n3 = three_nights(tmp_path)
+    assert "Route guide" not in pub.export_html(n3, archive, exports).read_text()
+    assert "Route guide" not in pub.write_html_index(archive, exports).read_text()
+    write_guide(archive, exports, "rambleon-birdsong", use_ai=False, log=lambda m: None)
+    page = pub.export_html(n3, archive, exports).read_text()
+    assert "<a href='guide-rambleon-birdsong.html'>Route guide</a>" in page
+    assert "<a href='guide-rambleon-birdsong.html'>Route guide</a>" in pub.write_html_index(archive, exports).read_text()
+    assert "Route guide" not in pub.export_html(n3, archive, exports, siblings={pub._page_name(n3)}).read_text()
+    assert "Route guide" not in pub.write_html_index(archive, exports, only={pub._page_name(n3)}, out=tmp_path / "i.html").read_text()

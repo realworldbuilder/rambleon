@@ -106,6 +106,30 @@ def test_finished_night_is_shared_when_auto_is_on(tmp_path, monkeypatch):
     session = archive.load_session("latest")
     cli._finish_night(archive, paths, use_ai=False, model="sonnet")(session)
     assert calls == []                                       # no toml: nothing leaves the Mac
+    assert (paths.exports_dir / "html" / "guide-rambleon-birdsong.html").exists()   # the route guide is part of a finished night
+    assert "Route guide" in next(paths.exports_dir.glob("html/2026-*.html")).read_text()
     (repo / "rambleon.local.toml").write_text("[share]\nauto = true\n")
     cli._finish_night(archive, paths, use_ai=False, model="sonnet")(session)
     assert len(calls) == 1 and calls[0][0][0].startswith("night-") and calls[0][1]["yes"] is True
+
+
+def test_share_takes_the_route_guide_along(tmp_path, monkeypatch):
+    from rambleon.guide import write_guide
+    from rambleon.nights import nights
+    monkeypatch.setattr("rambleon.config.find_repo_root", lambda: tmp_path)
+    repo = checkout(tmp_path)
+    archive, paths = archived(tmp_path, repo)
+    pushes: list = []
+    plain = share(archive, paths, ["tonight"], dry_run=True, runner=recording_runner(pushes))
+    assert not any("guide-" in f for f in plain.files)                   # no guide written yet: nothing to take
+    write_guide(archive, paths.exports_dir, "rambleon-birdsong", use_ai=False, log=lambda m: None)
+    dry = share(archive, paths, ["tonight"], dry_run=True, runner=recording_runner(pushes))
+    assert "site/example/guide-rambleon-birdsong.html" in dry.files
+    result = share(archive, paths, ["tonight"], yes=True, runner=recording_runner(pushes))
+    example = repo / "site" / "example"
+    page = (example / "guide-rambleon-birdsong.html").read_text()
+    night_page = nights(archive)[0]["id"]  # sanity: one night
+    assert result.pushed and "guide-rambleon-birdsong.html" in result.pages
+    assert "href='2026-" in page and night_page.startswith("night-")
+    assert "<a href='guide-rambleon-birdsong.html'>Route guide</a>" in (example / "index.html").read_text()
+    assert "Route guide" in [p for p in example.glob("2026-*.html")][0].read_text()

@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+- Story pages: a **Quests** section between the stats and the timeline lists what was turned in that night (by zone,
+  with the turn-in spot and level), what was picked up but not finished, and what is still being carried from earlier
+  chapters ("since Chapter 3"), so a friend playing alongside can see what to do and what to hold off on. A jump link
+  takes you there. `ramble catchup` prints the same carry-over list. Abandoned quests are not recorded, so the
+  carry-over list says what Rambleon knows, not what the quest log holds.
+- `ramble guide`: a route guide per character — how they actually leveled, one zone stretch per chapter with a numbered
+  sidebar, the quests picked up and turned in, first kills, loot, deaths, companions and your notes, drawn from every
+  night. Not the best route; the road taken. AI prose when the Claude CLI is present, written by the watcher only when
+  a new night was added. Modes say what to write from the same facts: `route` (for another player, default), `season`
+  (the story so far, for you) or `--mode your-prompt.md`; `[guide] mode` in `rambleon.local.toml` sets the watcher's.
+  The page is linked from the index and every story page, and `ramble share` copies it to the site along with the
+  chapters, so sharing now also publishes one page that sums up the whole character.
+- `ramble catchup [tonight|date]` prints a plain-text list of the quests turned in that night, grouped by zone with
+  the turn-in spot and level, plus the quests picked up but not finished, ready to paste to a friend who wants to catch
+  up. `--copy` puts it on the clipboard; a copy lands in `exports/social/<date>-<slug>-catchup.txt`.
+- Chapter continuity. The journal prompt now carries a "Story so far" block (one factual line for each of the last
+  three chapters, and the previous chapter as it was written) and marks every companion as familiar or new, with the
+  night they were first met, where, and the hours shared before tonight. The writer continues the story instead of
+  starting over, and an old friend is never introduced as a stranger. `[people."Name"] note = "..."` in
+  `rambleon.local.toml` hands the writer your own words about a person. Re-run `ramble summarize <date>` to rewrite
+  a chapter that mis-introduced a friend, then `ramble publish`.
 - Site: one slim top bar on every page, previous/next chapter links, jump links (Story · Recap · Journey · Notes)
   and a foldable timeline on story pages, a card list on the chapter index, a how-it-works strip and a tabbed Quick Start
   (terminal, a paste-into-Claude-Code prompt, from source) on the landing page.

@@ -142,5 +142,15 @@ archive/
 - `markdown/<date>-<slug>.md` — factual log (`ramble export`).
 - `prompts/<date>-<slug>-prompt.md` — AI-neutral prompt with rules + evidence (`ramble summarize`).
 - `markdown/<date>-<slug>-journal.md` and `social/<date>-<slug>-recap.txt` — when the Claude CLI wrote the chapter.
+- `social/<date>-<slug>-catchup.txt` — plain-text quest list for a friend (`ramble catchup`).
+- `markdown/guide-<slug>.md`, `prompts/guide-<slug>-<mode>-prompt.md`, `html/guide-<slug>.html` — the route guide
+  (`ramble guide`): every night of one character cut into zone stretches. `guide/<slug>-<mode>.json` is its sidecar:
+  `slug, displayName, title, mode, nights (ids the prose covers), chapters, prose, model, voice, createdAt`;
+  `markdown/guide-<slug>-<mode>-prose.md` the same prose as a file. A mode other than the configured default writes
+  `html/guide-<slug>-<mode>.html` beside the linked page.
+- `journal/<night id>.json` — the chapter as written: `sessionId, chapter, title, journal, recap, model, voice, createdAt`.
+  The story page, `Chapters.lua` and the prompts for later nights all read it: `memory.py` hands the writer the previous
+  chapter's text, the last three chapters' titles and a companion history built from the normalized nights. Deleting
+  a sidecar costs a title and the previous-chapter text, never a fact.
 
 Generated artifacts are downstream of the archive and can always be regenerated. Raw history is never edited.

@@ -164,6 +164,14 @@ On the Mac after logout: `ls "<WoW>/_classic_beta_/Screenshots/"` (note the exte
   service can push. `docs/invite-prompt.md` written for a friend.
 - To verify in game: `/reload` → `/ramble chapters` shows "4 of 4"; `/ramble debug` shows displayName Rambleon Birdsong.
 
+### 2026-09-27 — Quests on every chapter page (player request)
+- Friends who play alongside want to see, per chapter, which quests were picked up and turned in. `publish.py` adds a
+  Quests section (turned in by zone with level, picked up but still open, still carrying from earlier chapters with
+  the chapter it was accepted in) before The Journey, plus a jump link. `export.carried_over(prior, night)` computes
+  the carry-over from `nights.earlier_nights`; `ramble catchup` prints the same list. Caveat on the page: abandoned
+  quests are not recorded (no QUEST_REMOVED handler in the AddOn), so the carry-over is what Rambleon saw.
+- Restart the watcher (`ramble service install`) so the next finished chapter gets the section.
+
 ### Later
 - Milestone 2: nicer timeline, satisfying MARK MOMENT, minimap button or keybind polish, Tier 2 events (loot, hearth).
 - Milestone 3: chapter numbering across many sessions, recap cards, weekly recap.
