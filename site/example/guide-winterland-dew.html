@@ -1,0 +1,81 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>How Winterland Dew leveled 1–4 on Forever</title><link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
+h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
+figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.quests{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0}
+.quests .tabs{display:flex;gap:4px;padding:6px 8px 0;border-bottom:1px solid var(--line);background:rgba(90,53,16,.05)}
+.quests .tabs button{font:inherit;font-size:15px;padding:8px 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--soft);cursor:pointer;margin-bottom:-1px}
+.quests .tabs button:hover{color:var(--link)}.quests .tabs button[aria-selected=true]{color:#5a3510;border-color:var(--gold);font-weight:bold}
+.quests .tabs .n{display:inline-block;min-width:22px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(90,53,16,.1);font-size:12px;font-weight:normal;color:var(--soft);text-align:center}
+.quests .pane{display:none;padding:6px 0 4px}.quests .pane.on{display:block}
+.quests table{width:100%;border-collapse:collapse;font-size:15px}
+.quests th,.quests td{text-align:left;padding:7px 14px;border-top:1px solid rgba(201,180,138,.5);vertical-align:top}
+.quests thead th{font:700 12px/1 Cinzel,Georgia,serif;letter-spacing:1.5px;color:#5a3510;border-top:0;padding-top:10px}
+.quests tr.zone th{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;background:rgba(90,53,16,.06);letter-spacing:.5px}
+.quests td.where,.quests td.lv,.quests td.since{color:var(--soft);white-space:nowrap}.quests td.lv{text-align:right}
+.quests .caveat{font-size:13px;color:var(--faint);margin:0;padding:8px 14px 6px;border-top:1px solid rgba(201,180,138,.5)}
+@media(max-width:520px){.quests .tabs button{padding:8px 8px;font-size:14px}.quests th,.quests td{padding:6px 10px}.quests td.where{white-space:normal}}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+
+body.guide{max-width:1040px}
+.guide-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:36px;align-items:start}
+.toc{position:sticky;top:16px;font-size:14px}.toc ol{list-style:none;margin:0;padding:0}.toc li{margin:0 0 8px}
+.toc a{display:flex;gap:10px;text-decoration:none;color:var(--soft)}.toc a:hover{color:var(--link)}
+.toc b{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;min-width:20px}.toc small{display:block;color:var(--faint)}
+p.intro{font-size:19px;color:var(--soft);margin:0 0 28px}
+section.stretch{margin:0 0 40px}section.stretch h2{margin-top:0}section.stretch h2 .n{color:var(--gold);margin-right:8px}
+section.stretch h2 .lv{font-size:14px;color:var(--faint);margin-left:10px;letter-spacing:1px;text-transform:uppercase}
+.where,.from{color:var(--soft);font-size:15px}.prose{margin:14px 0}.prose p{margin:0 0 14px}
+.facts{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:14px 0}
+.facts dt{color:var(--faint);font-size:13px;text-transform:uppercase;letter-spacing:1px}.facts dd{margin:0}
+ul.notes li{font-style:italic}
+@media(max-width:760px){.guide-layout{grid-template-columns:1fr}.toc{position:static}.facts{grid-template-columns:1fr;gap:2px}}
+</style></head><body id='top' class='guide'>
+<nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='index.html'>All chapters</a><a href='../'>About Rambleon</a></nav>
+<h1>How Winterland Dew leveled 1–4 on Forever</h1>
+<div class='meta'>Windshaper Skyborne Hunter · 1 night, September 27, 2026 · 46m in Azeroth · 1 stretch · the road her feet actually took, not the best one · a night is still in progress</div>
+<div class='guide-layout'><aside class='toc'><ol>
+<li><a href='#ch-1'><b>1</b><span>Zephras Isle<small>Level 1–4</small></span></a></li>
+</ol></aside><main>
+<p class='intro'>Winterland Dew came into being on Zephras Isle on the night of September 27, 2026, and in a single sitting of forty-three minutes walked from level 1 to level 4. This is the record of that one night, the ground she covered and the small victories along the way, set down so another player might know the same road.</p>
+<section class='stretch' id='ch-1'><h2><span class='n'>1</span>Zephras Isle<span class='lv'>Level 1–4</span></h2>
+<div class='where'>Thendal Village · Thendal Grove · Rise of Spirits · Thendal Standing Stones</div>
+<div class='from'>From <a href='2026-09-27-winterland-dew.html'>Chapter 1 — First Winds Over Zephras</a> · September 27, 2026 · 43m</div>
+<div class='prose'><p>Winterland Dew began in Thendal Village, where Coming of Age was the first quest turned in and the character&#x27;s life, properly speaking, started. From there the work spread outward and back again: Harmony in Balance, The Way of the Hunter, and The Anchors of Zephras all closed in the Village before she pushed on to Thendal Grove for Elemental Unrest, and level 2 arrived there, a quiet marker rather than a fanfare. If you take the same road, expect that early loop between village and grove to carry you into your second level.</p>
+<p>Combat in these early hours was modest and close to home: juvenile vuldren, pesky cirrusflies, roiling winds, and an Al&#x27;Aketh convert, none of it grand, all of it necessary. Agitators was finished in the Grove, pushing her to level 3, and then the road bent toward the Rise of Spirits and the Thendal Standing Stones, where that same level was marked again in memory, a picture taken of stone and open sky. Return to Rorian, Infestation Investigation, The Cirrusfly Queen, and The Gift of Skysight all found their endings back in Thendal Village, the cirrusfly soldiers and their queen the sharpest fights of the stretch so far.</p>
+<p>By the night&#x27;s last turn-in, Aetheen of the Gales closed in Thendal Village and brought her to level 4, the third such moment captured that evening. Behind her lay a full slate of quests picked up but not yet finished — Infestation Investigation&#x27;s echoes, Foul Matriarch, Aggressive Encroachment among them — proof of how much ground remained even after so much had already been covered. For one night&#x27;s work, three levels and a fistful of village errands was no small thing, and she had not yet left the isle where it all began.</p></div>
+<figure><img src='2026-09-27-winterland-dew/2026-09-27-winterland-dew-01.jpg' alt='Reached Level 2 in Thendal Grove'><figcaption>2:12 PM — Reached Level 2 in Thendal Grove</figcaption></figure>
+<dl class='facts'><dt>Picked up</dt><dd>Coming of Age, Harmony in Balance, Infestation Investigation, Elemental Unrest, The Way of the Hunter, Harvesting Windstones, The Gift of Skysight, Falling With Style, The Anchors of Zephras, Agitators, Return to Rorian, The Cirrusfly Queen, Aetheen of the Gales, Foul Matriarch, Aggressive Encroachment</dd><dt>Turned in</dt><dd>Coming of Age (Thendal Village, level 1), Harmony in Balance (Thendal Village, level 2), The Way of the Hunter (Thendal Village, level 2), The Anchors of Zephras (Thendal Village, level 2), Elemental Unrest (Thendal Grove, level 2), Agitators (Thendal Grove, level 3), Return to Rorian (Thendal Village, level 3), Infestation Investigation (Thendal Village, level 3), The Cirrusfly Queen (Thendal Village, level 3), The Gift of Skysight (Thendal Village, level 3), Aetheen of the Gales (Thendal Village, level 4)</dd><dt>Reached</dt><dd>level 2 (Thendal Grove), level 3 (Thendal Standing Stones), level 4 (Thendal Village)</dd><dt>First met in combat</dt><dd>Juvenile Vuldren, Pesky Cirrusfly, Roiling Winds, Al&#x27;Aketh Convert, Cirrusfly Soldier, Cirrusfly Queen</dd></dl>
+</section>
+<a class='totop' href='#top'>↑ Back to top</a></main></div>
+<footer>Recorded by Rambleon · 1 night</footer></body></html>

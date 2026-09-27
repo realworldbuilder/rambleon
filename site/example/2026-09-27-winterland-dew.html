@@ -1,0 +1,136 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Chapter 1 — First Winds Over Zephras — Winterland Dew</title>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
+h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
+figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.quests{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0}
+.quests .tabs{display:flex;gap:4px;padding:6px 8px 0;border-bottom:1px solid var(--line);background:rgba(90,53,16,.05)}
+.quests .tabs button{font:inherit;font-size:15px;padding:8px 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--soft);cursor:pointer;margin-bottom:-1px}
+.quests .tabs button:hover{color:var(--link)}.quests .tabs button[aria-selected=true]{color:#5a3510;border-color:var(--gold);font-weight:bold}
+.quests .tabs .n{display:inline-block;min-width:22px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(90,53,16,.1);font-size:12px;font-weight:normal;color:var(--soft);text-align:center}
+.quests .pane{display:none;padding:6px 0 4px}.quests .pane.on{display:block}
+.quests table{width:100%;border-collapse:collapse;font-size:15px}
+.quests th,.quests td{text-align:left;padding:7px 14px;border-top:1px solid rgba(201,180,138,.5);vertical-align:top}
+.quests thead th{font:700 12px/1 Cinzel,Georgia,serif;letter-spacing:1.5px;color:#5a3510;border-top:0;padding-top:10px}
+.quests tr.zone th{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;background:rgba(90,53,16,.06);letter-spacing:.5px}
+.quests td.where,.quests td.lv,.quests td.since{color:var(--soft);white-space:nowrap}.quests td.lv{text-align:right}
+.quests .caveat{font-size:13px;color:var(--faint);margin:0;padding:8px 14px 6px;border-top:1px solid rgba(201,180,138,.5)}
+@media(max-width:520px){.quests .tabs button{padding:8px 8px;font-size:14px}.quests th,.quests td{padding:6px 10px}.quests td.where{white-space:normal}}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head><body id='top'>
+<nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='index.html'>All chapters</a><a href='guide-winterland-dew.html'>Route guide</a><a href='../'>About Rambleon</a></nav>
+<h1>Chapter 1 — First Winds Over Zephras</h1>
+<div class='meta'>Winterland Dew · September 27, 2026 · 46m in Azeroth</div>
+<div class='jump'><a href='#story'>Story</a><a href='#recap'>Recap</a><a href='#quests'>Quests</a><a href='#journey'>Journey</a></div>
+<figure class='hero'><img src='2026-09-27-winterland-dew/2026-09-27-winterland-dew-01.jpg' alt='Reached Level 2 in Thendal Grove'><figcaption>2:12 PM — Reached Level 2 in Thendal Grove</figcaption></figure>
+<div class='journal' id='story'><p>Winterland Dew came ashore at Thendal Village with nothing yet to her name but a bow and a windshaper&#x27;s restless curiosity. Zephras Isle greeted her plainly enough — a village, a grove pressing close beyond it, the sky doing whatever skies did on islands built half of stone and half of wind. She did not know yet what that meant. She would learn.</p>
+<p>The grove taught her first. Juvenile vuldren, wary and quick, fell to her arrows one after another until the counting was done, and something in her settled and sharpened at the same moment — the particular click of a girl becoming, however slightly, a huntress. She felt the second level arrive like a held breath let out. Cirrusflies came after, pesky and stubborn, and then the standing stones drew her onward toward converts of the Al&#x27;Aketh and things called Roiling Winds, which she put down without ceremony and without quite understanding what they had been. A third level came to her in that circle of old stones, and she paused long enough to let a picture be taken, as if the moment deserved remembering before she moved on.</p>
+<p>There was a note to find and a woman named Tai&#x27;ree Farsight to speak with in the grove — the Way of the Hunter, they called it, and it passed quickly, more instruction than trial. She viewed an Anchor Pylon at someone&#x27;s asking and did not linger to wonder at it. Rorian sent her out and welcomed her back. A cirrusfly queen, guarded by her soldiers, met the same end as her subjects, and Winterland found herself standing over the small wreckage of that little war feeling, oddly, more curious than triumphant. Near an Elemental Convergence she used something called Skysight for the first time, and whatever it showed her, it was enough to satisfy the task. By the time she returned to the village a fourth level had found her, and Aetheen of the Gales gave her a task and took it back again almost in the same breath — brisk island business, nothing wasted.</p>
+<p>She had walked alone the whole of it — no companion&#x27;s voice at her shoulder, no one to share the small satisfaction of a queen fallen or a fourth level won. That was Zephras Isle for her tonight: a place that asked little conversation of her and gave her, instead, arrows spent, quests closed one after another like doors, and the beginning of whatever a windshaper was meant to become. Forty-six minutes was not long. It was long enough to stop being new.</p></div>
+<div class='recap' id='recap'>46m in Azeroth tonight.
+3 level(s).
+11 quests.
+4 new places.
+0 deaths.
+Travelled alone.
+Ramble on.</div>
+<div class='stats'><div class='stat'><b>11</b><span>Quests</span></div><div class='stat'><b>4</b><span>Places</span></div><div class='stat'><b>34</b><span>Enemies slain</span></div><div class='stat'><b>0</b><span>Loot</span></div><div class='stat'><b>0</b><span>Deaths</span></div><div class='stat'><b>0</b><span>People</span></div><div class='stat'><b>2,881</b><span>XP</span></div></div>
+<h2 id='quests'>Quests</h2><div class='quests'><div class='tabs' role='tablist'><button role='tab' aria-selected='true' data-pane='done'>Turned in<span class='n'>11</span></button><button role='tab' aria-selected='false' data-pane='open'>Still open<span class='n'>4</span></button></div><div class='pane on' id='qpane-done' role='tabpanel'><table><thead><tr><th>Quest</th><th>Turned in at</th><th>Lv</th></tr></thead><tbody><tr class='zone'><th colspan='3'>Zephras Isle</th></tr><tr><td class='quest'>Coming of Age</td><td class='where'>Thendal Village</td><td class='lv'>1</td></tr><tr><td class='quest'>Harmony in Balance</td><td class='where'>Thendal Village</td><td class='lv'>2</td></tr><tr><td class='quest'>The Way of the Hunter</td><td class='where'>Thendal Village</td><td class='lv'>2</td></tr><tr><td class='quest'>The Anchors of Zephras</td><td class='where'>Thendal Village</td><td class='lv'>2</td></tr><tr><td class='quest'>Elemental Unrest</td><td class='where'>Thendal Grove</td><td class='lv'>2</td></tr><tr><td class='quest'>Agitators</td><td class='where'>Thendal Grove</td><td class='lv'>3</td></tr><tr><td class='quest'>Return to Rorian</td><td class='where'>Thendal Village</td><td class='lv'>3</td></tr><tr><td class='quest'>Infestation Investigation</td><td class='where'>Thendal Village</td><td class='lv'>3</td></tr><tr><td class='quest'>The Cirrusfly Queen</td><td class='where'>Thendal Village</td><td class='lv'>3</td></tr><tr><td class='quest'>The Gift of Skysight</td><td class='where'>Thendal Village</td><td class='lv'>3</td></tr><tr><td class='quest'>Aetheen of the Gales</td><td class='where'>Thendal Village</td><td class='lv'>4</td></tr></tbody></table></div><div class='pane' id='qpane-open' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th></tr></thead><tbody><tr><td class='quest'>Harvesting Windstones</td><td class='where'>Thendal Village</td></tr><tr><td class='quest'>Falling With Style</td><td class='where'>Thendal Village</td></tr><tr><td class='quest'>Foul Matriarch</td><td class='where'>Thendal Village</td></tr><tr><td class='quest'>Aggressive Encroachment</td><td class='where'>Thendal Village</td></tr></tbody></table></div></div><script>(function(){var tabs=document.querySelectorAll('.quests [role=tab]');tabs.forEach(function(t){t.addEventListener('click',function(){tabs.forEach(function(o){o.setAttribute('aria-selected',o===t)});document.querySelectorAll('.quests .pane').forEach(function(p){p.classList.toggle('on',p.id==='qpane-'+t.dataset.pane)})})})})();</script>
+<h2 id='journey'>The Journey</h2><details class='journey' open><summary>66 moments, in order · fold</summary><ul>
+<li>2:05 PM — Began the adventure</li>
+<li>2:05 PM — Entered Thendal Village (Zephras Isle)</li>
+<li>2:07 PM — Accepted &quot;Coming of Age&quot;</li>
+<li>2:07 PM — Completed &quot;Coming of Age&quot;</li>
+<li>2:07 PM — Accepted &quot;Harmony in Balance&quot;</li>
+<li>2:07 PM — Accepted &quot;Infestation Investigation&quot;</li>
+<li>2:08 PM — Entered Thendal Grove (Zephras Isle)</li>
+<li>2:08 PM — First Juvenile Vuldren slain</li>
+<li>2:12 PM — Reached Level 2</li>
+<li>2:12 PM — 8/8 Juvenile Vuldren slain — &quot;Harmony in Balance&quot;</li>
+<li>2:13 PM — Entered Thendal Village (Zephras Isle)</li>
+<li>2:13 PM — Completed &quot;Harmony in Balance&quot;</li>
+<li>2:13 PM — Accepted &quot;Elemental Unrest&quot;</li>
+<li>2:13 PM — Accepted &quot;The Way of the Hunter&quot;</li>
+<li>2:13 PM — Read the Scribbled Note and then speak with Tai&#x27;ree Farsight in Thendal Grove. — &quot;The Way of the Hunter&quot;</li>
+<li>2:14 PM — Completed &quot;The Way of the Hunter&quot;</li>
+<li>2:14 PM — Accepted &quot;Harvesting Windstones&quot;</li>
+<li>2:14 PM — Accepted &quot;The Gift of Skysight&quot;</li>
+<li>2:15 PM — Accepted &quot;Falling With Style&quot;</li>
+<li>2:15 PM — Accepted &quot;The Anchors of Zephras&quot;</li>
+<li>2:15 PM — View the Anchor Pylon — &quot;The Anchors of Zephras&quot;</li>
+<li>2:16 PM — Completed &quot;The Anchors of Zephras&quot;</li>
+<li>2:17 PM — Entered Thendal Grove (Zephras Isle)</li>
+<li>2:18 PM — First Pesky Cirrusfly slain</li>
+<li>2:20 PM — 8/8 Pesky Cirrusfly slain — &quot;Infestation Investigation&quot;</li>
+<li>2:21 PM — Entered Rise of Spirits (Zephras Isle)</li>
+<li>2:21 PM — Entered Thendal Grove (Zephras Isle)</li>
+<li>2:22 PM — Completed &quot;Elemental Unrest&quot;</li>
+<li>2:22 PM — Accepted &quot;Agitators&quot;</li>
+<li>2:22 PM — First Roiling Winds slain</li>
+<li>2:24 PM — Entered Thendal Standing Stones (Zephras Isle)</li>
+<li>2:24 PM — First Al&#x27;Aketh Convert slain</li>
+<li>2:24 PM — Reached Level 3</li>
+<li class='shot'><figure><img src='2026-09-27-winterland-dew/2026-09-27-winterland-dew-02.jpg' alt='Reached Level 3 in Thendal Standing Stones'><figcaption>2:24 PM — Reached Level 3 in Thendal Standing Stones</figcaption></figure></li>
+<li>2:29 PM — Entered Thendal Grove (Zephras Isle)</li>
+<li>2:30 PM — 7/7 Al&#x27;Aketh Convert slain — &quot;Agitators&quot;</li>
+<li>2:30 PM — Entered Thendal Standing Stones (Zephras Isle)</li>
+<li>2:30 PM — Entered Thendal Grove (Zephras Isle)</li>
+<li>2:31 PM — 6/6 Roiling Winds destroyed — &quot;Agitators&quot;</li>
+<li>2:31 PM — Completed &quot;Agitators&quot;</li>
+<li>2:31 PM — Accepted &quot;Return to Rorian&quot;</li>
+<li>2:34 PM — Entered Thendal Village (Zephras Isle)</li>
+<li>2:35 PM — Completed &quot;Return to Rorian&quot;</li>
+<li>2:35 PM — Completed &quot;Infestation Investigation&quot;</li>
+<li>2:36 PM — Accepted &quot;The Cirrusfly Queen&quot;</li>
+<li>2:38 PM — Entered Thendal Grove (Zephras Isle)</li>
+<li>2:40 PM — First Cirrusfly Soldier slain</li>
+<li>2:42 PM — First Cirrusfly Queen slain</li>
+<li>2:42 PM — 1/1 Cirrusfly Queen slain — &quot;The Cirrusfly Queen&quot;</li>
+<li>2:43 PM — Entered Thendal Village (Zephras Isle)</li>
+<li>2:44 PM — Completed &quot;The Cirrusfly Queen&quot;</li>
+<li>2:45 PM — Entered Thendal Grove (Zephras Isle)</li>
+<li>2:46 PM — Entered Thendal Standing Stones (Zephras Isle)</li>
+<li>2:46 PM — Use Skysight near the Elemental Convergence — &quot;The Gift of Skysight&quot;</li>
+<li>2:46 PM — Entered Thendal Grove (Zephras Isle)</li>
+<li>2:48 PM — Entered Thendal Village (Zephras Isle)</li>
+<li>2:48 PM — Entered Thendal Grove (Zephras Isle)</li>
+<li>2:48 PM — Entered Thendal Village (Zephras Isle)</li>
+<li>2:48 PM — Completed &quot;The Gift of Skysight&quot;</li>
+<li>2:48 PM — Reached Level 4</li>
+<li class='shot'><figure><img src='2026-09-27-winterland-dew/2026-09-27-winterland-dew-03.jpg' alt='Reached Level 4 in Thendal Village'><figcaption>2:48 PM — Reached Level 4 in Thendal Village</figcaption></figure></li>
+<li>2:49 PM — Accepted &quot;Aetheen of the Gales&quot;</li>
+<li>2:49 PM — Completed &quot;Aetheen of the Gales&quot;</li>
+<li>2:49 PM — Accepted &quot;Foul Matriarch&quot;</li>
+<li>2:49 PM — Accepted &quot;Aggressive Encroachment&quot;</li>
+</ul></details><a class='totop' href='#top'>↑ Back to top</a>
+<footer>Recorded by Rambleon · session night-2026-09-27-winterland-dew</footer></body></html>
