@@ -1,0 +1,100 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Chapter 7 — What Darkshore Still Held — Rambleon Birdsong</title>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
+h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
+figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.quests{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0}
+.quests .tabs{display:flex;gap:4px;padding:6px 8px 0;border-bottom:1px solid var(--line);background:rgba(90,53,16,.05)}
+.quests .tabs button{font:inherit;font-size:15px;padding:8px 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--soft);cursor:pointer;margin-bottom:-1px}
+.quests .tabs button:hover{color:var(--link)}.quests .tabs button[aria-selected=true]{color:#5a3510;border-color:var(--gold);font-weight:bold}
+.quests .tabs .n{display:inline-block;min-width:22px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(90,53,16,.1);font-size:12px;font-weight:normal;color:var(--soft);text-align:center}
+.quests .pane{display:none;padding:6px 0 4px}.quests .pane.on{display:block}
+.quests table{width:100%;border-collapse:collapse;font-size:15px}
+.quests th,.quests td{text-align:left;padding:7px 14px;border-top:1px solid rgba(201,180,138,.5);vertical-align:top}
+.quests thead th{font:700 12px/1 Cinzel,Georgia,serif;letter-spacing:1.5px;color:#5a3510;border-top:0;padding-top:10px}
+.quests tr.zone th{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;background:rgba(90,53,16,.06);letter-spacing:.5px}
+.quests td.where,.quests td.lv,.quests td.since{color:var(--soft);white-space:nowrap}.quests td.lv{text-align:right}
+.quests .caveat{font-size:13px;color:var(--faint);margin:0;padding:8px 14px 6px;border-top:1px solid rgba(201,180,138,.5)}
+@media(max-width:520px){.quests .tabs button{padding:8px 8px;font-size:14px}.quests th,.quests td{padding:6px 10px}.quests td.where{white-space:normal}}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head><body id='top'>
+<nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='index.html'>All chapters</a><a href='guide-rambleon-birdsong.html'>Route guide</a><a href='../'>About Rambleon</a></nav>
+<h1>Chapter 7 — What Darkshore Still Held</h1>
+<div class='meta'>Rambleon Birdsong · September 27, 2026 · 1h 10m in Azeroth</div>
+<div class='jump'><a href='#story'>Story</a><a href='#recap'>Recap</a><a href='#quests'>Quests</a><a href='#journey'>Journey</a></div>
+<div class='pager'><a class='prev' href='2026-09-26-rambleon-birdsong.html'>← Chapter 6 — Across the Border to Ashenvale</a></div>
+<figure class='hero'><img src='2026-09-27-rambleon-birdsong/2026-09-27-rambleon-birdsong-01.jpg' alt='Entered Darkshore'><figcaption>3:01 PM — Entered Darkshore</figcaption></figure>
+<div class='journal' id='story'><p>Rambleon had barely settled into Astranaar, still getting the measure of Ashenvale&#x27;s edges, when Cassidy found him again — as easy and familiar as ever, as though no time at all had passed since Blackwood Den had scattered them the night before. They did not linger in the new land. Something pulled them back west, through Maestra&#x27;s Post and out along the border, and before long the trees changed and the air of Darkshore settled around him once more: Twilight Vale, Twilight Shore, the Long Wash, ground he had walked raw only a night ago. He paused near the boundary long enough to let a picture keep the moment, the way one does at a threshold worth remembering.</p>
+<p>Auberdine again, then Bashal&#x27;Aran, then down along the Cliffspring, its river and its falls and the winding path between them — country that no longer asked anything new of him, only more of the same patient walking. A moonstalker fell to his bow along the water, and near the ruins a blackwood warrior went down as well. In Bashal&#x27;Aran&#x27;s shadow a den mother met the same end. None of it was hard-won in the way the mountain had been the night before; it read more like tidying, the kind of quiet work that fills an hour without asking to be remembered as anything grander.</p>
+<p>A priest named Tina joined them for a few minutes along the Cliffspring, the two of them falling into step easily enough before the moment passed and she went her own way — brief, unremarkable, the sort of company that comes and goes on any given afternoon in Darkshore. Cassidy stayed a while longer, familiar company doing what familiar company does, but by early evening she too parted ways with him near Auberdine, leaving Rambleon to consider that the night had given him little beyond motion and small kills — no new ground broken, no rank gained, nothing dramatic to set down. Seventeenth level still sat comfortably on him, unchallenged. It was, he thought, watching Auberdine&#x27;s lamps in the dimming light, a fair kind of evening: not every hour in Azeroth needed to change a man to be worth living.</p></div>
+<div class='recap' id='recap'>1h 10m in Azeroth tonight.
+0 levels.
+0 quests.
+11 new places.
+0 deaths.
+Cassidy again, and briefly a priest named Tina.
+Ramble on.</div>
+<div class='stats'><div class='stat'><b>0</b><span>Quests</span></div><div class='stat'><b>11</b><span>Places</span></div><div class='stat'><b>3</b><span>Enemies slain</span></div><div class='stat'><b>0</b><span>Loot</span></div><div class='stat'><b>0</b><span>Deaths</span></div><div class='stat'><b>2</b><span>People</span></div><div class='stat'><b>460</b><span>XP</span></div></div>
+<h2 id='quests'>Quests</h2><div class='quests'><div class='tabs' role='tablist'><button role='tab' aria-selected='true' data-pane='carried'>Carrying<span class='n'>11</span></button></div><div class='pane on' id='qpane-carried' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th><th>Since</th></tr></thead><tbody><tr><td class='quest'>Sathrah&#x27;s Sacrifice</td><td class='where'>Temple of the Moon</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Crown of the Earth</td><td class='where'>Dolanaar</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>Cave Mushrooms</td><td class='where'>Auberdine</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>The Family and the Fishing Pole</td><td class='where'>Auberdine</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>Expanding Horizons</td><td class='where'>Auberdine</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>As Water Cascades</td><td class='where'>Auberdine</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>The Absent Minded Prospector</td><td class='where'>Auberdine</td><td class='since'>Chapter 6</td></tr><tr><td class='quest'>Escape Through Force</td><td class='where'>Blackwood Den</td><td class='since'>Chapter 6</td></tr><tr><td class='quest'>The Tower of Althalaxx</td><td class='where'>Maestra&#x27;s Post</td><td class='since'>Chapter 6</td></tr><tr><td class='quest'>The Zoram Strand</td><td class='where'>Astranaar</td><td class='since'>Chapter 6</td></tr><tr><td class='quest'>On Guard in Stonetalon</td><td class='where'>Astranaar</td><td class='since'>Chapter 6</td></tr></tbody></table><p class='caveat'>As far as Rambleon knows: quests abandoned, or picked up before it was installed, are not recorded.</p></div></div><script>(function(){var tabs=document.querySelectorAll('.quests [role=tab]');tabs.forEach(function(t){t.addEventListener('click',function(){tabs.forEach(function(o){o.setAttribute('aria-selected',o===t)});document.querySelectorAll('.quests .pane').forEach(function(p){p.classList.toggle('on',p.id==='qpane-'+t.dataset.pane)})})})})();</script>
+<h2 id='journey'>The Journey</h2><details class='journey' open><summary>29 moments, in order · fold</summary><ul>
+<li>2:58 PM — Began the adventure</li>
+<li>2:58 PM — Entered Astranaar (Ashenvale)</li>
+<li>2:59 PM — Joined forces with Cassidy (Druid)</li>
+<li>3:00 PM — Entered Ashenvale</li>
+<li>3:00 PM — Entered Maestra&#x27;s Post (Ashenvale)</li>
+<li>3:01 PM — Entered Ashenvale</li>
+<li>3:01 PM — Entered Twilight Vale (Darkshore)</li>
+<li>3:02 PM — Entered Twilight Shore (Darkshore)</li>
+<li>3:02 PM — Entered The Long Wash (Darkshore)</li>
+<li>3:03 PM — Entered Auberdine (Darkshore)</li>
+<li>3:07 PM — Entered Darkshore</li>
+<li>3:08 PM — Entered Bashal&#x27;Aran (Darkshore)</li>
+<li>3:09 PM — Entered Darkshore</li>
+<li>3:10 PM — Entered Cliffspring River (Darkshore)</li>
+<li>3:11 PM — Entered Darkshore</li>
+<li>3:11 PM — First Moonstalker slain</li>
+<li>3:12 PM — Entered Bashal&#x27;Aran (Darkshore)</li>
+<li>3:12 PM — Entered Darkshore</li>
+<li>3:13 PM — Entered Cliffspring River (Darkshore)</li>
+<li>3:13 PM — Entered Cliffspring Falls (Darkshore)</li>
+<li>3:14 PM — Entered Cliffspring River (Darkshore)</li>
+<li>3:14 PM — First Blackwood Warrior slain</li>
+<li>3:15 PM — Joined forces with Tina (Priest)</li>
+<li>3:15 PM — Entered Darkshore</li>
+<li>3:16 PM — First Den Mother slain</li>
+<li>3:17 PM — Parted ways with Cassidy</li>
+<li>3:17 PM — Parted ways with Tina</li>
+<li>3:18 PM — Entered Auberdine (Darkshore)</li>
+</ul></details><a class='totop' href='#top'>↑ Back to top</a>
+<div class='pager bottom'><a class='prev' href='2026-09-26-rambleon-birdsong.html'>← Chapter 6 — Across the Border to Ashenvale</a></div>
+<footer>Recorded by Rambleon · session night-2026-09-27-rambleon-birdsong</footer></body></html>
