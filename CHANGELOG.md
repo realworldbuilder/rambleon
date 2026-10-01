@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Index page: with more than one character it is no longer one mixed list under the last-played name. A roster at
+  the top (race, class, faction, level, chapters, last played) jumps to a section per character, each with its own
+  chapters and route guide link. "All chapters" on a story page or guide returns to that character's section.
+  One character: unchanged.
+- In-game chapters: `Chapters.lua` keeps the last 12 nights **per character**, so a second character's nights never
+  push the first one's chapters out of `/ramble chapters`. Recording, nights, numbering, memory and the route guide
+  were already per character.
 - Story pages: a **Quests** section between the stats and the timeline lists what was turned in that night (by zone,
   with the turn-in spot and level), what was picked up but not finished, and what is still being carried from earlier
   chapters ("since Chapter 3"), so a friend playing alongside can see what to do and what to hold off on. A jump link

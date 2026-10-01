@@ -155,7 +155,7 @@ def test_split_prose_and_page(tmp_path):
     assert f"href='{_page_name(n1)}'" in page and f"href='{_page_name(n3)}'" in page
     assert "<dt>Turned in</dt><dd>The Emerald Dreamcatcher (Dolanaar, level 10)</dd>" in page
     assert "this cave is extremely cursed" in page and "retold through" not in page
-    assert "<a href='index.html'>All chapters</a>" in page
+    assert "<a href='index.html#rambleon-birdsong'>All chapters</a>" in page
 
     lonely = export_guide_html(g, sidecar, exports, "route", siblings=set()).read_text()
     assert f"href='{_page_name(n1)}'" not in lonely and "Chapter 1" in lonely

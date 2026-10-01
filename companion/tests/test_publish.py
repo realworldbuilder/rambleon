@@ -62,6 +62,28 @@ def test_two_nights_of_one_character_are_numbered_in_order(tmp_path):
     assert chapters[0]["id"] != chapters[1]["id"] and all(c["id"].endswith("-rambleon-birdsong") for c in chapters)
 
 
+def test_chapter_cap_is_per_character(tmp_path):
+    """A second character's nights must never push the first one's chapters out of /ramble chapters."""
+    from rambleon.publish import MAX_CHAPTERS_IN_GAME
+    from test_memory import _shifted
+    archive = Archive(tmp_path / "archive")
+    db = to_python(parse((FIXTURES / "Rambleon_simulated.lua").read_bytes()))["RambleonDB"]
+    raw = db["sessions"][0]
+    raws = [_shifted(raw, d) for d in range(MAX_CHAPTERS_IN_GAME + 2)] + [_shifted(raw, d, "Other") for d in (5, 6)]
+    cap = {"capturedAt": int(time.time()), "rawSnapshot": "x", "sourceHash": "h"}
+    for s in sessions_from_db({"sessions": raws}):
+        archive.upsert_session(s, cap)
+    archive.rebuild_index()
+    chapters = build_chapters(archive, tmp_path / "exports")
+    mine = [c["number"] for c in chapters if c["slug"] == "rambleon-birdsong"]
+    other = [c["number"] for c in chapters if c["slug"] == "rambleon-birdsongother"]
+    assert mine == list(range(3, MAX_CHAPTERS_IN_GAME + 3))          # 12 kept, the oldest two dropped
+    assert other == [1, 2]                                            # the other character keeps everything
+    assert len(chapters) == MAX_CHAPTERS_IN_GAME + 2
+    assert [c["startedAt"] for c in chapters] == sorted(c["startedAt"] for c in chapters)
+    assert len({c["guid"] for c in chapters}) == 2
+
+
 def test_recap_wording():
     db = to_python(parse((FIXTURES / "Rambleon_simulated.lua").read_bytes()))["RambleonDB"]
     s = sessions_from_db(db)[0]
@@ -189,7 +211,7 @@ def test_story_pages_link_to_neighbouring_chapters(tmp_path):
     p1 = export_html(n1, archive, tmp_path / "exports")
     p2 = export_html(n2, archive, tmp_path / "exports")
     t1, t2 = p1.read_text(), p2.read_text()
-    assert "<nav class='top'>" in t1 and "href='index.html'>All chapters" in t1
+    assert "<nav class='top'>" in t1 and "href='index.html#rambleon-birdsong'>All chapters" in t1
     assert "<div class='jump'>" in t1 and "href='#journey'" in t1 and "<details class='journey' open>" in t1
     assert t1.count("<div class='pager") == 2 and f"class='next' href='{p2.name}'" in t1 and "class='prev'" not in t1
     assert f"class='prev' href='{p1.name}'" in t2 and "class='next'" not in t2
@@ -205,6 +227,37 @@ def test_index_is_a_list_of_cards(tmp_path):
     assert text.count("<a class='card'") == 2 and "<span class='n'>Chapter 2</span>" in text
     assert text.index("Chapter 2</span>") < text.index("Chapter 1</span>")      # newest first
     assert "<nav class='top'>" in text and "1 companion<" in text and "companions" not in text.split("Chapter 2")[1].split("</li>")[0]
+
+
+def test_index_gives_each_character_their_own_section(tmp_path):
+    """Two characters: a roster on top, then one section each (latest played first), never one mixed list."""
+    import rambleon.publish as pub
+    from rambleon.guide import write_guide
+    from rambleon.nights import nights
+    from test_memory import _shifted
+    archive, exports = Archive(tmp_path / "archive"), tmp_path / "exports"
+    raw = to_python(parse((FIXTURES / "Rambleon_simulated.lua").read_bytes()))["RambleonDB"]["sessions"][0]
+    raws = [_shifted(raw, d) for d in (0, 1, 3)] + [_shifted(raw, 2, "Other")]
+    cap = {"capturedAt": int(time.time()), "rawSnapshot": "x", "sourceHash": "h"}
+    for s in sessions_from_db({"sessions": raws}):
+        archive.upsert_session(s, cap)
+    archive.rebuild_index()
+    write_guide(archive, exports, "rambleon-birdsong", use_ai=False, log=lambda m: None)
+    text = pub.write_html_index(archive, exports).read_text()
+    assert "<h1>Adventure Journal</h1>" in text and "2 characters · 4 chapters" in text
+    assert "<a class='char' href='#rambleon-birdsong'>" in text and "<a class='char' href='#rambleon-birdsongother'>" in text
+    mine, other = text.index("<section class='who' id='rambleon-birdsong'>"), text.index("<section class='who' id='rambleon-birdsongother'>")
+    assert mine < other                                               # the character played last comes first
+    assert text[mine:other].count("<a class='card'") == 3 and text[other:].count("<a class='card'") == 1
+    assert "Chapter 1</span>" in text[other:] and "Chapter 3</span>" in text[mine:other]
+    assert "Night Elf Druid · Alliance" in text[mine:other] and "3 chapters" in text[mine:other] and "1 chapter ·" in text[:mine]
+    # Each section links its own guide; the top bar no longer pretends there is one.
+    assert "<a href='guide-rambleon-birdsong.html'>Route guide</a>" in text[mine:other]
+    assert "Route guide" not in text[:mine] and "Route guide" not in text[other:]
+    # A shared subset with one character left falls back to that character's own page, whoever played last overall.
+    theirs = {pub._page_name(n) for n in nights(archive, "rambleon-birdsongother")}
+    alone = pub.write_html_index(archive, exports, only=theirs, out=tmp_path / "i.html").read_text()
+    assert "<h1 id='rambleon-birdsongother'>" in alone and "class='roster'" not in alone and alone.count("<a class='card'") == 1
 
 
 def _fixture_session():

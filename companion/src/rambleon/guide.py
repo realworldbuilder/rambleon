@@ -19,7 +19,7 @@ from .export import _collapse_titles, _quest_label, _times, duration, long_date,
 from .memory import _chapters_phrase
 from .nights import nights as list_nights
 from .publish import (CSS, FONTS, _figure, _page_name, _paragraphs, chapter_title, guide_page_name as default_page_name,
-                      load_journal, prepare_images, top_nav)
+                      index_anchor, load_journal, prepare_images, top_nav)
 from .screenshots import caption as shot_caption, event_index
 from .summarize import DEFAULT_MODEL, DEFAULT_VOICE, claude_available, load_voice, run_claude
 
@@ -484,7 +484,7 @@ def render_guide_html(guide: dict[str, Any], sidecar: dict[str, Any] | None, exp
         meta.append("a night is still in progress")
     parts = [f"<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>",
              f"<title>{html.escape(guide['title'])}</title>{FONTS}<style>{CSS}{GUIDE_CSS}</style></head><body id='top' class='guide'>",
-             top_nav(("All chapters", "index.html"), ("About Rambleon", "../")),
+             top_nav(("All chapters", index_anchor(guide["slug"])), ("About Rambleon", "../")),
              f"<h1>{html.escape(guide['title'])}</h1>",
              f"<div class='meta'>{html.escape(' · '.join(meta))}</div>",
              "<div class='guide-layout'><aside class='toc'><ol>"]

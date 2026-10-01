@@ -16,7 +16,7 @@ from .nights import chapter_number as night_number, earlier_nights, nights
 from .paths import Paths
 from .screenshots import caption as shot_caption, event_index
 
-MAX_CHAPTERS_IN_GAME = 12
+MAX_CHAPTERS_IN_GAME = 12   # per character: one character's nights never evict another's from /ramble chapters
 MAX_LOG_CHARS = 8000
 RESIZER = shutil.which("sips")   # macOS image tool; web copies are 1600 px JPEGs when it is present
 WEB_WIDTH = 1600
@@ -56,9 +56,19 @@ def lua_string(text: str) -> str:
     return '"' + text + '"'
 
 
+def recent_nights_per_character(all_nights: list[dict[str, Any]], keep: int = MAX_CHAPTERS_IN_GAME) -> list[dict[str, Any]]:
+    """The last `keep` nights of each character, flattened back into one chronological list."""
+    by_slug: dict[str, list[dict[str, Any]]] = {}
+    for night in all_nights:
+        by_slug.setdefault(night.get("character", {}).get("slug") or "unknown", []).append(night)
+    out = [n for group in by_slug.values() for n in group[-keep:]]
+    out.sort(key=lambda n: n.get("startedAt") or 0)
+    return out
+
+
 def build_chapters(archive: Archive, exports_dir: Path) -> list[dict[str, Any]]:
     chapters = []
-    for session in nights(archive)[-MAX_CHAPTERS_IN_GAME:]:
+    for session in recent_nights_per_character(nights(archive)):
         number = night_number(archive, session)
         journal = load_journal(exports_dir, session["id"])
         chapters.append({
@@ -105,36 +115,78 @@ def publish_chapters(archive: Archive, paths: Paths) -> tuple[Path, int]:
     return write_chapters_lua(chapters, paths.addon_src), len(chapters)
 
 
+def character_line(c: dict[str, Any]) -> str:
+    """'Night Elf Hunter · Alliance · Level 19', from whatever was recorded about the character."""
+    who = f"{c.get('race') or ''} {c.get('class') or ''}".strip()
+    level = c.get("endLevel") or c.get("startLevel")
+    return " · ".join(x for x in (who, c.get("faction"), f"Level {level}" if level else "") if x)
+
+
+def index_anchor(slug: str) -> str:
+    """index.html, at this character's chapters (the index gives each character an id)."""
+    return "index.html" + (f"#{slug}" if slug else "")
+
+
+def _index_card(archive: Archive, exports_dir: Path, night: dict[str, Any], page: Path) -> str:
+    journal = load_journal(exports_dir, night["id"])
+    number = night_number(archive, night)
+    cnt = night.get("counters", {})
+    hero = pick_hero(prepare_images(night, page.with_suffix("")))
+    thumb = f"<img class='thumb' src='{html.escape(hero['src'])}' alt=''>" if hero else "<span class='noshot'></span>"
+    facts = [long_date(night.get("startedAt")), duration(night.get("playedSeconds")), _count(cnt.get("questsCompleted", 0), "quest"),
+             _count(cnt.get("kills", 0), "kill"), _count(len(night.get("people", [])), "companion")]
+    title = chapter_title(night, journal, number)
+    heading = title.split(" — ", 1)[1] if " — " in title else title
+    return (f"<li><a class='card' href='{html.escape(page.name)}'>{thumb}<span class='body'><span class='n'>Chapter {number}</span>"
+            f"<span class='t'>{html.escape(heading)}</span><span class='m'>{html.escape(' · '.join(facts))}</span></span></a></li>")
+
+
 def write_html_index(archive: Archive, exports_dir: Path, only: set[str] | None = None, out: Path | None = None) -> Path:
-    """exports/html/index.html: every night, newest first, linking to its story page (built if missing)."""
-    rows = []
-    all_nights = nights(archive)
-    for night in reversed(all_nights):
+    """exports/html/index.html: every night, newest first, linking to its story page (built if missing).
+
+    One character: the page is theirs. Several: a roster at the top, then a section per character (most recently
+    played first) with its own chapters and route guide, so two journals never read as one."""
+    groups: dict[str, dict[str, Any]] = {}   # slug → the character as of their latest night, and their cards
+    for night in reversed(nights(archive)):
         page = exports_dir / "html" / export_filename(night).replace(".md", ".html")
         if only is not None and page.name not in only:
             continue
         if not page.exists():
             export_html(night, archive, exports_dir)
-        journal = load_journal(exports_dir, night["id"])
-        number = night_number(archive, night)
-        cnt = night.get("counters", {})
-        images = prepare_images(night, page.with_suffix(""))
-        hero = pick_hero(images)
-        thumb = f"<img class='thumb' src='{html.escape(hero['src'])}' alt=''>" if hero else "<span class='noshot'></span>"
-        people = len(night.get("people", []))
-        facts = [long_date(night.get("startedAt")), duration(night.get("playedSeconds")), _count(cnt.get("questsCompleted", 0), "quest"),
-                 _count(cnt.get("kills", 0), "kill"), _count(people, "companion")]
-        title = chapter_title(night, journal, number)
-        heading = title.split(" — ", 1)[1] if " — " in title else title
-        rows.append(f"<li><a class='card' href='{html.escape(page.name)}'>{thumb}<span class='body'><span class='n'>Chapter {number}</span>"
-                    f"<span class='t'>{html.escape(heading)}</span><span class='m'>{html.escape(' · '.join(facts))}</span></span></a></li>")
-    name = html.escape(all_nights[-1]["character"].get("displayName", "")) if rows else "Rambleon"
-    guide = _guide_link(exports_dir, all_nights[-1]["character"].get("slug", ""), only) if rows else None
+        c = night.get("character", {})
+        group = groups.setdefault(c.get("slug") or "unknown", {"character": c, "latest": night.get("startedAt"), "cards": []})
+        group["cards"].append(_index_card(archive, exports_dir, night, page))
+    total = sum(len(g["cards"]) for g in groups.values())
+    chapters = lambda n: f"{n} chapter{'s' if n != 1 else ''}"
+    nav_links = [("About Rambleon", "../"), ("GitHub", "https://github.com/realworldbuilder/rambleon")]
+    if len(groups) <= 1:
+        slug, group = next(iter(groups.items()), ("", {"character": {}, "cards": []}))
+        name = html.escape(group["character"].get("displayName", "") or "Rambleon")
+        guide = _guide_link(exports_dir, slug, only)
+        if guide:
+            nav_links.insert(0, ("Route guide", guide))
+        title = f"{name} — Adventure Journal"
+        body = (f"<h1 id='{html.escape(slug)}'>{name}</h1><div class='meta'>Adventure journal · {chapters(total)} · newest first</div>"
+                "<ul class='chapters'>" + "".join(group["cards"]) + "</ul>")
+    else:
+        names = [html.escape(g["character"].get("displayName") or slug) for slug, g in groups.items()]
+        title = "Adventure Journal — " + ", ".join(names)
+        roster, sections = [], []
+        for (slug, group), name in zip(groups.items(), names):
+            c, n = group["character"], len(group["cards"])
+            line = html.escape(character_line(c))
+            guide = _guide_link(exports_dir, slug, only)
+            roster.append(f"<a class='char' href='#{html.escape(slug)}'><span class='cn'>{name}</span>"
+                          + (f"<span class='cl'>{line}</span>" if line else "")
+                          + f"<span class='cm'>{chapters(n)} · last played {html.escape(long_date(group['latest']))}</span></a>")
+            meta = " · ".join(x for x in (line, chapters(n), f"<a href='{html.escape(guide)}'>Route guide</a>" if guide else "") if x)
+            sections.append(f"<section class='who' id='{html.escape(slug)}'><h2>{name}</h2><div class='meta'>{meta}</div>"
+                            "<ul class='chapters'>" + "".join(group["cards"]) + "</ul></section>")
+        body = (f"<h1>Adventure Journal</h1><div class='meta'>{len(groups)} characters · {chapters(total)} · newest first</div>"
+                "<div class='roster'>" + "".join(roster) + "</div>" + "".join(sections))
     doc = (f"<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
-           f"<title>{name} — Adventure Journal</title>{FONTS}<style>{CSS}</style></head><body>"
-           + top_nav(*([("Route guide", guide)] if guide else []), ("About Rambleon", "../"), ("GitHub", "https://github.com/realworldbuilder/rambleon"))
-           + f"<h1>{name}</h1><div class='meta'>Adventure journal · {len(rows)} chapter{'s' if len(rows) != 1 else ''} · newest first</div>"
-           "<ul class='chapters'>" + "".join(rows) + "</ul><footer>Recorded by Rambleon</footer></body></html>")
+           f"<title>{title}</title>{FONTS}<style>{CSS}</style></head><body>"
+           + top_nav(*nav_links) + body + "<footer>Recorded by Rambleon</footer></body></html>")
     out = out or exports_dir / "html" / "index.html"
     atomic_write_bytes(out, doc.encode("utf-8"))
     return out
@@ -206,6 +258,12 @@ details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0
 .card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
 .card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
 .card .m{color:var(--soft);font-size:14px}
+.roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 8px}
+.char{display:block;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;text-decoration:none;color:inherit}
+.char:hover{box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.char .cn{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510}
+.char .cl{display:block;font-size:15px;color:var(--ink)}.char .cm{display:block;font-size:13px;color:var(--faint)}
+.who{scroll-margin-top:12px}.who h2{font:700 26px/1.2 Cinzel,Georgia,serif;letter-spacing:.5px;color:#5a3510;margin:44px 0 4px;padding-bottom:6px}
 @media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
 """
 
@@ -376,7 +434,7 @@ def render_html(session: dict[str, Any], journal: dict[str, Any] | None, number:
     parts = [f"<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>",
              f"<title>{html.escape(title)} — {html.escape(name)}</title>",
              f"{FONTS}<style>{CSS}</style></head><body id='top'>",
-             top_nav(("All chapters", "index.html"), *([("Route guide", guide)] if guide else []), ("About Rambleon", "../")),
+             top_nav(("All chapters", index_anchor(c.get("slug", ""))), *([("Route guide", guide)] if guide else []), ("About Rambleon", "../")),
              f"<h1>{html.escape(title)}</h1>",
              f"<div class='meta'>{html.escape(name)} · {html.escape(long_date(session.get('startedAt')))} · {html.escape(duration(session.get('playedSeconds')))} in Azeroth</div>",
              "<div class='jump'>" + "".join(f"<a href='{h}'>{t}</a>" for t, h in jumps) + "</div>",
