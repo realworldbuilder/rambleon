@@ -1,0 +1,229 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Chapter 3 — A Last Request — Winterland Dew</title>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
+h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
+figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.quests{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0}
+.quests .tabs{display:flex;gap:4px;padding:6px 8px 0;border-bottom:1px solid var(--line);background:rgba(90,53,16,.05)}
+.quests .tabs button{font:inherit;font-size:15px;padding:8px 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--soft);cursor:pointer;margin-bottom:-1px}
+.quests .tabs button:hover{color:var(--link)}.quests .tabs button[aria-selected=true]{color:#5a3510;border-color:var(--gold);font-weight:bold}
+.quests .tabs .n{display:inline-block;min-width:22px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(90,53,16,.1);font-size:12px;font-weight:normal;color:var(--soft);text-align:center}
+.quests .pane{display:none;padding:6px 0 4px}.quests .pane.on{display:block}
+.quests table{width:100%;border-collapse:collapse;font-size:15px}
+.quests th,.quests td{text-align:left;padding:7px 14px;border-top:1px solid rgba(201,180,138,.5);vertical-align:top}
+.quests thead th{font:700 12px/1 Cinzel,Georgia,serif;letter-spacing:1.5px;color:#5a3510;border-top:0;padding-top:10px}
+.quests tr.zone th{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;background:rgba(90,53,16,.06);letter-spacing:.5px}
+.quests td.where,.quests td.lv,.quests td.since{color:var(--soft);white-space:nowrap}.quests td.lv{text-align:right}
+.quests .caveat{font-size:13px;color:var(--faint);margin:0;padding:8px 14px 6px;border-top:1px solid rgba(201,180,138,.5)}
+@media(max-width:520px){.quests .tabs button{padding:8px 8px;font-size:14px}.quests th,.quests td{padding:6px 10px}.quests td.where{white-space:normal}}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head><body id='top'>
+<nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='index.html'>All chapters</a><a href='guide-winterland-dew.html'>Route guide</a><a href='../'>About Rambleon</a></nav>
+<h1>Chapter 3 — A Last Request</h1>
+<div class='meta'>Winterland Dew · September 30, 2026 · 2h 51m in Azeroth</div>
+<div class='jump'><a href='#story'>Story</a><a href='#recap'>Recap</a><a href='#quests'>Quests</a><a href='#journey'>Journey</a></div>
+<div class='pager'><a class='prev' href='2026-09-29-winterland-dew.html'>← Chapter 2 — The Company of Strangers</a></div>
+<figure class='hero'><img src='2026-09-30-winterland-dew/2026-09-30-winterland-dew-01.jpg' alt='Reached Level 7 in Shen&#x27;dar Village'><figcaption>8:10 PM — Reached Level 7 in Shen&#x27;dar Village</figcaption></figure>
+<div class='journal' id='story'><p>Axilla was waiting for her again on Zephras Isle, as easy a reunion as if no day had passed between them, and Winterland Dew felt the same loosening of the shoulders she remembered from two nights before — company instead of the quiet. Zerril Softbreeze taught her to cook in Shen&#x27;dar Village before the hunting even began, a small domestic skill tucked between larger ones. The prideclaws fell first, and her seventh level came quietly in the village square, marked with a picture before she and Axilla turned back out to the highlands. There Chuleta joined her, a druid new to her acquaintance, and between the two of them the hippogryphs of the highlands — youths, protectors, and at last a matriarch — went down one after another until the grove&#x27;s harassment was answered in full.</p>
+<p>Stabooty crossed her path next, a rogue for only a few minutes&#x27; worth of highland bandits before peeling off on his own road. The bandits led her into their hideout, where Badwind Bennic fell and her eighth level arrived without fanfare, another photograph for the growing collection. Windstones recovered, she drifted past Windsong Standing Stones toward Falaath Village, where the work only thickened — cultists to learn of, larders to restock, watchtowers to check in on.</p>
+<p>Falaath was where the night turned harder. Fiasko and Evil fell in with her there, a druid and a rogue each lending their swords to the stormcallers and living lightning scattered through Havoc in the Highlands, and the fighting cost her twice over — once in the village itself, once again out in the highlands beyond it — two quiet deaths she shook off the way the isle seemed to expect of her. Commander Cyclas fell before the debts were settled, and by the time Evil and Fiasko had each gone their own ways, Falaath&#x27;s stolen supplies were recovered and the long account there closed.</p>
+<p>What stayed with her longest was A Last Request — a feather fetched for Raani, a signet carried out of the Al&#x27;Aketh&#x27;s reach, Skypriest Aanders put down to finish it. There was something in the gathering of those three small things that felt less like errand-running than like carrying something careful for someone else. Her ninth level came soon after in Shen&#x27;dar Village, and from there the road unspooled further than she&#x27;d yet walked it — Gustberry Lowlands, the Shriekling Den and its matriarch, and finally Valanaar, a horizon entirely new, where Riaani Nightwind left her with more to do than the night had hours left to give.</p></div>
+<div class='recap' id='recap'>2h 51m in Azeroth tonight.
+3 level(s).
+18 quests.
+11 new places.
+2 deaths.
+Axilla again, and new faces in Chuleta, Fiasko, Evil, and Stabooty.
+Ramble on.</div>
+<div class='stats'><div class='stat'><b>18</b><span>Quests</span></div><div class='stat'><b>11</b><span>Places</span></div><div class='stat'><b>109</b><span>Enemies slain</span></div><div class='stat'><b>0</b><span>Loot</span></div><div class='stat'><b>2</b><span>Deaths</span></div><div class='stat'><b>5</b><span>People</span></div><div class='stat'><b>13,490</b><span>XP</span></div></div>
+<h2 id='quests'>Quests</h2><div class='quests'><div class='tabs' role='tablist'><button role='tab' aria-selected='true' data-pane='done'>Turned in<span class='n'>18</span></button><button role='tab' aria-selected='false' data-pane='open'>Still open<span class='n'>9</span></button><button role='tab' aria-selected='false' data-pane='carried'>Carrying<span class='n'>3</span></button></div><div class='pane on' id='qpane-done' role='tabpanel'><table><thead><tr><th>Quest</th><th>Turned in at</th><th>Lv</th></tr></thead><tbody><tr class='zone'><th colspan='3'>Zephras Isle</th></tr><tr><td class='quest'>Camping 101: Cooking</td><td class='where'>Shen&#x27;dar Village</td><td class='lv'>6</td></tr><tr><td class='quest'>Camping 101: Skinning</td><td class='where'>Shen&#x27;dar Village</td><td class='lv'>7</td></tr><tr><td class='quest'>Hippogryph Harrassment</td><td class='where'>Shen&#x27;dar Village</td><td class='lv'>7</td></tr><tr><td class='quest'>WANTED: Vulgara the Insatiable</td><td class='where'>Shen&#x27;dar Village</td><td class='lv'>7</td></tr><tr><td class='quest'>A Little Beauty</td><td class='where'>Shen&#x27;dar Village</td><td class='lv'>7</td></tr><tr><td class='quest'>Pilfered Windstones</td><td class='where'>Shen&#x27;dar Village</td><td class='lv'>8</td></tr><tr><td class='quest'>The Criminal Element</td><td class='where'>Shen&#x27;dar Village</td><td class='lv'>8</td></tr><tr><td class='quest'>Infiltrating the Cult</td><td class='where'>Shen&#x27;dar Village</td><td class='lv'>8</td></tr><tr><td class='quest'>Falaath Village</td><td class='where'>Falaath Village</td><td class='lv'>8</td></tr><tr><td class='quest'>Among the Faithful</td><td class='where'>Shen&#x27;dar Village</td><td class='lv'>8</td></tr><tr><td class='quest'>The Western Watch</td><td class='where'>Shen&#x27;dar Highlands</td><td class='lv'>8</td></tr><tr><td class='quest'>Stolen Supplies</td><td class='where'>Shen&#x27;dar Village</td><td class='lv'>8</td></tr><tr><td class='quest'>Havoc in the Highlands</td><td class='where'>Shen&#x27;dar Village</td><td class='lv'>9</td></tr><tr><td class='quest'>A Last Request</td><td class='where'>Shen&#x27;dar Village</td><td class='lv'>9</td></tr><tr><td class='quest'>To Valanaar</td><td class='where'>Valanaar</td><td class='lv'>9</td></tr><tr><td class='quest'>Deliver the Signet</td><td class='where'>Valanaar</td><td class='lv'>9</td></tr><tr><td class='quest'>The Grand Skyseer</td><td class='where'>Valanaar</td><td class='lv'>9</td></tr><tr><td class='quest'>The Broken Construct</td><td class='where'>Valanaar</td><td class='lv'>9</td></tr></tbody></table></div><div class='pane' id='qpane-open' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th></tr></thead><tbody><tr><td class='quest'>Crab Season</td><td class='where'>Valanaar</td></tr><tr><td class='quest'>Blood Tithe</td><td class='where'>Valanaar</td></tr><tr><td class='quest'>Unnerving Silence</td><td class='where'>Valanaar</td></tr><tr><td class='quest'>Bugged</td><td class='where'>Valanaar</td></tr><tr><td class='quest'>Aid For The Refugees</td><td class='where'>Valanaar</td></tr><tr><td class='quest'>The Fate of a Loved One</td><td class='where'>Valanaar</td></tr><tr><td class='quest'>A Grand Adventure</td><td class='where'>Valanaar</td></tr><tr><td class='quest'>Unwelcome Spirits</td><td class='where'>Valanaar</td></tr><tr><td class='quest'>The Broken Construct</td><td class='where'>Valanaar</td></tr></tbody></table></div><div class='pane' id='qpane-carried' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th><th>Since</th></tr></thead><tbody><tr><td class='quest'>Harvesting Windstones</td><td class='where'>Thendal Village</td><td class='since'>Chapter 1</td></tr><tr><td class='quest'>Restocking the Larders</td><td class='where'>Shen&#x27;dar Village</td><td class='since'>Chapter 2</td></tr><tr><td class='quest'>Camping 101: Leatherworking</td><td class='where'>Shen&#x27;dar Village</td><td class='since'>Chapter 2</td></tr></tbody></table><p class='caveat'>As far as Rambleon knows: quests abandoned, or picked up before it was installed, are not recorded.</p></div></div><script>(function(){var tabs=document.querySelectorAll('.quests [role=tab]');tabs.forEach(function(t){t.addEventListener('click',function(){tabs.forEach(function(o){o.setAttribute('aria-selected',o===t)});document.querySelectorAll('.quests .pane').forEach(function(p){p.classList.toggle('on',p.id==='qpane-'+t.dataset.pane)})})})})();</script>
+<h2 id='journey'>The Journey</h2><details class='journey' open><summary>157 moments, in order · fold</summary><ul>
+<li>7:54 PM — Began the adventure</li>
+<li>7:54 PM — Entered Shen&#x27;dar Village (Zephras Isle)</li>
+<li>8:01 PM — Learn cooking from Zerril Softbreeze in Shen&#x27;dar Village — &quot;Camping 101: Cooking&quot;</li>
+<li>8:01 PM — Completed &quot;Camping 101: Cooking&quot;</li>
+<li>8:06 PM — Joined forces with Axilla (Hunter)</li>
+<li>8:10 PM — First Prideclaw slain</li>
+<li>8:10 PM — Reached Level 7</li>
+<li>8:11 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>8:14 PM — First Hippogryph Youth slain</li>
+<li>8:15 PM — First Hippogryph Protector slain</li>
+<li>8:15 PM — Joined forces with Chuleta (Druid)</li>
+<li>8:17 PM — Raise your skinning skill to 20 — &quot;Camping 101: Skinning&quot;</li>
+<li>8:17 PM — 6/6 Hippogryph Protector slain — &quot;Hippogryph Harrassment&quot;</li>
+<li>8:20 PM — First Hippogryph Matriarch slain</li>
+<li>8:20 PM — 1/1 Hippogryph Matriarch slain — &quot;Hippogryph Harrassment&quot;</li>
+<li>8:25 PM — 8/8 Hippogryph Youth slain — &quot;Hippogryph Harrassment&quot;</li>
+<li>8:26 PM — 8/8 Hippogryph Down — &quot;A Little Beauty&quot;</li>
+<li>8:26 PM — Parted ways with Chuleta</li>
+<li>8:27 PM — Entered Shen&#x27;dar Village (Zephras Isle)</li>
+<li>8:29 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>8:29 PM — First Vuldren slain</li>
+<li>8:31 PM — First Vulgara the Insatiable slain</li>
+<li>8:32 PM — 1/1 Vulgara&#x27;s Head — &quot;WANTED: Vulgara the Insatiable&quot;</li>
+<li>8:32 PM — Entered Shen&#x27;dar Village (Zephras Isle)</li>
+<li>8:32 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>8:32 PM — Entered Shen&#x27;dar Village (Zephras Isle)</li>
+<li>8:32 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>8:32 PM — Entered Shen&#x27;dar Village (Zephras Isle)</li>
+<li>8:33 PM — Completed &quot;Camping 101: Skinning&quot;</li>
+<li>8:34 PM — Completed &quot;Hippogryph Harrassment&quot;</li>
+<li>8:34 PM — Completed &quot;WANTED: Vulgara the Insatiable&quot;</li>
+<li>8:35 PM — Completed &quot;A Little Beauty&quot;</li>
+<li>8:36 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>8:36 PM — First Galestrider slain</li>
+<li>8:37 PM — Joined forces with Stabooty (Rogue)</li>
+<li>8:37 PM — First Highlands Bandit slain</li>
+<li>8:39 PM — Parted ways with Stabooty</li>
+<li>8:42 PM — Entered Bandit Hideout (Zephras Isle)</li>
+<li>8:42 PM — 10/10 Highlands Bandit slain — &quot;The Criminal Element&quot;</li>
+<li>8:46 PM — First &quot;Badwind&quot; Bennic slain</li>
+<li>8:46 PM — 1/1 &quot;Badwind&quot; Bennic slain — &quot;The Criminal Element&quot;</li>
+<li>8:48 PM — Reached Level 8</li>
+<li class='shot'><figure><img src='2026-09-30-winterland-dew/2026-09-30-winterland-dew-02.jpg' alt='Reached Level 8 in Bandit Hideout'><figcaption>8:48 PM — Reached Level 8 in Bandit Hideout</figcaption></figure></li>
+<li>8:49 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>8:53 PM — 10/10 Pilfered Windstone — &quot;Pilfered Windstones&quot;</li>
+<li>8:53 PM — Entered Windsong Standing Stones (Zephras Isle)</li>
+<li>8:53 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>8:53 PM — Entered Shen&#x27;dar Village (Zephras Isle)</li>
+<li>8:54 PM — Completed &quot;Pilfered Windstones&quot;</li>
+<li>8:55 PM — Completed &quot;The Criminal Element&quot;</li>
+<li>8:55 PM — Accepted &quot;Infiltrating the Cult&quot;</li>
+<li>8:55 PM — Completed &quot;Infiltrating the Cult&quot;</li>
+<li>8:55 PM — Accepted &quot;Falaath Village&quot;</li>
+<li>8:57 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>8:58 PM — 3/3 Small Egg — &quot;Restocking the Larders&quot;</li>
+<li>9:03 PM — Entered Falaath Village (Zephras Isle)</li>
+<li>9:03 PM — Completed &quot;Falaath Village&quot;</li>
+<li>9:03 PM — Accepted &quot;Among the Faithful&quot;</li>
+<li>9:05 PM — 1/1 Learn about the cultists&#x27; plans — &quot;Among the Faithful&quot;</li>
+<li>9:06 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:06 PM — 8/8 Strider Meat — &quot;Restocking the Larders&quot;</li>
+<li>9:06 PM — Entered Shen&#x27;dar Village (Zephras Isle)</li>
+<li>9:11 PM — Completed &quot;Among the Faithful&quot;</li>
+<li>9:11 PM — Accepted &quot;Havoc in the Highlands&quot;</li>
+<li>9:11 PM — Accepted &quot;The Western Watch&quot;</li>
+<li>9:11 PM — Accepted &quot;Stolen Supplies&quot;</li>
+<li>9:15 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:17 PM — 1/1 Check in on the Western Watchtower in the Shen&#x27;dar Highlands — &quot;The Western Watch&quot;</li>
+<li>9:17 PM — Completed &quot;The Western Watch&quot;</li>
+<li>9:17 PM — Accepted &quot;A Last Request&quot;</li>
+<li>9:18 PM — Entered Falaath Village (Zephras Isle)</li>
+<li>9:18 PM — Joined forces with Fiasko (Druid)</li>
+<li>9:19 PM — First Living Lightning slain</li>
+<li>9:19 PM — Joined forces with Evil (Rogue)</li>
+<li>9:19 PM — First Al&#x27;Aketh Stormcaller slain</li>
+<li>9:20 PM — Died in Falaath Village</li>
+<li>9:21 PM — Entered Windsong Lake (Zephras Isle)</li>
+<li>9:21 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:22 PM — Entered Falaath Village (Zephras Isle)</li>
+<li>9:22 PM — Back among the living</li>
+<li>9:22 PM — Parted ways with Evil</li>
+<li>9:23 PM — 6/6 Al&#x27;Aketh Stormcaller slain — &quot;Havoc in the Highlands&quot;</li>
+<li>9:23 PM — 4/4 Living Lightning slain — &quot;Havoc in the Highlands&quot;</li>
+<li>9:24 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:24 PM — Entered Falaath Village (Zephras Isle)</li>
+<li>9:25 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:25 PM — Entered Falaath Village (Zephras Isle)</li>
+<li>9:26 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:26 PM — Died in Shen&#x27;dar Highlands</li>
+<li>9:26 PM — Entered Gustberry Lowlands (Zephras Isle)</li>
+<li>9:27 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:27 PM — Entered Gustberry Lowlands (Zephras Isle)</li>
+<li>9:27 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:27 PM — Entered Windsong Lake (Zephras Isle)</li>
+<li>9:28 PM — Back among the living</li>
+<li>9:29 PM — Parted ways with Fiasko</li>
+<li>9:29 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:29 PM — Entered Falaath Village (Zephras Isle)</li>
+<li>9:30 PM — First Commander Cyclas slain</li>
+<li>9:30 PM — 1/1 Commander Cyclas&#x27;s Head — &quot;Havoc in the Highlands&quot;</li>
+<li>9:31 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:31 PM — Entered Falaath Village (Zephras Isle)</li>
+<li>9:32 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:32 PM — Entered Falaath Village (Zephras Isle)</li>
+<li>9:32 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:32 PM — Entered Falaath Village (Zephras Isle)</li>
+<li>9:35 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:36 PM — Entered Falaath Village (Zephras Isle)</li>
+<li>9:38 PM — 10/10 Stolen Shen&#x27;dar Supplies — &quot;Stolen Supplies&quot;</li>
+<li>9:38 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:40 PM — 1/1 Collect and read the note — &quot;A Last Request&quot;</li>
+<li>9:41 PM — Entered West Pylon Watchtower (Zephras Isle)</li>
+<li>9:41 PM — 1/1 Raani&#x27;s Favorite Feather — &quot;A Last Request&quot;</li>
+<li>9:41 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:42 PM — Entered West Pylon Watchtower (Zephras Isle)</li>
+<li>9:42 PM — First Al&#x27;Aketh Warrior slain</li>
+<li>9:42 PM — 1/1 Shadowsong Family Signet — &quot;A Last Request&quot;</li>
+<li>9:43 PM — First Skypriest Aanders slain</li>
+<li>9:43 PM — 1/1 Skypriest Aanders slain — &quot;A Last Request&quot;</li>
+<li>9:43 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:46 PM — Entered Shen&#x27;dar Village (Zephras Isle)</li>
+<li>9:47 PM — Reached Level 9</li>
+<li>9:47 PM — Completed &quot;Stolen Supplies&quot;</li>
+<li class='shot'><figure><img src='2026-09-30-winterland-dew/2026-09-30-winterland-dew-03.jpg' alt='Reached Level 9 in Shen&#x27;dar Village'><figcaption>9:47 PM — Reached Level 9 in Shen&#x27;dar Village</figcaption></figure></li>
+<li>9:48 PM — Completed &quot;Havoc in the Highlands&quot;</li>
+<li>9:48 PM — Completed &quot;A Last Request&quot;</li>
+<li>9:48 PM — Accepted &quot;To Valanaar&quot;</li>
+<li>9:48 PM — Deliver Aonda&#x27;s Written Report to Valennia Stormfist in Valanaar. — &quot;To Valanaar&quot;</li>
+<li>9:48 PM — Accepted &quot;Deliver the Signet&quot;</li>
+<li>9:48 PM — Deliver the Shadowsong Family Signet to Talaanis Shadowsong in Valanaar. — &quot;Deliver the Signet&quot;</li>
+<li>9:49 PM — Entered Shen&#x27;dar Highlands (Zephras Isle)</li>
+<li>9:52 PM — Entered Overlook Standing Stones (Zephras Isle)</li>
+<li>9:52 PM — Entered Gustberry Lowlands (Zephras Isle)</li>
+<li>9:54 PM — First Ornery Galestrider slain</li>
+<li>9:55 PM — Entered Shriekling Den (Zephras Isle)</li>
+<li>9:55 PM — First Shriekling Fledgling slain</li>
+<li>9:59 PM — First Shriekling Matriarch slain</li>
+<li>10:03 PM — Entered Gustberry Lowlands (Zephras Isle)</li>
+<li>10:04 PM — Entered Valanaar (Zephras Isle)</li>
+<li>10:05 PM — Accepted &quot;Crab Season&quot;</li>
+<li>10:06 PM — Accepted &quot;Blood Tithe&quot;</li>
+<li>10:07 PM — Accepted &quot;Unnerving Silence&quot;</li>
+<li>10:08 PM — Completed &quot;To Valanaar&quot;</li>
+<li>10:08 PM — Accepted &quot;The Grand Skyseer&quot;</li>
+<li>10:08 PM — Completed &quot;Deliver the Signet&quot;</li>
+<li>10:09 PM — Accepted &quot;Bugged&quot;</li>
+<li>10:10 PM — Accepted &quot;Aid For The Refugees&quot;</li>
+<li>10:10 PM — Accepted &quot;The Fate of a Loved One&quot;</li>
+<li>10:30 PM — First Skyhopper slain</li>
+<li>10:32 PM — Completed &quot;The Grand Skyseer&quot;</li>
+<li>10:32 PM — Accepted &quot;A Grand Adventure&quot;</li>
+<li>10:32 PM — Accepted &quot;The Broken Construct&quot;</li>
+<li>10:32 PM — Accepted &quot;Unwelcome Spirits&quot;</li>
+<li>10:33 PM — Completed &quot;The Broken Construct&quot;</li>
+<li>10:33 PM — Accepted &quot;The Broken Construct&quot;</li>
+<li>10:34 PM — 1/1 Listen to what Riaani Nightwind has to say — &quot;The Broken Construct&quot;</li>
+</ul></details><a class='totop' href='#top'>↑ Back to top</a>
+<div class='pager bottom'><a class='prev' href='2026-09-29-winterland-dew.html'>← Chapter 2 — The Company of Strangers</a></div>
+<footer>Recorded by Rambleon · session night-2026-09-30-winterland-dew</footer></body></html>
