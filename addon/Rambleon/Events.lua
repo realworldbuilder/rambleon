@@ -7,6 +7,7 @@ ns.eventFrame = frame
 local handlers = {}
 
 local ZONE_DEBOUNCE = 1.5
+local DEATH_ECHO = 30      -- seconds: build 70009 fires PLAYER_DEAD twice per death, one to four seconds apart
 local zoneToken = 0
 
 local function scheduleZoneCheck()
@@ -157,7 +158,13 @@ end
 
 handlers.PLAYER_DEAD = function()
   if not ns.EnsureSession() then return end
+  local now = ns.Now()
+  -- One death, one event: the client repeats PLAYER_DEAD a few seconds after the first (verified 2026-10-01,
+  -- every death recorded twice since build 70009). A second within DEATH_ECHO is the same death.
+  if ns.lastDeathAt and now - ns.lastDeathAt < DEATH_ECHO then return end
+  if ns.SafeCall(UnitIsFeignDeath, "player") then return end
   ns.isDead = true
+  ns.lastDeathAt = now
   ns.AddEvent("DEATH", {})
 end
 

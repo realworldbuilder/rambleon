@@ -10,10 +10,11 @@ Rules, in priority order:
 2. Tone: {voice}
    (The voice governs tone only. Rules 1, 3 and 6 win over any length or point-of-view instruction in it.)
 3. Third person, past tense, about {name} ({pronouns}); the reader is the player. Notice what changed
-   between stretches: where the road turned, who kept turning up, where the deaths cluster, which quests
-   were picked up and never finished.
+   between stretches: where the road turned, who kept turning up, which quests were picked up and never
+   finished.
 4. The player's own notes are the most important evidence. Quote them where they fall.
-5. Deaths dry, level-ups a nod, companions a clause.
+5. Deaths: one dry clause at most per stretch, how many and where, never why and never as a verdict on the
+   player (no "careless", no lesson, no toll). Level-ups a nod, companions a clause.
 6. Write exactly one section per stretch listed below, in the same order, with the heading copied exactly
    as given: `## {number}. {title}`. Never add, merge, reorder or skip a stretch. 60–140 words per section.
 7. Before the first section, one short untitled paragraph: where the road stands now and what is still open.

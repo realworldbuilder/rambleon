@@ -1,5 +1,21 @@
 # Progress
 
+## 2026-10-02 — Deaths were counted twice
+
+- Looking into why the chapters dwelt on dying: the raw archive showed every DEATH recorded twice, 1–4 s apart, with
+  one REVIVED per pair, on every night from 09-24 (build 70009) on. 74 recorded deaths were 46. 09-22 and Winterland
+  Dew's nights had no doubles. The prose followed the data ("died once, and died again moments later, the kind of
+  careless end…", "nine deaths there", a guide saying "died seventeen times" where it was nine).
+- AddOn: `PLAYER_DEAD` within 30 s of the last recorded death is the same death; `UnitIsFeignDeath` skipped.
+  Companion: `normalize.drop_death_echoes` (normalized version 3); a renormalized session may shrink once on
+  reprocess. Archive reprocessed: every night now has DEATH == REVIVED.
+- Prompts: a death is a fact, not a verdict. One dry sentence per chapter at most, never the title or the post,
+  never a reason the record lacks. Same in the route and season guide modes. Chapter 10 and the route guide were
+  rewritten; chapters 1–9 keep their old prose (correct counts on their pages and recaps only where regenerated).
+
+### To verify next session
+- One death in game → exactly one "Died in …" line in `/ramble dump` and one DEATH in the night's JSON.
+
 ## 2026-09-21 — Day one
 
 Goal: first playable milestone (AddOn loads, `/ramble` works, a session is captured, `ramble export latest` produces Markdown).

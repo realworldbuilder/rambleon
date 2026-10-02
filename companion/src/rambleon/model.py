@@ -5,7 +5,8 @@ import re
 from typing import Any
 
 SCHEMA_VERSION = 1
-NORMALIZED_VERSION = 2  # 2: displayName/slug derived with the surname rule, guid published in game
+NORMALIZED_VERSION = 3  # 2: displayName/slug derived with the surname rule, guid published in game; 3: death echoes dropped
+DEATH_ECHO = 30         # seconds: Forever build 70009 fires PLAYER_DEAD twice per death; AddOns before 0.3.1 recorded both
 SUSPEND_TIMEOUT = 600  # seconds; a suspended session older than this is treated as ended
 KEEP_ALL = True
 

@@ -5,7 +5,7 @@ import time
 from typing import Any
 
 from .luaparse import to_python
-from .model import COUNTER_KEYS, NORMALIZED_VERSION, SUSPEND_TIMEOUT, slugify, validate_session
+from .model import COUNTER_KEYS, DEATH_ECHO, NORMALIZED_VERSION, SUSPEND_TIMEOUT, slugify, validate_session
 
 
 def _int(v: Any) -> int | None:
@@ -68,6 +68,25 @@ def display_name(character: dict[str, Any]) -> str:
     return name
 
 
+def drop_death_echoes(events: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], int]:
+    """One death, one event. A DEATH within DEATH_ECHO seconds of the previous one, with no REVIVED between, is the
+    client repeating itself (every death on build 70009 was recorded twice, one to four seconds apart).
+    Returns (events, dropped)."""
+    out: list[dict[str, Any]] = []
+    last_death: int | None = None
+    dropped = 0
+    for ev in events:
+        if ev.get("type") == "DEATH":
+            if last_death is not None and ev["t"] - last_death < DEATH_ECHO:
+                dropped += 1
+                continue
+            last_death = ev["t"]
+        elif ev.get("type") == "REVIVED":
+            last_death = None
+        out.append(ev)
+    return out, dropped
+
+
 def normalize_session(raw: Any, addon_version: Any = None, db_schema: Any = None, now: float | None = None) -> dict[str, Any] | None:
     raw = to_python(raw) if isinstance(raw, dict) and any(isinstance(k, int) for k in raw) else raw
     if not isinstance(raw, dict):
@@ -105,7 +124,10 @@ def normalize_session(raw: Any, addon_version: Any = None, db_schema: Any = None
             clean["t"] = _int(ev["t"])
             events.append(clean)
     events.sort(key=lambda e: e["t"])  # stable: preserves insertion order for equal timestamps
+    events, echoes = drop_death_echoes(events)
     s["events"] = events
+    if echoes:
+        s["counters"]["deaths"] = max(0, s["counters"]["deaths"] - echoes)
     levels = [e["level"] for e in events if isinstance(e.get("level"), (int, float)) and not isinstance(e.get("level"), bool)]
     if levels:
         start = _int(s["character"].get("startLevel"))

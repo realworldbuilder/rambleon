@@ -1,4 +1,5 @@
-"""The immutable local archive. Raw snapshots are never modified; normalized sessions never shrink."""
+"""The immutable local archive. Raw snapshots are never modified; normalized sessions never shrink, except when
+a newer companion renormalizes them (a higher normalizedVersion, e.g. death echoes dropped on reprocess)."""
 from __future__ import annotations
 
 import hashlib
@@ -117,7 +118,9 @@ class Archive:
         return f"{local:%Y-%m-%d_%H%M}_{session['character'].get('slug', 'unknown')}.json"
 
     def upsert_session(self, session: dict[str, Any], capture: dict[str, Any]) -> tuple[str, Path | None]:
-        """Merge rule: new wins only if it has at least as many events and is not a downgrade.
+        """Merge rule: new wins only if it has at least as many events and is not a downgrade. A session normalized
+        by a newer companion (higher normalizedVersion) replaces the old one even with fewer events: reprocess walks
+        the raw snapshots oldest first, so the newest snapshot still ends up on top.
         Returns (outcome, path) with outcome in new | updated | unchanged | rejected."""
         self.ensure()
         existing_path = self._find_existing(session["id"])
@@ -135,11 +138,12 @@ class Archive:
         old = load_json(existing_path)
         old_events = len(old.get("events", []))
         new_events = len(session.get("events", []))
-        if new_events < old_events:
+        renormalized = int(session.get("normalizedVersion") or 0) > int(old.get("normalizedVersion") or 0)
+        if new_events < old_events and not renormalized:
             return "rejected", existing_path
         old_rank = STATE_RANK.get(old.get("state"), 0)
         new_rank = STATE_RANK.get(session.get("state"), 0)
-        if new_events == old_events and new_rank < old_rank:
+        if new_events == old_events and new_rank < old_rank and not renormalized:
             return "rejected", existing_path
         if _content_key(old) == _content_key(session):
             return "unchanged", existing_path

@@ -12,7 +12,9 @@ Rules, in priority order:
 3. Third person, past tense, about {name} ({pronouns}). The reader is another player. At most one sentence
    per stretch may address the reader ("If you take the same road, …") and only to restate a recorded fact.
 4. The player's own notes are the most important evidence. Quote or paraphrase them where they fall.
-5. Deaths dry, level-ups a nod, companions a clause. No triumph the facts do not carry.
+5. Deaths: one dry clause at most per stretch, how many and where, never why and never as a verdict on the
+   player (no "careless", no lesson, no toll). Level-ups a nod, companions a clause. No triumph the facts do
+   not carry.
 6. Write exactly one section per stretch listed below, in the same order, with the heading copied exactly
    as given: `## {number}. {title}`. Never add, merge, reorder or skip a stretch. 80–160 words per section.
 7. Before the first section, one short untitled paragraph: who this is, from what level to what, over how

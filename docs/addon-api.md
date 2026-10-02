@@ -65,7 +65,7 @@ matches chapters by it (slug only as a fallback for old files). Group members ar
 | `PLAYER_LEVEL_UP` | `LEVEL_UP` | arg1 = new level |
 | `QUEST_ACCEPTED` | `QUEST_ACCEPTED` | retail passes `(questID)`, classic `(index, questID)`; both handled. Title from `C_QuestLog.GetTitleForQuestID`, retried once after 1 s |
 | `QUEST_TURNED_IN` | `QUEST_COMPLETED` | `(questID, xp, money)` |
-| `PLAYER_DEAD` / `PLAYER_UNGHOST` / `PLAYER_ALIVE` | `DEATH` / `REVIVED` | revival only logged if `UnitIsDeadOrGhost` is false |
+| `PLAYER_DEAD` / `PLAYER_UNGHOST` / `PLAYER_ALIVE` | `DEATH` / `REVIVED` | **build 70009 fires `PLAYER_DEAD` twice per death**, 1–4 s apart (every death from 09-24 to 10-01 was recorded twice; 09-22 and the second character were not). The AddOn ignores a repeat within 30 s and skips `UnitIsFeignDeath`; `normalize.drop_death_echoes` does the same for old recordings (`ramble reprocess`). Revival only logged if `UnitIsDeadOrGhost` is false |
 | `GROUP_ROSTER_UPDATE` | `GROUP_JOIN` / `GROUP_LEAVE`, people table | roster diff, names guarded against secret values, time together accumulated on heartbeat |
 | `UPDATE_INSTANCE_INFO` | `INSTANCE_ENTER` / `INSTANCE_EXIT` | via `IsInInstance()` transitions |
 | `ACHIEVEMENT_EARNED` | `ACHIEVEMENT` | pcall-registered; may not exist |

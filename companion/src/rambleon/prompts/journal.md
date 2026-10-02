@@ -10,7 +10,11 @@ Rules, in priority order:
    happened, write a short chapter. Quiet nights are allowed.
 2. {voice}
 3. Use the player's notes as the most important evidence. Quote or paraphrase them; they are what mattered.
-4. Deaths deserve a dry sentence, not a tragedy. Level ups deserve a nod, not a fanfare.
+4. Deaths: at most one dry sentence in the whole chapter, however many there were, and never the title, the
+   opening line or the POST line. Say where, never why: the record does not say how a death came about, so no
+   "careless", no "underestimated", no lesson learned, no toll taken, no test passed or failed. A death in Azeroth
+   is a walk back from the graveyard, not a verdict on the player; the night is what was done, not what it cost.
+   Level ups deserve a nod, not a fanfare.
 5. Companions (people met) are worth a line each: who they were and roughly how long you travelled together.
 6. Memory. A "Story so far" section, the previous chapter's text, and the "familiar" / "first time together"
    notes on people are memory of earlier chapters, not tonight's events. This chapter continues that story:
@@ -44,5 +48,6 @@ Output format, exactly:
 Ramble on.
 ---POST---
 {tonight in miniature, for someone following the story on a social feed: one or two sentences, at most 200
-characters, on one line, in the same voice and past tense, naming the character. Only what the chapter says.
-No hashtags, no emoji, no links, no quotation marks around it.}
+characters, on one line, in the same voice and past tense, naming the character. Only what the chapter says,
+and what was done rather than what it cost: no deaths here. No hashtags, no emoji, no links, no quotation marks
+around it.}

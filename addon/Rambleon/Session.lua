@@ -13,6 +13,7 @@ ns.currentGroup = {}           -- name -> { since = GetTime() }
 ns.lastZoneKey = nil
 ns.inInstance = nil
 ns.isDead = false
+ns.lastDeathAt = nil
 ns.dbRestored = false
 ns.dirty = false               -- UI refresh hint
 ns.resumed = false

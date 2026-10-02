@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- **Deaths were counted twice.** Since Forever build 70009 the client fires `PLAYER_DEAD` twice per death, a few
+  seconds apart, and every death from 09-24 on was recorded twice (13 on the night of 10-01; 8 real). The AddOn now
+  ignores a repeat within 30 seconds, and the companion drops the echo from old recordings: `ramble reprocess`
+  rebuilds the archive (normalized version 3; a renormalized session may hold fewer events than before, once).
+- The writer treats a death as a fact, not a verdict: at most one dry sentence per chapter however many there were,
+  never the title or the social post, and never a reason the record does not contain ("careless", "a lesson").
+  Same for the route guide and the season recap.
 - `ramble post [tonight|date]`: tell a night on X. One post with the chapter title, the night in one or two sentences
   and the hero picture (with its caption as the picture's description); `--style thread` posts the whole chapter as a
   thread; `--link` adds the shared story page (X charges far more for a post with a link, so it is off by default);

@@ -5,7 +5,7 @@ from pathlib import Path
 from rambleon.archive import Archive
 from rambleon.export import render_markdown
 from rambleon.luaparse import parse, to_python
-from rambleon.normalize import display_name, sessions_from_db, surname
+from rambleon.normalize import display_name, drop_death_echoes, normalize_session, sessions_from_db, surname
 from rambleon.summarize import build_prompt, split_output
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -50,6 +50,22 @@ def test_end_level_derived_from_events():
     assert s["character"]["startLevel"] == 8 and s["character"]["endLevel"] == 9
 
 
+def test_death_echo_is_one_death():
+    # Build 70009 fires PLAYER_DEAD twice per death, one to four seconds apart; the AddOn recorded both before 0.3.1.
+    t = 1_790_900_000
+    events = [{"t": t, "type": "DEATH"}, {"t": t + 3, "type": "DEATH"}, {"t": t + 90, "type": "REVIVED"},
+              {"t": t + 100, "type": "DEATH"}, {"t": t + 101, "type": "DEATH"}, {"t": t + 200, "type": "REVIVED"},
+              {"t": t + 300, "type": "DEATH"}, {"t": t + 400, "type": "DEATH"}]   # a missed REVIVED: both real
+    kept, dropped = drop_death_echoes(events)
+    assert dropped == 2
+    assert [e["t"] for e in kept if e["type"] == "DEATH"] == [t, t + 100, t + 300, t + 400]
+    raw = {"id": "s", "state": "ended", "startedAt": t, "endedAt": t + 500, "character": {"name": "Rambleon"},
+           "counters": {"deaths": 6}, "events": events, "zones": [], "people": []}
+    s = normalize_session(raw, now=t + 1000)
+    assert s["counters"]["deaths"] == 4 and sum(e["type"] == "DEATH" for e in s["events"]) == 4
+    assert s["normalizedVersion"] == 3
+
+
 def test_empty_db_yields_nothing():
     assert sessions_from_db({"schemaVersion": 1, "sessions": []}) == []
     assert sessions_from_db(None) == []
@@ -71,8 +87,12 @@ def test_archive_merge_rules(tmp_path):
     assert list(archive.history_dir.glob("*.json"))
     downgrade = dict(more, state="suspended")
     assert archive.upsert_session(downgrade, capture)[0] == "rejected"
+    # a newer companion may renormalize a session into fewer events (death echoes dropped), once
+    renormalized = dict(more, events=more["events"][:-2], normalizedVersion=more["normalizedVersion"] + 1)
+    assert archive.upsert_session(renormalized, capture)[0] == "updated"
+    assert archive.upsert_session(dict(renormalized, events=renormalized["events"][:-1]), capture)[0] == "rejected"
     index = archive.rebuild_index()
-    assert index["sessions"][0]["events"] == len(more["events"])
+    assert index["sessions"][0]["events"] == len(renormalized["events"])
     assert archive.load_session("latest")["id"] == s["id"]
     # a trivial login-only session archived later must not become "latest"
     tiny = dict(sessions[1], events=sessions[1]["events"][:2], playedSeconds=5, startedAt=s["startedAt"] + 9999)

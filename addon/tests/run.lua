@@ -92,6 +92,8 @@ assertEq(ns.shotStatus, "ok", "shot status ok")
 
 -- Death and revival
 WoW.state.dead = true; WoW.Fire("PLAYER_DEAD")
+WoW.Advance(3); WoW.Fire("PLAYER_DEAD")          -- build 70009 repeats the event a few seconds later
+assertEq(ns.session.counters.deaths, 1, "a repeated PLAYER_DEAD is the same death")
 WoW.state.dead = false; WoW.Fire("PLAYER_UNGHOST")
 assertEq(ns.session.counters.deaths, 1, "deaths")
 assertEq(ns.session.events[#ns.session.events].type, "REVIVED", "revived")
