@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- `ramble post [tonight|date]`: tell a night on X. One post with the chapter title, the night in one or two sentences
+  and the hero picture (with its caption as the picture's description); `--style thread` posts the whole chapter as a
+  thread; `--link` adds the shared story page (X charges far more for a post with a link, so it is off by default);
+  `--dry-run` shows the text and posts nothing. It asks before posting. `ramble x login|logout|status` keeps the four
+  keys of your own X developer app in the macOS Keychain (X's API is pay-per-use, about 1.5 cents a post).
+  `[x] auto = true` in `rambleon.local.toml` lets the watcher post by itself: once per night, after the chapter was
+  written and the night has been quiet for `delay` minutes (default 30). Tonight's chapter is held while you are
+  still in the world, and a chapter older than two days is never posted. `archive/posts/x.json` remembers what was posted so nothing goes out twice.
+- The journal prompt now also asks for a `---POST---` line (the night in miniature, at most 200 characters); it is
+  kept in the journal sidecar as `post`. Chapters written before this use the opening sentences of the chapter.
 - Index page: with more than one character it is no longer one mixed list under the last-played name. A roster at
   the top (race, class, faction, level, chapters, last played) jumps to a section per character, each with its own
   chapters and route guide link. "All chapters" on a story page or guide returns to that character's section.

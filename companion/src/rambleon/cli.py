@@ -24,9 +24,10 @@ from .nights import earlier_nights, nights as list_nights, resolve_night
 from .notify import notify
 from .publish import export_html, publish_chapters, write_html_index
 from .screenshots import refresh_session_screenshots
-from .config import share_auto
+from .config import X_STYLES, share_auto, x_config
 from .guide import available_modes, default_mode, write_guide
 from .share import ShareError, share as run_share
+from . import xpost
 from .watch import Finalizer
 from .wowstate import logged_out_since
 from .summarize import DEFAULT_MODEL, DEFAULT_VOICE, available_voices, summarize as run_summarize
@@ -214,9 +215,16 @@ def watch(interval: float = typer.Option(1.0, help="Seconds between polls."),
         raise typer.Exit(1)
     finalizer = None if no_auto else Finalizer(_finish_night(archive, paths, use_ai=not no_ai, model=model, voice=voice), log,
                                                logged_out=lambda since: logged_out_since(paths.wow_dir, since))
+    # `[x] auto = true` in rambleon.local.toml: a finished chapter is told on X once the night has gone quiet.
+    poster = None if no_auto else xpost.AutoPoster(archive, paths, log, notify=notify,
+                                                   in_world=lambda since: not logged_out_since(paths.wow_dir, since))
+
+    def tick() -> None:
+        finalizer.tick()
+        poster.tick()
     try:
         run_watch(paths, archive, log, interval=interval, copy_screenshots=copy_screenshots,
-                  after_capture=finalizer.on_capture if finalizer else None, tick=finalizer.tick if finalizer else None)
+                  after_capture=finalizer.on_capture if finalizer else None, tick=tick if finalizer else None)
     except KeyboardInterrupt:
         console.print("\nstopped.")
 
@@ -317,6 +325,105 @@ def share(refs: list[str] = typer.Argument(None, help="tonight | latest | YYYY-M
     console.print(result.message)
     for url in result.urls:
         console.print(url)
+
+
+@app.command()
+def post(ref: str = typer.Argument("tonight", help="tonight | latest | YYYY-MM-DD | night id"),
+         style: str = typer.Option(None, "--style", help="post (one post, the night in miniature) or thread (the whole chapter)."),
+         link: bool = typer.Option(None, "--link/--no-link", help="Add the shared story page's address. X charges far more for a post with a link."),
+         picture: bool = typer.Option(None, "--picture/--no-picture", help="Attach the night's hero screenshot."),
+         yes: bool = typer.Option(False, "--yes", "-y", help="Do not ask before posting."),
+         dry_run: bool = typer.Option(False, "--dry-run", help="Show what would be posted; post nothing."),
+         force: bool = typer.Option(False, "--force", help="Post a night that was already posted.")) -> None:
+    """Tell a night on X: the chapter in miniature with its hero picture, or the whole chapter as a thread.
+    Defaults come from [x] in rambleon.local.toml. Needs your X developer keys once: `ramble x login`."""
+    archive, paths = _archive()
+    cfg = x_config(paths.repo_root)
+    style = style or cfg["style"]
+    if style not in X_STYLES:
+        console.print(f"[red]unknown style {style!r}[/red]; choose from: {', '.join(X_STYLES)}")
+        raise typer.Exit(1)
+    night = _night(ref)
+
+    def confirm(question: str) -> bool:
+        return typer.confirm(question, default=False)
+    link = cfg["link"] if link is None else link
+    picture = cfg["picture"] if picture is None else picture
+    preview = xpost.post_night(archive, paths, night, style=style, link=link, picture=picture, dry_run=True, force=force, log=log)
+    for n, text in enumerate(preview.texts, 1):
+        console.print(f"[dim]— {n}/{len(preview.texts)} · {xpost.weighted_len(text)} of {xpost.LIMIT} —[/dim]")
+        console.print(text, markup=False, highlight=False, soft_wrap=True)
+    console.print(f"[dim]picture: {preview.image or 'none'}[/dim]", soft_wrap=True)
+    if dry_run or not preview.message.startswith("dry run"):
+        console.print(preview.message)
+        return
+    try:
+        result = xpost.post_night(archive, paths, night, style=style, link=link and "https://" in preview.texts[-1],
+                                  picture=picture, force=force, yes=yes, confirm=confirm, log=log)
+    except xpost.XError as e:
+        console.print(f"[red]{e}[/red]")
+        raise typer.Exit(1)
+    console.print(result.message)
+
+
+x_app = typer.Typer(help="Your X account: the keys `ramble post` and the watcher's auto-post use.")
+app.add_typer(x_app, name="x")
+
+
+@x_app.command("login")
+def x_login(check: bool = typer.Option(True, "--check/--no-check", help="Ask X who the keys belong to (one small paid request).")) -> None:
+    """Store the four keys of your X developer app in the macOS Keychain."""
+    console.print("At console.x.com: create an app, set its user authentication to [bold]Read and write[/bold], then generate\n"
+                  "the API Key and Secret and the Access Token and Secret (in that order: a token made before the permission\n"
+                  "change stays read-only), and add a few dollars of credits. Paste the four values here; they go into your\n"
+                  "Keychain and nowhere else.")
+    creds = {
+        "api_key": typer.prompt("API Key", hide_input=True),
+        "api_secret": typer.prompt("API Key Secret", hide_input=True),
+        "access_token": typer.prompt("Access Token", hide_input=True),
+        "access_secret": typer.prompt("Access Token Secret", hide_input=True),
+    }
+    try:
+        xpost.store_credentials(creds)
+        console.print("stored in the Keychain.")
+        if check:
+            console.print(f"X knows these keys as [bold]@{xpost.XClient(creds).me()}[/bold].")
+    except xpost.XError as e:
+        console.print(f"[red]{e}[/red]")
+        raise typer.Exit(1)
+    archive, paths = _archive()
+    cfg = x_config(paths.repo_root)
+    if cfg["auto"]:
+        due = [f"{n['character'].get('displayName')} ({n['nightDate']})" for n in xpost.due_nights(archive, paths.exports_dir, cfg)]
+        console.print("Auto-post is on. " + (f"The watcher posts these within a minute or two: {', '.join(due)}." if due else
+                      "Nothing is waiting; the next finished chapter is posted once the night has gone quiet."), markup=False)
+    else:
+        console.print("Try `ramble post tonight --dry-run`, then `ramble post tonight`. For posting by itself, put\n"
+                      "[x] auto = true in rambleon.local.toml.", markup=False)
+
+
+@x_app.command("logout")
+def x_logout() -> None:
+    """Remove the X keys from the Keychain."""
+    console.print(f"removed {xpost.delete_credentials()} key(s) from the Keychain.")
+
+
+@x_app.command("status")
+def x_status() -> None:
+    """Are the keys here, is auto-post on, and what was posted last?"""
+    archive, paths = _archive()
+    cfg = x_config(paths.repo_root)
+    console.print(f"keys: {'found' if xpost.load_credentials() else 'none (run `ramble x login`)'}")
+    console.print(f"auto-post: {'on' if cfg['auto'] else 'off ([x] auto = true in rambleon.local.toml turns it on)'}", markup=False)
+    console.print(f"style: {cfg['style']} · link: {'yes' if cfg['link'] else 'no'} · picture: {'yes' if cfg['picture'] else 'no'} · "
+                  f"quiet before posting: {cfg['delay']:g} min · characters: {', '.join(cfg['characters']) or 'all'}", soft_wrap=True)
+    ledger = xpost.load_ledger(archive)
+    for night_id, entry in sorted(ledger.items(), key=lambda kv: kv[1].get("postedAt") or 0)[-5:]:
+        ids = entry.get("ids") or []
+        when = datetime.fromtimestamp(entry.get("postedAt") or 0)
+        console.print(f"{when:%Y-%m-%d %H:%M}  {night_id}  https://x.com/i/status/{ids[0] if ids else '?'}", highlight=False)
+    if not ledger:
+        console.print("nothing posted yet.")
 
 
 @app.command()

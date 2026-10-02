@@ -97,12 +97,16 @@ def build_night(sessions: list[dict[str, Any]], now: float | None = None) -> dic
     return night
 
 
-def nights(archive: Archive, slug: str | None = None) -> list[dict[str, Any]]:
+def nights(archive: Archive, slug: str | None = None, since: str | None = None) -> list[dict[str, Any]]:
+    """`since` (a night date, YYYY-MM-DD) leaves older nights unread: for callers that poll and only care
+    about the last day or two."""
     groups: dict[tuple[str, str], list[dict[str, Any]]] = {}
     for row in archive.list_sessions():
         if row.get("trivial"):
             continue
         if slug and row.get("slug") != slug:
+            continue
+        if since and night_date(row.get("startedAt")) < since:
             continue
         session = load_json(archive.normalized_dir / row["file"])
         key = (row.get("slug") or "unknown", night_date(row.get("startedAt")))

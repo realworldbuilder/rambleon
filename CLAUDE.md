@@ -41,6 +41,12 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
 - **Sharing is manual by default**: `ramble share tonight` copies the page and web-sized pictures into `site/example`,
   commits and pushes after asking. A Mac can opt in to automatic sharing with `[share] auto = true` in the gitignored
   `rambleon.local.toml`: then every finished chapter is pushed by the watcher. Nothing else publishes.
+- **X**: `ramble post tonight` tells a night on X (asks first): title, the writer's `---POST---` line, hero picture;
+  `--style thread` posts the whole chapter. Keys of the player's own X developer app live in the macOS Keychain
+  (`ramble x login`; OAuth 1.0a, stdlib only, pay-per-use API, a link in a post costs ~13× more so `link` is off by
+  default). `[x] auto = true` in `rambleon.local.toml`: the watcher's `AutoPoster` posts a night once it is over, its
+  chapter covers the last session, it has been quiet for `delay` minutes and (for tonight's) the player is not in the world.
+  `archive/posts/x.json` is the ledger: a night is never posted twice. Unverified against the live API as of 10-01.
 - **A chapter is a night**: every session of one evening (5 a.m. cutoff) stitched together in `nights.py`.
   Reloads and relogs are continuity, not breaks (the AddOn resumes a session seen < 10 min ago).
 - **Finalization**: the watcher writes the chapter the moment the player leaves (WoW quit, or `Logs/Client.log`
@@ -72,7 +78,8 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
   `normalize`, `archive`, `watch` (+ `Finalizer`), `wowstate` (logout detection), `nights`, `export`, `summarize`,
   `publish` (Chapters.lua, HTML), `service` (launchd), `notify`, `config`, `doctor`, `install`, `cli`,
   `model` (schema constants), `screenshots` (pairs files with SCREENSHOT events, captions), `share` (GitHub Pages),
-  `memory` (what earlier chapters lend the prompt), `guide` (the route guide: stretches, modes, page).
+  `memory` (what earlier chapters lend the prompt), `guide` (the route guide: stretches, modes, page),
+  `xpost` (X: keys, signing, composing the post or thread, ledger, the watcher's auto-post).
 - The companion wheel **bundles the AddOn** via an explicit per-file `force-include` list in `companion/pyproject.toml`.
   Adding a file to `addon/Rambleon/` means adding it there too, or `uv tool install` users get a broken AddOn.
   Without a checkout, `install.py` seeds `~/Rambleon/addon/Rambleon` from the bundled copy.
@@ -145,6 +152,7 @@ Keybindings under AddOns: Open Adventure Log, Mark Moment.
 Mac: `ramble setup [--no-ai]` · `doctor [--fix]` · `uninstall` · `install [--copy]` · `service install|uninstall|status` · `watch [--no-ai] [--no-auto] [--voice]`
 · `ingest` · `reprocess` · `status` · `sessions` · `nights` · `show latest` · `export tonight|YYYY-MM-DD|--all`
 · `summarize tonight [--voice] [--no-ai]` · `page tonight` · `publish` · `share [tonight|date|--all] [--yes] [--dry-run]` · `voices`
+· `post [tonight|date] [--style post|thread] [--link] [--no-picture] [--yes] [--dry-run] [--force]` · `x login|logout|status`
 · `catchup [tonight|date] [--copy]` · `guide [slug|latest] [--no-ai] [--voice] [--mode route|season|file.md] [--list] [--open]`.
 
 ## Where this is going

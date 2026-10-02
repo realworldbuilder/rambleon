@@ -55,6 +55,8 @@ help from us.
       "first time in Darnassus" moments, time-of-day in the character's world.
 - [ ] **Voices.** Two or three good ones, chosen per night or per character. Keep `golden` and `field-journal`;
       add a terse "captain's log". A `ramble voices try tonight` that renders all voices for comparison.
+- [x] **X.** `ramble post` and `[x] auto`: one post per night (title, the writer's one-line telling, hero picture) or
+      the whole chapter as a thread. Built 2026-10-01; not yet run against the live API.
 - [ ] **Recap card.** A PNG share card (title, date, stats, one line) generated from the story page for socials.
 - [x] **Screenshots on the timeline** in the story page, captioned by the moment (auto shots at level ups, marks, new
       zones; hero picture; `ramble share`). Done 2026-09-22; in-game verification pending.

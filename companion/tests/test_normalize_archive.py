@@ -110,8 +110,12 @@ def test_prompt_and_split():
     s = load_sessions()[0]
     prompt = build_prompt(s, 3)
     assert "# Chapter 3" in prompt and "Only what happened" in prompt and "Moonhoof" in prompt
-    journal, recap = split_output("# Chapter 3 — Test\n\nbody\n\n---RECAP---\n2h in Azeroth.\nRamble on.")
-    assert journal.startswith("# Chapter 3") and recap.startswith("2h")
+    journal, recap, post = split_output("# Chapter 3 — Test\n\nbody\n\n---RECAP---\n2h in Azeroth.\nRamble on.")
+    assert journal.startswith("# Chapter 3") and recap.startswith("2h") and post is None
+    journal, recap, post = split_output("# Chapter 3 — Test\n\nbody\n\n---RECAP---\n2h in Azeroth.\nRamble on.\n"
+                                        "---POST---\nRambleon walked\nto Dolanaar.\n")
+    assert recap == "2h in Azeroth.\nRamble on.\n" and post == "Rambleon walked to Dolanaar." and "POST" not in journal
+    assert "---POST---" in prompt
 
 
 def test_display_name_survives_the_client_name_change():

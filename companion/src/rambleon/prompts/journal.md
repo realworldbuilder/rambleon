@@ -42,3 +42,7 @@ Output format, exactly:
 {deaths} deaths.
 {one short line about people met, or "Travelled alone." if none}
 Ramble on.
+---POST---
+{tonight in miniature, for someone following the story on a social feed: one or two sentences, at most 200
+characters, on one line, in the same voice and past tense, naming the character. Only what the chapter says.
+No hashtags, no emoji, no links, no quotation marks around it.}

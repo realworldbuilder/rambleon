@@ -80,6 +80,24 @@ next to your checkout (the file is gitignored, so it only affects that Mac) and 
 auto = true
 ```
 
+Want the story told on X as well? `ramble x login` stores the four keys of your own X developer app in the macOS
+Keychain (console.x.com: create an app, set it to Read and write, generate the keys, add a few dollars of credits; X
+bills about 1.5 cents a post). `ramble post tonight` then shows the post and asks before sending it: the chapter's
+title, the night in one or two sentences from the writer, and the night's hero picture. `--style thread` tells the
+whole chapter instead, `--dry-run` posts nothing. To have the watcher post by itself once a night has gone quiet:
+
+```toml
+[x]
+auto = true
+# style = "thread"      # the whole chapter instead of one post
+# link = true           # add the shared story page's address (X charges about 20 cents for a post with a link)
+# delay = 30            # minutes of quiet after the chapter was written before it is posted
+# characters = ["rambleon-birdsong"]   # only these; default is every character
+```
+
+A night is posted once. If you come back and play more after it went out, the chapter on your Mac is rewritten but
+the post is not repeated.
+
 Inviting a friend? Send them [docs/invite-prompt.md](docs/invite-prompt.md): a message they can paste into Claude Code
 and it installs Rambleon for them.
 
@@ -91,8 +109,8 @@ achievements, screenshots (yours, and the ones it takes at level ups, marks and 
 
 Never: damage numbers or the combat log, chat content, other players beyond your group roster as the game shows it,
 anything Blizzard marks protected or secret. Nothing leaves your Mac. If you use the AI step, the only thing sent is
-the prompt for that chapter, through your own Claude login. `ramble share` is the one command that publishes a chapter,
-and it asks first.
+the prompt for that chapter, through your own Claude login. `ramble share` and `ramble post` are the only commands that publish a chapter,
+and they ask first unless you turned on `auto` for them yourself.
 
 Your history lives as plain JSON in `~/Rambleon/archive/` (or the checkout's `archive/`). Raw files WoW wrote are
 kept byte for byte and never edited. Stories are always generated downstream; the record is never touched to make

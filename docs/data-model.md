@@ -128,6 +128,7 @@ archive/
   sessions/normalized/history/  previous versions of any normalized file that was replaced
   screenshots/<session>/   copies of the night's screenshots (default; `--no-copy-screenshots` keeps references only)
   index.json               rebuilt after every change
+  posts/x.json             what `ramble post` sent to X: night id → { postedAt, style, ids, texts, image, partial? }
   watch.pid                present while `ramble watch` runs
 ```
 
@@ -148,7 +149,8 @@ archive/
   `slug, displayName, title, mode, nights (ids the prose covers), chapters, prose, model, voice, createdAt`;
   `markdown/guide-<slug>-<mode>-prose.md` the same prose as a file. A mode other than the configured default writes
   `html/guide-<slug>-<mode>.html` beside the linked page.
-- `journal/<night id>.json` — the chapter as written: `sessionId, chapter, title, journal, recap, model, voice, createdAt`.
+- `journal/<night id>.json` — the chapter as written: `sessionId, chapter, title, journal, recap, post, model, voice, createdAt`
+  (`post`: the one-line telling for a social feed, from the prompt's `---POST---` section; absent before 2026-10-01).
   The story page, `Chapters.lua` and the prompts for later nights all read it: `memory.py` hands the writer the previous
   chapter's text, the last three chapters' titles and a companion history built from the normalized nights. Deleting
   a sidecar costs a title and the previous-chapter text, never a fact.

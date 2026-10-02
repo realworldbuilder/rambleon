@@ -31,6 +31,7 @@ def load_voice(name: str | None) -> str:
         raise ValueError(f"unknown voice {name!r}; available: {', '.join(available_voices())}")
     return path.read_text(encoding="utf-8").strip()
 RECAP_MARKER = "---RECAP---"
+POST_MARKER = "---POST---"
 DEFAULT_MODEL = "sonnet"
 SYSTEM_PROMPT = ("You are a careful writer helping a player keep a personal journal of their World of Warcraft "
                  "adventures. Follow the instructions in the message exactly. Output only the requested text.")
@@ -167,11 +168,19 @@ def run_claude(prompt: str, model: str = DEFAULT_MODEL, timeout: int = 600) -> t
     return (out, "ok (plain text)") if out else (None, "claude returned nothing")
 
 
-def split_output(text: str) -> tuple[str, str | None]:
+def split_output(text: str) -> tuple[str, str | None, str | None]:
+    """(journal, recap, post). The post is the one-line telling for a social feed; either tail may be missing."""
+    post = None
+    if POST_MARKER in text:
+        text, tail = text.split(POST_MARKER, 1)
+        if RECAP_MARKER in tail:              # sections in the wrong order: the recap still belongs to the recap
+            tail, recap_tail = tail.split(RECAP_MARKER, 1)
+            text += RECAP_MARKER + recap_tail
+        post = " ".join(tail.split()) or None
     if RECAP_MARKER in text:
         journal, recap = text.split(RECAP_MARKER, 1)
-        return journal.strip() + "\n", recap.strip() + "\n"
-    return text.strip() + "\n", None
+        return journal.strip() + "\n", recap.strip() + "\n", post
+    return text.strip() + "\n", None, post
 
 
 def summarize(session: dict[str, Any], archive: Archive, exports_dir: Path, use_ai: bool = True,
@@ -199,7 +208,7 @@ def summarize(session: dict[str, Any], archive: Archive, exports_dir: Path, use_
     if text is None:
         log(f"AI journal skipped: {diag}. The prompt is at {prompt_path}.")
         return result
-    journal, recap = split_output(text)
+    journal, recap, post = split_output(text)
     title = None
     for line in journal.splitlines():
         if line.startswith("#"):
@@ -207,7 +216,7 @@ def summarize(session: dict[str, Any], archive: Archive, exports_dir: Path, use_
             break
     atomic_write_json(exports_dir / "journal" / f"{session['id']}.json", {
         "sessionId": session["id"], "chapter": chapter, "title": title, "journal": journal,
-        "recap": recap or render_recap(session), "model": model, "voice": voice or os.environ.get("RAMBLEON_VOICE") or DEFAULT_VOICE,
+        "recap": recap or render_recap(session), "post": post, "model": model, "voice": voice or os.environ.get("RAMBLEON_VOICE") or DEFAULT_VOICE,
         "createdAt": int(__import__("time").time()),
     })
     journal_path = exports_dir / "markdown" / export_filename(session, "-journal")
