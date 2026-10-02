@@ -495,7 +495,7 @@ class AutoPoster:
         if client is None:
             if not self._told_no_keys:
                 self._told_no_keys = True
-                self.log("X: [x] auto is on but there are no keys on this Mac; run `ramble x login`")
+                self.log("X: auto-post is on but there are no keys on this Mac; run `ramble x login`")
             return []
         results = []
         for night in due:
