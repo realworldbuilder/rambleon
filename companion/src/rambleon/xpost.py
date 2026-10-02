@@ -165,6 +165,11 @@ HINTS = {
 }
 
 
+NOT_ENROLLED = ("the keys are fine, but the developer account is not set up to use the API yet: at console.x.com "
+                "buy a few dollars of credits (that enrols it in pay-per-use) and check the app sits inside a Project, "
+                "then generate the keys again and run `ramble x login`")
+
+
 def _explain(status: int, payload: Any) -> str:
     detail = ""
     if isinstance(payload, dict):
@@ -172,6 +177,8 @@ def _explain(status: int, payload: Any) -> str:
         first = errors[0] if isinstance(errors, list) and errors and isinstance(errors[0], dict) else {}
         detail = str(payload.get("detail") or first.get("message") or first.get("detail") or payload.get("title") or "")
     hint = HINTS.get(status)
+    if status == 403 and ("attached to a Project" in detail or "client-not-enrolled" in str(payload)):
+        hint = NOT_ENROLLED          # the keys are fine; the developer account cannot use the API yet
     return f"X answered {status}" + (f": {detail}" if detail else "") + (f" ({hint})" if hint else "")
 
 

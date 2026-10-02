@@ -164,6 +164,15 @@ def test_refusal_is_explained_and_half_a_thread_is_not_repeated(tmp_path):
     assert due_nights(archive, paths.exports_dir, x_config(tmp_path), now=night["endedAt"] + 7200) == []
 
 
+def test_an_account_without_credits_is_told_so_not_sent_after_its_keys():
+    refused = {"title": "Forbidden", "type": "https://api.twitter.com/2/problems/client-forbidden", "reason": "client-not-enrolled",
+               "detail": "When authenticating requests to the X API v2 endpoints, you must use keys and tokens from a "
+                         "developer App that is attached to a Project."}
+    message = xpost._explain(403, refused)
+    assert "the keys are fine" in message and "credits" in message and "Read and write" not in message
+    assert "Read and write" in xpost._explain(403, {"detail": "You are not permitted to perform this action."})
+
+
 def test_due_nights_waits_for_a_quiet_finished_chapter(tmp_path):
     archive, paths, night = archived(tmp_path)
     cfg = x_config(tmp_path)
