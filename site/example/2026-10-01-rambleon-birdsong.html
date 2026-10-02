@@ -1,0 +1,209 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Chapter 10 — The Charred Vale Takes Its Toll — Rambleon Birdsong</title>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
+h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
+figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.quests{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0}
+.quests .tabs{display:flex;gap:4px;padding:6px 8px 0;border-bottom:1px solid var(--line);background:rgba(90,53,16,.05)}
+.quests .tabs button{font:inherit;font-size:15px;padding:8px 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--soft);cursor:pointer;margin-bottom:-1px}
+.quests .tabs button:hover{color:var(--link)}.quests .tabs button[aria-selected=true]{color:#5a3510;border-color:var(--gold);font-weight:bold}
+.quests .tabs .n{display:inline-block;min-width:22px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(90,53,16,.1);font-size:12px;font-weight:normal;color:var(--soft);text-align:center}
+.quests .pane{display:none;padding:6px 0 4px}.quests .pane.on{display:block}
+.quests table{width:100%;border-collapse:collapse;font-size:15px}
+.quests th,.quests td{text-align:left;padding:7px 14px;border-top:1px solid rgba(201,180,138,.5);vertical-align:top}
+.quests thead th{font:700 12px/1 Cinzel,Georgia,serif;letter-spacing:1.5px;color:#5a3510;border-top:0;padding-top:10px}
+.quests tr.zone th{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;background:rgba(90,53,16,.06);letter-spacing:.5px}
+.quests td.where,.quests td.lv,.quests td.since{color:var(--soft);white-space:nowrap}.quests td.lv{text-align:right}
+.quests .caveat{font-size:13px;color:var(--faint);margin:0;padding:8px 14px 6px;border-top:1px solid rgba(201,180,138,.5)}
+@media(max-width:520px){.quests .tabs button{padding:8px 8px;font-size:14px}.quests th,.quests td{padding:6px 10px}.quests td.where{white-space:normal}}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+.roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 8px}
+.char{display:block;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;text-decoration:none;color:inherit}
+.char:hover{box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.char .cn{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510}
+.char .cl{display:block;font-size:15px;color:var(--ink)}.char .cm{display:block;font-size:13px;color:var(--faint)}
+.who{scroll-margin-top:12px}.who h2{font:700 26px/1.2 Cinzel,Georgia,serif;letter-spacing:.5px;color:#5a3510;margin:44px 0 4px;padding-bottom:6px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head><body id='top'>
+<nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='index.html#rambleon-birdsong'>All chapters</a><a href='guide-rambleon-birdsong.html'>Route guide</a><a href='../'>About Rambleon</a></nav>
+<h1>Chapter 10 — The Charred Vale Takes Its Toll</h1>
+<div class='meta'>Rambleon Birdsong · October 1, 2026 · 3h 00m in Azeroth</div>
+<div class='jump'><a href='#story'>Story</a><a href='#recap'>Recap</a><a href='#quests'>Quests</a><a href='#journey'>Journey</a></div>
+<div class='pager'><a class='prev' href='2026-09-29-rambleon-birdsong.html'>← Chapter 9 — The First Train Ride</a></div>
+<figure class='hero'><img src='2026-10-01-rambleon-birdsong/2026-10-01-rambleon-birdsong-01.jpg' alt='Entered Ashenvale'><figcaption>8:29 PM — Entered Ashenvale</figcaption></figure>
+<div class='journal' id='story'><p>Rambleon came down out of Ironforge the way he so often did now, through the Great Forge&#x27;s heat and out into the green hush of Ashenvale, Astranaar rising familiar on the road ahead. Therylune&#x27;s Escape was a quick, tidy thing, settled almost before he&#x27;d caught his bearings, and he paused long enough near the border to let a picture hold the moment of crossing back into the vale he knew so well.</p>
+<p>East of Astranaar the Foulweald camp pulled him in, one totemic and warrior and ursa after another, the kind of grinding, methodical work a hunter learns to love for its rhythm. Company shifted around him all the while — Rip the rogue stayed the better part of a quarter hour, Ialach the druid longer still, Sertuvius a fellow hunter for a similar stretch, and a shaman named Alourah for the briefest of passages, there and gone in two minutes. The Foulweald ursa cost him once, a careless fall in the thick of it, but he rose and finished the work, and An Aggressive Defense closed out back at Astranaar with the quiet satisfaction of a job properly done.</p>
+<p>He struck west after that, past the Shrine of Aessina and Lake Falathim, out along the Zoram Strand and across the Veiled Sea to Stonetalon — another picture marking the crossing, Stonetalon Peak his first real foothold there. Reclaiming the Charred Vale took him in its teeth almost at once. Cassidy found him partway through, as she so often did now, and settled in for the long haul of the evening, a steadying presence through what became the vale&#x27;s hardest test of him. Special Delivery for Gaxim came and went easily enough along the way, a small, clean errand amid the larger grind.</p>
+<p>The Charred Vale itself was less forgiving. Bloodfury ambushers and harpies and windcallers, charred ancients and a singed basilisk — the vale took him down again and again, nine deaths there before the night was through, each one a short walk back from Webwinder Path and no dwelling on it. Two druids, Arktalis and Falsila, joined near the end and stayed the last twenty-some minutes, enough hands finally to see the harpies and ambushers through to their last. He parted from them both at Astranaar, the quest closed, the vale&#x27;s toll paid in patience rather than pride.</p></div>
+<div class='recap' id='recap'>3h 00m in Azeroth tonight.
+0 level(s).
+3 quests.
+15 new places.
+13 deaths.
+Cassidy stayed close most of the night; Rip, Ialach, Sertuvius, Alourah, Arktalis, and Falsila lent a hand along the way.
+Ramble on.</div>
+<div class='stats'><div class='stat'><b>3</b><span>Quests</span></div><div class='stat'><b>15</b><span>Places</span></div><div class='stat'><b>113</b><span>Enemies slain</span></div><div class='stat'><b>0</b><span>Loot</span></div><div class='stat'><b>13</b><span>Deaths</span></div><div class='stat'><b>7</b><span>People</span></div><div class='stat'><b>16,577</b><span>XP</span></div></div>
+<h2 id='quests'>Quests</h2><div class='quests'><div class='tabs' role='tablist'><button role='tab' aria-selected='true' data-pane='done'>Turned in<span class='n'>3</span></button><button role='tab' aria-selected='false' data-pane='open'>Still open<span class='n'>1</span></button><button role='tab' aria-selected='false' data-pane='carried'>Carrying<span class='n'>33</span></button></div><div class='pane on' id='qpane-done' role='tabpanel'><table><thead><tr><th>Quest</th><th>Turned in at</th><th>Lv</th></tr></thead><tbody><tr class='zone'><th colspan='3'>Ashenvale</th></tr><tr><td class='quest'>Therylune&#x27;s Escape</td><td class='where'>The Shrine of Aessina</td><td class='lv'>20</td></tr><tr><td class='quest'>An Aggressive Defense</td><td class='where'>Astranaar</td><td class='lv'>20</td></tr><tr class='zone'><th colspan='3'>Stonetalon Mountains</th></tr><tr><td class='quest'>Special Delivery for Gaxim</td><td class='where'>Webwinder Path</td><td class='lv'>20</td></tr></tbody></table></div><div class='pane' id='qpane-open' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th></tr></thead><tbody><tr><td class='quest'>Reclaiming the Charred Vale</td><td class='where'>Stonetalon Peak</td></tr></tbody></table></div><div class='pane' id='qpane-carried' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th><th>Since</th></tr></thead><tbody><tr><td class='quest'>Sathrah&#x27;s Sacrifice</td><td class='where'>Temple of the Moon</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Crown of the Earth</td><td class='where'>Dolanaar</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>Cave Mushrooms</td><td class='where'>Auberdine</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>The Family and the Fishing Pole</td><td class='where'>Auberdine</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>As Water Cascades</td><td class='where'>Auberdine</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>The Absent Minded Prospector</td><td class='where'>Auberdine</td><td class='since'>Chapter 6</td></tr><tr><td class='quest'>Culling the Threat</td><td class='where'>Astranaar</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>The Tower of Althalaxx</td><td class='where'>Maestra&#x27;s Post</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Raene&#x27;s Cleansing</td><td class='where'>Moonwell</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Unrequited Love</td><td class='where'>Auberdine</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Researching the Corruption</td><td class='where'>Auberdine</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>In Search of Thaelrid</td><td class='where'>Craftsmen&#x27;s Terrace</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Super Reaper 6000</td><td class='where'>Windshear Crag</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Knowledge in the Deeps</td><td class='where'>Blackfathom Deeps</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Humble Beginnings</td><td class='where'>Cathedral Square</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Retrieval for Mauren</td><td class='where'>Mage Quarter</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Gold Dust Exchange</td><td class='where'>Goldshire</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Poor Old Blanchy</td><td class='where'>The Jansen Stead</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Forgotten Heirloom</td><td class='where'>The Jansen Stead</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Killing Fields</td><td class='where'>Saldean&#x27;s Farm</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Harvesting the Harvesters</td><td class='where'>Saldean&#x27;s Farm</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Defias Brotherhood</td><td class='where'>Sentinel Tower</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The People&#x27;s Militia</td><td class='where'>Sentinel Tower</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Red Leather Bandanas</td><td class='where'>Sentinel Hill</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Stormpike&#x27;s Delivery</td><td class='where'>Dwarven District</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Underground Assault</td><td class='where'>Dwarven District</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Collecting Memories</td><td class='where'>Dwarven District</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Oh Brother...</td><td class='where'>Dwarven District</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Brother Paxton</td><td class='where'>Royal Library</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Save Techbot&#x27;s Brain!</td><td class='where'>Tinker Town</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Find Bingles</td><td class='where'>Tinker Town</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>The Day After</td><td class='where'>Tinker Town</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Ineptitude + Chemicals = Fun</td><td class='where'>Tinker Town</td><td class='since'>Chapter 9</td></tr></tbody></table><p class='caveat'>As far as Rambleon knows: quests abandoned, or picked up before it was installed, are not recorded.</p></div></div><script>(function(){var tabs=document.querySelectorAll('.quests [role=tab]');tabs.forEach(function(t){t.addEventListener('click',function(){tabs.forEach(function(o){o.setAttribute('aria-selected',o===t)});document.querySelectorAll('.quests .pane').forEach(function(p){p.classList.toggle('on',p.id==='qpane-'+t.dataset.pane)})})})})();</script>
+<h2 id='journey'>The Journey</h2><details class='journey' open><summary>131 moments, in order · fold</summary><ul>
+<li>8:24 PM — Began the adventure</li>
+<li>8:24 PM — Entered The High Seat (Ironforge)</li>
+<li>8:26 PM — Entered The Great Forge (Ironforge)</li>
+<li>8:29 PM — Entered Astranaar (Ashenvale)</li>
+<li>8:30 PM — Entered Ashenvale</li>
+<li>8:30 PM — First Ghostpaw Runner slain</li>
+<li>8:35 PM — Entered The Shrine of Aessina (Ashenvale)</li>
+<li>8:35 PM — Entered Ashenvale</li>
+<li>8:35 PM — Entered The Shrine of Aessina (Ashenvale)</li>
+<li>8:35 PM — First Wildthorn Stalker slain</li>
+<li>8:38 PM — Completed &quot;Therylune&#x27;s Escape&quot;</li>
+<li>8:39 PM — Entered Ashenvale</li>
+<li>8:40 PM — Entered Astranaar (Ashenvale)</li>
+<li>8:43 PM — Entered Ashenvale</li>
+<li>8:47 PM — First Foulweald Totemic slain</li>
+<li>8:50 PM — Joined forces with Rip (Rogue)</li>
+<li>8:51 PM — First Foulweald Pathfinder slain</li>
+<li>8:51 PM — First Foulweald Warrior slain</li>
+<li>8:53 PM — First Foulweald Den Watcher slain</li>
+<li>8:53 PM — 1/1 Foulweald Den Watcher slain — &quot;An Aggressive Defense&quot;</li>
+<li>8:55 PM — First Foulweald Ursa slain</li>
+<li>8:55 PM — Died in Ashenvale</li>
+<li>8:55 PM — Died in Ashenvale</li>
+<li>8:55 PM — Entered Astranaar (Ashenvale)</li>
+<li>8:55 PM — Entered Ashenvale</li>
+<li>8:56 PM — Back among the living</li>
+<li>8:57 PM — Joined forces with Ialach (Druid)</li>
+<li>8:58 PM — 2/2 Foulweald Ursa slain — &quot;An Aggressive Defense&quot;</li>
+<li>8:59 PM — 10/10 Foulweald Totemic slain — &quot;An Aggressive Defense&quot;</li>
+<li>9:01 PM — First Foulweald Shaman slain</li>
+<li>9:01 PM — Joined forces with Alourah (Shaman)</li>
+<li>9:02 PM — Joined forces with Sertuvius (Hunter)</li>
+<li>9:04 PM — Parted ways with Alourah</li>
+<li>9:04 PM — Entered Greenpaw Village (Ashenvale)</li>
+<li>9:05 PM — 12/12 Foulweald Warrior slain — &quot;An Aggressive Defense&quot;</li>
+<li>9:06 PM — Parted ways with Rip</li>
+<li>9:16 PM — Parted ways with Ialach</li>
+<li>9:16 PM — Entered Ashenvale</li>
+<li>9:17 PM — Parted ways with Sertuvius</li>
+<li>9:19 PM — Entered Astranaar (Ashenvale)</li>
+<li>9:20 PM — Completed &quot;An Aggressive Defense&quot;</li>
+<li>9:22 PM — Entered Ashenvale</li>
+<li>9:22 PM — Entered The Shrine of Aessina (Ashenvale)</li>
+<li>9:22 PM — Entered Lake Falathim (Ashenvale)</li>
+<li>9:22 PM — Entered Ashenvale</li>
+<li>9:22 PM — Entered The Zoram Strand (Ashenvale)</li>
+<li>9:23 PM — Entered The Veiled Sea (Ashenvale)</li>
+<li>9:24 PM — Entered Stonetalon Mountains</li>
+<li class='shot'><figure><img src='2026-10-01-rambleon-birdsong/2026-10-01-rambleon-birdsong-02.jpg' alt='Entered Stonetalon Mountains'><figcaption>9:24 PM — Entered Stonetalon Mountains</figcaption></figure></li>
+<li>9:24 PM — Entered Stonetalon Peak (Stonetalon Mountains)</li>
+<li>9:28 PM — Accepted &quot;Reclaiming the Charred Vale&quot;</li>
+<li>9:28 PM — First Sap Beast slain</li>
+<li>9:30 PM — Entered Stonetalon Mountains</li>
+<li>9:32 PM — First Antlered Courser slain</li>
+<li>9:33 PM — Entered Mirkfallon Lake (Stonetalon Mountains)</li>
+<li>9:36 PM — First Blackened Basilisk slain</li>
+<li>9:39 PM — Entered Stonetalon Mountains</li>
+<li>9:42 PM — Entered The Charred Vale (Stonetalon Mountains)</li>
+<li>9:43 PM — First Bloodfury Ambusher slain</li>
+<li>9:44 PM — Died in The Charred Vale</li>
+<li>9:44 PM — Died in The Charred Vale</li>
+<li>9:44 PM — Entered Webwinder Path (Stonetalon Mountains)</li>
+<li>9:44 PM — Entered Sun Rock Retreat (Stonetalon Mountains)</li>
+<li>9:45 PM — Entered Webwinder Path (Stonetalon Mountains)</li>
+<li>9:46 PM — Entered Mirkfallon Lake (Stonetalon Mountains)</li>
+<li>9:47 PM — Entered Stonetalon Mountains</li>
+<li>9:48 PM — Entered The Charred Vale (Stonetalon Mountains)</li>
+<li>9:48 PM — Back among the living</li>
+<li>9:51 PM — Entered Stonetalon Mountains</li>
+<li>9:52 PM — Died in Stonetalon Mountains</li>
+<li>9:52 PM — Entered Webwinder Path (Stonetalon Mountains)</li>
+<li>9:53 PM — Entered Mirkfallon Lake (Stonetalon Mountains)</li>
+<li>9:54 PM — Entered Stonetalon Mountains</li>
+<li>9:56 PM — Joined forces with Cassidy (Druid)</li>
+<li>9:57 PM — Back among the living</li>
+<li>9:58 PM — Died in Stonetalon Mountains</li>
+<li>9:58 PM — Entered Webwinder Path (Stonetalon Mountains)</li>
+<li>9:58 PM — Entered Sun Rock Retreat (Stonetalon Mountains)</li>
+<li>9:59 PM — Entered Webwinder Path (Stonetalon Mountains)</li>
+<li>9:59 PM — Entered Mirkfallon Lake (Stonetalon Mountains)</li>
+<li>10:01 PM — Entered Stonetalon Mountains</li>
+<li>10:03 PM — Back among the living</li>
+<li>10:03 PM — Died in Stonetalon Mountains</li>
+<li>10:04 PM — Entered Webwinder Path (Stonetalon Mountains)</li>
+<li>10:05 PM — Entered Mirkfallon Lake (Stonetalon Mountains)</li>
+<li>10:05 PM — Entered Stonetalon Mountains</li>
+<li>10:06 PM — Back among the living</li>
+<li>10:07 PM — Entered Mirkfallon Lake (Stonetalon Mountains)</li>
+<li>10:10 PM — Entered Webwinder Path (Stonetalon Mountains)</li>
+<li>10:12 PM — Completed &quot;Special Delivery for Gaxim&quot;</li>
+<li>10:15 PM — Entered Mirkfallon Lake (Stonetalon Mountains)</li>
+<li>10:20 PM — Died in Mirkfallon Lake</li>
+<li>10:20 PM — Died in Mirkfallon Lake</li>
+<li>10:20 PM — Entered Webwinder Path (Stonetalon Mountains)</li>
+<li>10:21 PM — Entered Mirkfallon Lake (Stonetalon Mountains)</li>
+<li>10:22 PM — Back among the living</li>
+<li>10:24 PM — Entered Stonetalon Mountains</li>
+<li>10:36 PM — Entered The Charred Vale (Stonetalon Mountains)</li>
+<li>10:36 PM — Entered Stonetalon Mountains</li>
+<li>10:37 PM — Entered The Charred Vale (Stonetalon Mountains)</li>
+<li>10:38 PM — First Bloodfury Harpy slain</li>
+<li>10:39 PM — Died in The Charred Vale</li>
+<li>10:39 PM — Died in The Charred Vale</li>
+<li>10:39 PM — Entered Webwinder Path (Stonetalon Mountains)</li>
+<li>10:40 PM — Entered Mirkfallon Lake (Stonetalon Mountains)</li>
+<li>10:41 PM — Entered Stonetalon Mountains</li>
+<li>10:42 PM — Entered The Charred Vale (Stonetalon Mountains)</li>
+<li>10:42 PM — Back among the living</li>
+<li>10:43 PM — Entered Stonetalon Mountains</li>
+<li>10:47 PM — First Rogue Flame Spirit slain</li>
+<li>10:53 PM — Joined forces with Arktalis (Druid)</li>
+<li>10:53 PM — Joined forces with Falsila (Druid)</li>
+<li>10:54 PM — Entered The Charred Vale (Stonetalon Mountains)</li>
+<li>10:54 PM — Entered Stonetalon Mountains</li>
+<li>10:57 PM — Entered The Charred Vale (Stonetalon Mountains)</li>
+<li>10:58 PM — First Bloodfury Windcaller slain</li>
+<li>11:01 PM — First Charred Ancient slain</li>
+<li>11:01 PM — 6/6 Bloodfury Harpy slain — &quot;Reclaiming the Charred Vale&quot;</li>
+<li>11:02 PM — 6/6 Bloodfury Ambusher slain — &quot;Reclaiming the Charred Vale&quot;</li>
+<li>11:04 PM — First Singed Basilisk slain</li>
+<li>11:05 PM — Died in The Charred Vale</li>
+<li>11:05 PM — Died in The Charred Vale</li>
+<li>11:05 PM — Entered Webwinder Path (Stonetalon Mountains)</li>
+<li>11:07 PM — Back among the living</li>
+<li>11:07 PM — Entered The Charred Vale (Stonetalon Mountains)</li>
+<li>11:09 PM — Entered Stonetalon Mountains</li>
+<li>11:10 PM — Entered The Charred Vale (Stonetalon Mountains)</li>
+<li>11:15 PM — Entered Astranaar (Ashenvale)</li>
+<li>11:15 PM — Parted ways with Arktalis</li>
+<li>11:15 PM — Parted ways with Falsila</li>
+</ul></details><a class='totop' href='#top'>↑ Back to top</a>
+<div class='pager bottom'><a class='prev' href='2026-09-29-rambleon-birdsong.html'>← Chapter 9 — The First Train Ride</a></div>
+<footer>Recorded by Rambleon · session night-2026-10-01-rambleon-birdsong</footer></body></html>
