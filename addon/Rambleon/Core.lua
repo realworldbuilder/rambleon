@@ -45,6 +45,9 @@ function ns.DebugReport()
   add("auto shots", string.format("%s, Screenshot(): %s, last: %s", ns.AutoShotsEnabled() and "on" or "off",
                                   type(Screenshot) == "function" and "available" or "missing", tostring(ns.shotStatus)))
   add("failed events", #ns.failedEvents > 0 and table.concat(ns.failedEvents, ", ") or "none")
+  local ls = ns.lootStats or {}
+  add("loot", string.format("%d chat lines, %d read, %d kept (uncommon+)", ls.lines or 0, ls.parsed or 0, ls.kept or 0))
+  if ls.lastUnparsed then add("  last unread loot line", ls.lastUnparsed) end
   add("warnings", #ns.warnings)
   for i = math.max(1, #ns.warnings - 4), #ns.warnings do
     add("  warning", ns.warnings[i])

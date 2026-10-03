@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- **Loot was never recorded.** Item links on the 12.x codebase carry a named colour (`|cnIQ2:`), not the old hex
+  colour, and the parser only knew the hex form, so no uncommon-or-better loot and no equip was ever kept. Both
+  spellings are read now (quality from the API, else from the link). `/ramble debug` shows how many loot lines
+  arrived, how many were read, and the last one that was not.
 - **Deaths were counted twice.** Since Forever build 70009 the client fires `PLAYER_DEAD` twice per death, a few
   seconds apart, and every death from 09-24 on was recorded twice (13 on the night of 10-01; 8 real). The AddOn now
   ignores a repeat within 30 seconds, and the companion drops the echo from old recordings: `ramble reprocess`

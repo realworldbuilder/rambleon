@@ -572,14 +572,20 @@ local LINK_COLORS = { ["1eff00"] = 2, ["0070dd"] = 3, ["a335ee"] = 4, ["ff8000"]
 
 local function itemFromLink(link)
   if type(link) ~= "string" then return nil end
-  local color, itemID, name = link:match("|c%x%x(%x%x%x%x%x%x)|Hitem:(%d+)[^|]*|h%[([^%]]*)%]|h")
+  -- The link itself: |Hitem:<id>:...|h[Name]|h. The colour before it comes in two spellings on the 12.x codebase:
+  -- the classic |cff1eff00 and the named |cnIQ2: (IQ = item quality), which is what the Forever client sends.
+  local itemID, name = link:match("|Hitem:(%d+)[^|]*|h%[([^%]]*)%]|h")
   if not itemID then return nil end
   itemID = tonumber(itemID)
   local quality
   if C_Item and C_Item.GetItemQualityByID then
     quality = ns.Clean(ns.SafeCall(C_Item.GetItemQualityByID, itemID))
   end
-  if type(quality) ~= "number" then quality = LINK_COLORS[color:lower()] or 1 end
+  if type(quality) ~= "number" then
+    local named = link:match("|cnIQ(%d+):|Hitem:")
+    local hex = link:match("|c%x%x(%x%x%x%x%x%x)|Hitem:")
+    quality = tonumber(named) or (hex and LINK_COLORS[hex:lower()]) or 1
+  end
   return { itemID = itemID, name = ns.CleanString(name), quality = quality }
 end
 
@@ -612,22 +618,34 @@ local function buildLootPatterns()
   return lootPatterns
 end
 
+-- Loot diagnostics for /ramble debug: how many loot lines arrived, how many we could read, the last one we could not.
+ns.lootStats = { lines = 0, parsed = 0, kept = 0, lastUnparsed = nil }
+
 function ns.RecordLootFromChat(text)
+  local stats = ns.lootStats
+  stats.lines = stats.lines + 1
   text = ns.CleanString(text)
-  if not text then return end
+  if not text then stats.lastUnparsed = "(secret or empty)"; return end
   local link, count
   for _, pattern in ipairs(buildLootPatterns()) do
     link, count = text:match(pattern)
     if link then break end
   end
-  if not link then return end
+  if not link then
+    if not text:find("^You ") then return end   -- someone else's loot: not ours to read
+    stats.lastUnparsed = text:sub(1, 160)
+    return
+  end
   local item = itemFromLink(link)
-  if not item or item.quality < MIN_QUALITY then return end
+  if not item then stats.lastUnparsed = text:sub(1, 160); return end
+  stats.parsed = stats.parsed + 1
+  if item.quality < MIN_QUALITY then return end
   local s = ns.EnsureSession()
   if not s then return end
   ns.AddEvent("LOOT", { itemID = item.itemID, name = item.name, quality = item.quality,
                         qualityName = QUALITY_NAMES[item.quality], count = tonumber(count) or 1 })
   s.counters.loot = (s.counters.loot or 0) + 1
+  stats.kept = stats.kept + 1
 end
 
 ns.equippedSeen = {}

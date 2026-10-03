@@ -14,6 +14,8 @@
   rewritten; chapters 1–9 keep their old prose (correct counts on their pages and recaps only where regenerated).
 
 ### To verify next session
+- Loot a green: `/ramble debug` should say `loot: … 1 kept` and `/ramble dump` show "Looted …". If `read` stays 0,
+  paste the `last unread loot line`.
 - One death in game → exactly one "Died in …" line in `/ramble dump` and one DEATH in the night's JSON.
 
 ## 2026-09-21 — Day one
