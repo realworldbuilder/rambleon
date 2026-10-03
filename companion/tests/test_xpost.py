@@ -95,6 +95,8 @@ def test_compose_post_prefers_the_writers_line(tmp_path):
     [text] = compose(night, {**journal, "post": None}, 1, url="https://example.github.io/rambleon/example/page.html")
     assert weighted_len(text) <= LIMIT and text.endswith("page.html")
     assert "Cassidy was waiting" in text and text.split("\n\n")[1].endswith(".")
+    [text] = compose(night, journal, 1, url="https://example.github.io/Rambleon/Page.html", lowercase=True)
+    assert text.startswith(name.lower() + " · chapter 1 — the road to dolanaar") and text.endswith("/Rambleon/Page.html")
     # no chapter at all: the numbers
     [text] = compose(night, None, 1)
     assert "in Azeroth tonight." in text and weighted_len(text) <= LIMIT
@@ -177,7 +179,7 @@ def test_due_nights_waits_for_a_quiet_finished_chapter(tmp_path):
     archive, paths, night = archived(tmp_path)
     cfg = x_config(tmp_path)
     ended = night["endedAt"]
-    assert cfg == {"auto": False, "style": "post", "link": False, "picture": True, "delay": 30, "characters": []}
+    assert cfg == {"auto": False, "style": "post", "link": False, "picture": True, "lowercase": False, "delay": 30, "characters": []}
     assert due_nights(archive, paths.exports_dir, cfg, now=ended + 3600) == []          # no chapter written yet
     write_journal(paths, night, created_at=ended - 600)
     assert due_nights(archive, paths.exports_dir, cfg, now=ended + 3600) == []          # the chapter misses the last session

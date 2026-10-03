@@ -40,9 +40,9 @@ def x_config(repo_root: Path | None = None) -> dict[str, Any]:
     """`[x]` in rambleon.local.toml: how a finished chapter is told on X. `auto = true` lets the watcher post
     by itself (off unless this Mac says so). `style`: "post" (one post, the night in miniature) or "thread" (the
     whole chapter). `link`: add the shared story page's address (X charges far more for a post with a link).
-    `picture`: attach the night's hero screenshot. `delay`: minutes of quiet after the chapter was written
-    before the watcher posts, so a night you come back to is told once, whole. `characters`: slugs to post
-    for; empty means all."""
+    `picture`: attach the night's hero screenshot. `lowercase`: all lower case, the way you write there.
+    `delay`: minutes of quiet after the chapter was written before the watcher posts, so a night you come back
+    to is told once, whole. `characters`: slugs to post for; empty means all."""
     x = load_local_config(repo_root).get("x", {})
     x = x if isinstance(x, dict) else {}
     style = x.get("style") if x.get("style") in X_STYLES else "post"
@@ -53,6 +53,7 @@ def x_config(repo_root: Path | None = None) -> dict[str, Any]:
         "style": style,
         "link": bool(x.get("link")),
         "picture": x.get("picture") is not False,
+        "lowercase": bool(x.get("lowercase")),
         "delay": delay if isinstance(delay, (int, float)) and not isinstance(delay, bool) and delay >= 0 else 30,
         "characters": [str(c) for c in chars] if isinstance(chars, list) else [],
     }

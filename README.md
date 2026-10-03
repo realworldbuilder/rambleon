@@ -91,6 +91,7 @@ whole chapter instead, `--dry-run` posts nothing. To have the watcher post by it
 auto = true
 # style = "thread"      # the whole chapter instead of one post
 # link = true           # add the shared story page's address (X charges about 20 cents for a post with a link)
+# lowercase = true      # all lower case, if that is how you write there
 # delay = 30            # minutes of quiet after the chapter was written before it is posted
 # characters = ["rambleon-birdsong"]   # only these; default is every character
 ```

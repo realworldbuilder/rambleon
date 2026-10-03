@@ -297,9 +297,20 @@ def story_text(journal: dict[str, Any] | None) -> str:
     return " ".join(ln for ln in lines if ln and not ln.startswith("#"))
 
 
+def lower_case(text: str) -> str:
+    """All lower case, links left alone."""
+    return "".join(part if _URL.match(part) else part.lower() for part in re.split(r"(https?://\S+)", text))
+
+
 def compose(night: dict[str, Any], journal: dict[str, Any] | None, number: int, style: str = "post",
-            url: str | None = None) -> list[str]:
+            url: str | None = None, lowercase: bool = False) -> list[str]:
     """The post, or the thread, for one night. Every text fits X's limit."""
+    posts = _compose(night, journal, number, style, url)
+    return [lower_case(p) for p in posts] if lowercase else posts
+
+
+def _compose(night: dict[str, Any], journal: dict[str, Any] | None, number: int, style: str,
+             url: str | None) -> list[str]:
     name = str(night.get("character", {}).get("displayName") or "").strip()
     title = chapter_title(night, journal, number)
     header = f"{name} · {title}" if name else title
@@ -379,7 +390,7 @@ class PostResult:
 
 
 def post_night(archive: Archive, paths: Any, night: dict[str, Any], style: str = "post", link: bool = False,
-               picture: bool = True, dry_run: bool = False, force: bool = False, yes: bool = False,
+               picture: bool = True, lowercase: bool = False, dry_run: bool = False, force: bool = False, yes: bool = False,
                confirm: Callable[[str], bool] | None = None, client: XClient | None = None,
                log: Log = lambda m: None, runner: Runner = subprocess.run) -> PostResult:
     result = PostResult(night_id=night["id"])
@@ -388,7 +399,7 @@ def post_night(archive: Archive, paths: Any, night: dict[str, Any], style: str =
     url = shared_url(paths, night, runner) if link else None
     if link and not url:
         log("no link: this night's page is not on the site yet (`ramble share` puts it there)")
-    result.texts = compose(night, journal, chapter_number(archive, night), style, url)
+    result.texts = compose(night, journal, chapter_number(archive, night), style, url, lowercase)
     hero = hero_image(night, paths.exports_dir) if picture else None
     result.image = hero[0] if hero else None
     if earlier and not force:
@@ -509,7 +520,7 @@ class AutoPoster:
             name = night.get("character", {}).get("displayName")
             try:
                 result = post_night(self.archive, self.paths, night, style=cfg["style"], link=cfg["link"],
-                                    picture=cfg["picture"], yes=True, client=client, log=self.log)
+                                    picture=cfg["picture"], lowercase=cfg["lowercase"], yes=True, client=client, log=self.log)
             except Exception as e:  # noqa: BLE001 — posting must never take the watcher down
                 attempts = self._failures.get(night["id"], (0, 0.0))[0]
                 if attempts < len(RETRY_AFTER):

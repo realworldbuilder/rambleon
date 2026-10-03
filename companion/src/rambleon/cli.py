@@ -332,6 +332,7 @@ def post(ref: str = typer.Argument("tonight", help="tonight | latest | YYYY-MM-D
          style: str = typer.Option(None, "--style", help="post (one post, the night in miniature) or thread (the whole chapter)."),
          link: bool = typer.Option(None, "--link/--no-link", help="Add the shared story page's address. X charges far more for a post with a link."),
          picture: bool = typer.Option(None, "--picture/--no-picture", help="Attach the night's hero screenshot."),
+         lowercase: bool = typer.Option(None, "--lowercase/--no-lowercase", help="All lower case, the way you write on X."),
          yes: bool = typer.Option(False, "--yes", "-y", help="Do not ask before posting."),
          dry_run: bool = typer.Option(False, "--dry-run", help="Show what would be posted; post nothing."),
          force: bool = typer.Option(False, "--force", help="Post a night that was already posted.")) -> None:
@@ -349,7 +350,9 @@ def post(ref: str = typer.Argument("tonight", help="tonight | latest | YYYY-MM-D
         return typer.confirm(question, default=False)
     link = cfg["link"] if link is None else link
     picture = cfg["picture"] if picture is None else picture
-    preview = xpost.post_night(archive, paths, night, style=style, link=link, picture=picture, dry_run=True, force=force, log=log)
+    lowercase = cfg["lowercase"] if lowercase is None else lowercase
+    preview = xpost.post_night(archive, paths, night, style=style, link=link, picture=picture, lowercase=lowercase,
+                               dry_run=True, force=force, log=log)
     for n, text in enumerate(preview.texts, 1):
         console.print(f"[dim]— {n}/{len(preview.texts)} · {xpost.weighted_len(text)} of {xpost.LIMIT} —[/dim]")
         console.print(text, markup=False, highlight=False, soft_wrap=True)
@@ -359,7 +362,7 @@ def post(ref: str = typer.Argument("tonight", help="tonight | latest | YYYY-MM-D
         return
     try:
         result = xpost.post_night(archive, paths, night, style=style, link=link and "https://" in preview.texts[-1],
-                                  picture=picture, force=force, yes=yes, confirm=confirm, log=log)
+                                  picture=picture, lowercase=lowercase, force=force, yes=yes, confirm=confirm, log=log)
     except xpost.XError as e:
         console.print(f"[red]{e}[/red]")
         raise typer.Exit(1)
@@ -415,7 +418,7 @@ def x_status() -> None:
     cfg = x_config(paths.repo_root)
     console.print(f"keys: {'found' if xpost.load_credentials() else 'none (run `ramble x login`)'}")
     console.print(f"auto-post: {'on' if cfg['auto'] else 'off ([x] auto = true in rambleon.local.toml turns it on)'}", markup=False)
-    console.print(f"style: {cfg['style']} · link: {'yes' if cfg['link'] else 'no'} · picture: {'yes' if cfg['picture'] else 'no'} · "
+    console.print(f"style: {cfg['style']} · link: {'yes' if cfg['link'] else 'no'} · picture: {'yes' if cfg['picture'] else 'no'} · lower case: {'yes' if cfg['lowercase'] else 'no'} · "
                   f"quiet before posting: {cfg['delay']:g} min · characters: {', '.join(cfg['characters']) or 'all'}", soft_wrap=True)
     ledger = xpost.load_ledger(archive)
     for night_id, entry in sorted(ledger.items(), key=lambda kv: kv[1].get("postedAt") or 0)[-5:]:
