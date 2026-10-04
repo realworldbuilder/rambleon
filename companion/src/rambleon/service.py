@@ -39,7 +39,8 @@ def install(extra_args: list[str] | None = None) -> str:
         "StandardErrorPath": str(LOG_DIR / "watch.log"),
         "EnvironmentVariables": {"PATH": path_env, "HOME": str(Path.home())},
     }
-    for key in ("RAMBLEON_HOME", "RAMBLEON_WOW_DIR", "RAMBLEON_ARCHIVE_DIR", "RAMBLEON_EXPORTS_DIR"):
+    for key in ("RAMBLEON_HOME", "RAMBLEON_WOW_DIR", "RAMBLEON_ARCHIVE_DIR", "RAMBLEON_EXPORTS_DIR",
+                "RAMBLEON_VOICE", "RAMBLEON_MODEL", "RAMBLEON_GUIDE_MODE"):
         if os.environ.get(key):
             plist["EnvironmentVariables"][key] = os.environ[key]
     if is_loaded():

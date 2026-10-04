@@ -331,6 +331,41 @@ for _, s in ipairs(RambleonDB.sessions) do
 end
 assertEq(kept, 10, "ten finished sessions kept"); assert(hasActive, "the active session survives pruning")
 
+-- Settings: defaults fill what is missing, what the player chose stays, debug survives a reload
+RambleonDB.settings = { autoScreenshots = false, somethingOld = "kept" }
+ns.InitDB()
+assertEq(RambleonDB.settings.autoScreenshots, false, "a stored setting is kept")
+assertEq(RambleonDB.settings.debug, false, "a missing setting gets its default")
+assertEq(RambleonDB.settings.somethingOld, "kept", "unknown keys are left alone")
+assertEq(ns.SetSetting("autoScreenshots", "yes"), false, "a value of the wrong type is refused")
+assertEq(ns.SetSetting("nonsense", true), nil, "an unknown setting is refused")
+ns.HandleSlash("debug on"); ns.InitDB()
+assertEq(ns.debugEnabled, true, "debug survives a reload")
+ns.HandleSlash("debug off"); ns.SetAutoShots(true)
+assertEq(ns.debugEnabled, false, "debug off")
+
+-- Migrations run once, in order, and never on data from a newer Rambleon
+do
+  local ran = 0
+  ns.MIGRATIONS[2] = function(db) ran = ran + 1; db.migrated = true end
+  ns.SCHEMA_VERSION = 2
+  ns.InitDB()
+  assertEq(ran, 1, "migration ran"); assertEq(RambleonDB.schemaVersion, 2, "schema stamped")
+  ns.InitDB()
+  assertEq(ran, 1, "migration does not run twice")
+  RambleonDB.schemaVersion = 99
+  ns.InitDB()
+  assertEq(RambleonDB.schemaVersion, 99, "data from a newer Rambleon is left alone")
+  assert(ns.warnings[#ns.warnings]:find("newer Rambleon"), "and it is said")
+  ns.MIGRATIONS[2] = nil; ns.SCHEMA_VERSION = 1
+  RambleonDB.schemaVersion = 1; RambleonDB.migrated = nil
+  local sessions = RambleonDB.sessions
+  RambleonDB = nil
+  ns.InitDB()
+  assert(type(RambleonDB.sessions) == "table" and RambleonDB.settings.autoScreenshots == true, "a fresh table on a cold start")
+  RambleonDB.sessions = sessions
+end
+
 -- An event this client does not know is recorded, not fatal
 assertEq(ns.SafeRegister(ns.eventFrame, "BOGUS_EVENT"), false, "unknown event refused")
 assertEq(table.remove(ns.failedEvents), "BOGUS_EVENT", "and remembered for /ramble debug")

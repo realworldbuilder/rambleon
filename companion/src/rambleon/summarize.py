@@ -6,11 +6,12 @@ import os
 import shutil
 import subprocess
 import tempfile
+import time
 from pathlib import Path
 from typing import Any
 
 from .archive import Archive, atomic_write_bytes, atomic_write_json
-from .config import character_overrides, people_notes
+from .config import character_overrides, journal_model, journal_voice, people_notes
 from .export import clock, describe, duration, export_filename, long_date, render_recap
 from .memory import build_memory, companion_suffix, render_memory
 from .screenshots import caption
@@ -184,8 +185,11 @@ def split_output(text: str) -> tuple[str, str | None, str | None]:
 
 
 def summarize(session: dict[str, Any], archive: Archive, exports_dir: Path, use_ai: bool = True,
-              model: str = DEFAULT_MODEL, log=print, voice: str | None = None) -> dict[str, Path | None]:
+              model: str | None = None, log=print, voice: str | None = None) -> dict[str, Path | None]:
+    """`voice` and `model`: what was asked for; else the environment, else `[journal]` in rambleon.local.toml."""
     from .nights import earlier_nights
+    voice = journal_voice(voice)
+    model = journal_model(model) or DEFAULT_MODEL
     memory = None
     if session.get("kind") == "night":
         prior = earlier_nights(archive, session)          # one nights() pass: chapter number and memory together
@@ -216,8 +220,8 @@ def summarize(session: dict[str, Any], archive: Archive, exports_dir: Path, use_
             break
     atomic_write_json(exports_dir / "journal" / f"{session['id']}.json", {
         "sessionId": session["id"], "chapter": chapter, "title": title, "journal": journal,
-        "recap": recap or render_recap(session), "post": post, "model": model, "voice": voice or os.environ.get("RAMBLEON_VOICE") or DEFAULT_VOICE,
-        "createdAt": int(__import__("time").time()),
+        "recap": recap or render_recap(session), "post": post, "model": model, "voice": voice or DEFAULT_VOICE,
+        "createdAt": int(time.time()),
     })
     journal_path = exports_dir / "markdown" / export_filename(session, "-journal")
     header = f"_{session.get('character', {}).get('displayName')} · {long_date(session.get('startedAt'))} · {duration(session.get('playedSeconds'))} in Azeroth_\n\n"

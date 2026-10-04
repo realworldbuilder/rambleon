@@ -22,6 +22,48 @@ ns.lastXP, ns.lastXPMax = nil, nil
 ns.doneObjectives = {}
 ns.objectivesSeeded = false
 
+-- Settings -------------------------------------------------------------------
+-- RambleonDB.settings. A new setting is one line here; its type is the type of its default.
+local DEFAULTS = {
+  autoScreenshots = true,      -- pictures at level ups, marks and new zones
+  debug = false,               -- debug chatter in chat
+  welcomed = false,            -- the first-run welcome has been shown
+}
+
+function ns.GetSetting(key)
+  local default = DEFAULTS[key]
+  local settings = RambleonDB and RambleonDB.settings
+  if type(settings) == "table" and type(settings[key]) == type(default) then return settings[key] end
+  return default
+end
+
+function ns.SetSetting(key, value)
+  local default = DEFAULTS[key]
+  value = ns.Clean(value)
+  if default == nil or type(value) ~= type(default) then return ns.GetSetting(key) end
+  if RambleonDB and type(RambleonDB.settings) == "table" then RambleonDB.settings[key] = value end
+  if key == "debug" then ns.debugEnabled = value end
+  return ns.GetSetting(key)
+end
+
+-- Schema migrations: ns.MIGRATIONS[n] turns a version n-1 table into version n. None yet (the schema is 1).
+ns.MIGRATIONS = {}
+
+function ns.Migrate(db, from)
+  if from > ns.SCHEMA_VERSION then
+    ns.Warn("RambleonDB was written by a newer Rambleon (schema " .. from .. "); leaving it as it is")
+    return false
+  end
+  for v = from + 1, ns.SCHEMA_VERSION do
+    local step = ns.MIGRATIONS[v]
+    if step then
+      local ok, err = pcall(step, db)
+      if not ok then ns.Warn("migration to schema " .. v .. " failed: " .. tostring(err)) end
+    end
+  end
+  return true
+end
+
 function ns.InitDB()
   ns.dbRestored = false
   if type(RambleonDB) == "table" then
@@ -29,10 +71,15 @@ function ns.InitDB()
   else
     RambleonDB = {}
   end
-  RambleonDB.schemaVersion = ns.SCHEMA_VERSION
+  local stored = tonumber(RambleonDB.schemaVersion) or ns.SCHEMA_VERSION
+  if ns.Migrate(RambleonDB, stored) then RambleonDB.schemaVersion = ns.SCHEMA_VERSION end
   RambleonDB.addonVersion = ns.VERSION
   if type(RambleonDB.sessions) ~= "table" then RambleonDB.sessions = {} end
   if type(RambleonDB.settings) ~= "table" then RambleonDB.settings = {} end
+  for key, default in pairs(DEFAULTS) do
+    if type(RambleonDB.settings[key]) ~= type(default) then RambleonDB.settings[key] = default end
+  end
+  ns.debugEnabled = ns.GetSetting("debug")
 end
 
 -- Location ------------------------------------------------------------------
@@ -715,14 +762,11 @@ ns.lastAutoShotAt = 0          -- GetTime()
 ns.shotStatus = "none"         -- none | ok | failed | unsupported | disabled
 
 function ns.AutoShotsEnabled()
-  return not (RambleonDB and RambleonDB.settings and RambleonDB.settings.autoScreenshots == false)
+  return ns.GetSetting("autoScreenshots")
 end
 
 function ns.SetAutoShots(on)
-  if RambleonDB and type(RambleonDB.settings) == "table" then
-    RambleonDB.settings.autoScreenshots = on and true or false
-  end
-  return ns.AutoShotsEnabled()
+  return ns.SetSetting("autoScreenshots", on and true or false)
 end
 
 function ns.RestoreUIAfterShot()

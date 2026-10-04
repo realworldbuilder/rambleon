@@ -38,7 +38,7 @@ local function handle(msg)
   elseif cmd == "save" or cmd == "end" then
     ns.UI.PromptEndChapter()
   elseif cmd == "debug" then
-    if rest == "on" then ns.debugEnabled = true elseif rest == "off" then ns.debugEnabled = false end
+    if rest == "on" then ns.SetSetting("debug", true) elseif rest == "off" then ns.SetSetting("debug", false) end
     for _, line in ipairs(ns.DebugReport()) do ns.Print(line) end
     ns.Print("debug chatter is " .. (ns.debugEnabled and "on" or "off") .. " (/ramble debug on|off)")
   elseif cmd == "dump" then

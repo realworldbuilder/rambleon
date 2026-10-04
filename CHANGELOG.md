@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- **`rambleon.local.toml` is checked.** A key Rambleon does not know or a value of the wrong kind is a warning
+  (`ramble doctor`, the watcher's log) and the default applies; a file that is not valid TOML is said out loud
+  instead of silently switching auto-share and auto-post off. `ramble config` prints the settings in effect and
+  where the file lives (`~/Rambleon/` for a package install).
+- `[journal] voice = "..."` and `model = "..."` in `rambleon.local.toml` (or `RAMBLEON_VOICE` / `RAMBLEON_MODEL`):
+  the background watcher can now write in a voice of your choosing. A `--voice` / `--model` flag still wins.
+- AddOn settings have defaults in one table and survive upgrades; `/ramble debug on` now survives a `/reload`.
 - **A chapter that fails to write no longer stops the watcher.** Every step after a night is guarded; an error is
   logged and the archiving goes on. The X auto-post's scan is guarded the same way.
 - **`ramble share` commits only `site/example`.** Anything else you had staged in the checkout stays staged instead

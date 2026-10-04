@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .archive import Archive, atomic_write_bytes, atomic_write_json, load_json
-from .config import character_overrides, guide_mode
+from .config import character_overrides, guide_mode, journal_model, journal_voice
 from .export import _collapse_titles, _quest_label, _times, duration, long_date, place
 from .memory import _chapters_phrase
 from .nights import nights as list_nights
@@ -553,10 +553,12 @@ def export_guide_html(guide: dict[str, Any], sidecar: dict[str, Any] | None, exp
 # ---------------------------------------------------------------------------------------------------
 # Putting it together
 
-def write_guide(archive: Archive, exports_dir: Path, slug: str, use_ai: bool = True, model: str = DEFAULT_MODEL,
+def write_guide(archive: Archive, exports_dir: Path, slug: str, use_ai: bool = True, model: str | None = None,
                 voice: str | None = None, mode: str | None = None, log: Callable[[str], None] = print,
                 only_if_new: bool = False, siblings: set[str] | None = None) -> dict[str, Path | None]:
     """Facts always (Markdown + prompt), prose when the CLI is there and — with `only_if_new` — a night is new, then the page."""
+    voice = journal_voice(voice)
+    model = journal_model(model) or DEFAULT_MODEL
     guide = build_guide(archive, slug, exports_dir)
     mode_name, mode_text = load_mode(mode)
     md_path = exports_dir / "markdown" / f"guide-{slug}.md"
@@ -581,7 +583,7 @@ def write_guide(archive: Archive, exports_dir: Path, slug: str, use_ai: bool = T
         else:
             sidecar = {"slug": slug, "displayName": guide["displayName"], "title": guide["title"], "mode": mode_name,
                        "nights": list(guide["nightIds"]), "chapters": k, "prose": text.strip() + "\n",
-                       "model": model, "voice": voice or os.environ.get("RAMBLEON_VOICE") or DEFAULT_VOICE,
+                       "model": model, "voice": voice or DEFAULT_VOICE,
                        "createdAt": int(time.time())}
             atomic_write_json(sidecar_path(exports_dir, slug, mode_name), sidecar)
             prose_path = exports_dir / "markdown" / f"guide-{slug}-{mode_name}-prose.md"

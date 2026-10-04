@@ -10,6 +10,7 @@ from pathlib import Path
 
 import typer
 from rich.console import Console
+from rich.markup import escape
 from rich.table import Table
 
 from . import __version__
@@ -24,7 +25,7 @@ from .nights import earlier_nights, nights as list_nights, resolve_night
 from .notify import notify
 from .publish import export_html, publish_chapters, write_html_index
 from .screenshots import refresh_session_screenshots
-from .config import X_STYLES, share_auto, x_config
+from .config import X_STYLES, effective, load_config, share_auto, x_config
 from .guide import available_modes, default_mode, write_guide
 from .share import ShareError, share as run_share
 from . import xpost
@@ -38,7 +39,7 @@ console = Console()
 
 
 def log(msg: str) -> None:
-    console.print(f"[dim]{datetime.now():%H:%M:%S}[/dim] {msg}", highlight=False)
+    console.print(f"[dim]{datetime.now():%H:%M:%S}[/dim] {escape(msg)}", highlight=False)
 
 
 def _archive() -> tuple[Archive, "Paths"]:  # type: ignore[name-defined]
@@ -67,6 +68,15 @@ def _night(ref: str) -> dict:
     return night
 
 
+def _x_config(paths) -> dict:
+    """[x] from rambleon.local.toml. A file that cannot be read is said out loud: posting on defaults would surprise."""
+    cfg = load_config(paths.repo_root)
+    if cfg.error:
+        console.print(f"[red]{cfg.error}[/red]", highlight=False)
+        raise typer.Exit(1)
+    return x_config(paths.repo_root)
+
+
 @app.command()
 def version() -> None:
     """Print the companion version."""
@@ -77,7 +87,7 @@ def _print_checks(checks) -> None:
     width = max(len(c.label) for c in checks) + 1
     for c in checks:
         color = "green" if c.ok else ("yellow" if not c.essential else "red")
-        console.print(f"{c.label + ':':<{width}} [{color}]{c.status}[/{color}]  [dim]{c.detail}[/dim]", highlight=False)
+        console.print(f"{c.label + ':':<{width}} [{color}]{c.status}[/{color}]  [dim]{escape(c.detail)}[/dim]", highlight=False)
 
 
 @app.command()
@@ -163,7 +173,7 @@ def install(copy: bool = typer.Option(False, "--copy", help="Copy the AddOn inst
     console.print("Now /reload in WoW (or restart it if Rambleon was not loaded before).")
 
 
-def _finish_night(archive: Archive, paths, use_ai: bool, model: str, voice: str | None = None):
+def _finish_night(archive: Archive, paths, use_ai: bool, model: str | None = None, voice: str | None = None):
     """What happens when a night is over: export, journal, HTML, publish to the game."""
     def run(session: dict) -> None:
         night = resolve_night(archive, session["id"]) or session
@@ -206,8 +216,8 @@ def watch(interval: float = typer.Option(1.0, help="Seconds between polls."),
           copy_screenshots: bool = typer.Option(True, "--copy-screenshots/--no-copy-screenshots", help="Copy matching screenshots into the archive."),
           no_ai: bool = typer.Option(False, "--no-ai", help="Do not call the Claude CLI when a chapter ends."),
           no_auto: bool = typer.Option(False, "--no-auto", help="Only archive; skip export/journal/publish."),
-          model: str = typer.Option(DEFAULT_MODEL, "--model"),
-          voice: str = typer.Option(None, "--voice", help="Journal voice profile (see `ramble voices`).")) -> None:
+          model: str = typer.Option(None, "--model", help=f"Claude model for the chapter (default: [journal] model, else {DEFAULT_MODEL})."),
+          voice: str = typer.Option(None, "--voice", help="Journal voice profile (see `ramble voices`; default: [journal] voice).")) -> None:
     """Watch SavedVariables and archive every session WoW writes. Leave this running while you play.
     When a chapter ends it also exports it, writes the journal, builds the story page and publishes it to the game."""
     archive, paths = _archive()
@@ -220,7 +230,28 @@ def watch(interval: float = typer.Option(1.0, help="Seconds between polls."),
     poster = None if no_auto else xpost.AutoPoster(archive, paths, log, notify=notify,
                                                    in_world=lambda since: not logged_out_since(paths.wow_dir, since))
 
+    seen_config: list = [None]
+
+    def check_config() -> None:
+        """Say it once when rambleon.local.toml changes into something that cannot be used."""
+        cfg_path = paths.repo_root / "rambleon.local.toml"
+        try:
+            stamp = cfg_path.stat().st_mtime_ns
+        except OSError:
+            stamp = 0
+        if stamp == seen_config[0]:
+            return
+        seen_config[0] = stamp
+        cfg = load_config(paths.repo_root)
+        if cfg.error:
+            log(f"{cfg.error} — auto-share and auto-post are off until it is fixed")
+            notify("Rambleon", "rambleon.local.toml cannot be read; auto-share and auto-post are off until it is fixed.")
+        for w in cfg.warnings:
+            log(f"rambleon.local.toml: {w}")
+    check_config()
+
     def tick() -> None:
+        check_config()
         finalizer.tick()
         poster.tick()
     try:
@@ -263,6 +294,28 @@ def service_uninstall() -> None:
 def service_status() -> None:
     """Is the background watcher installed and running?"""
     console.print(svc.status())
+
+
+@app.command()
+def config() -> None:
+    """Show the settings in effect and where they come from (rambleon.local.toml; every key is optional)."""
+    paths = resolve_paths()
+    cfg = load_config(paths.repo_root)
+    console.print(f"file: {cfg.path} ({'found' if cfg.exists else 'not there; these are the defaults'})", highlight=False, soft_wrap=True)
+    if cfg.error:
+        console.print(f"[red]{cfg.error}[/red]", highlight=False)
+        raise typer.Exit(1)
+    for section, values in effective(cfg).items():
+        console.print(f"[{section}]", markup=False, highlight=False)
+        for key, value in values.items():
+            shown = "unset" if value is None else (", ".join(value) or "all" if isinstance(value, (list, tuple)) else str(value).lower() if isinstance(value, bool) else value)
+            console.print(f"  {key} = {shown}", markup=False, highlight=False)
+    for slug, fields in cfg.characters.items():
+        console.print(f'[characters."{slug}"] ' + ", ".join(f"{k} = {v}" for k, v in fields.items()), markup=False, highlight=False)
+    for name, note in cfg.people.items():
+        console.print(f'[people."{name}"] note = {note}', markup=False, highlight=False)
+    for w in cfg.warnings:
+        console.print(f"[yellow]warning[/yellow] {escape(w)}", highlight=False)
 
 
 @app.command()
@@ -340,7 +393,7 @@ def post(ref: str = typer.Argument("tonight", help="tonight | latest | YYYY-MM-D
     """Tell a night on X: the chapter in miniature with its hero picture, or the whole chapter as a thread.
     Defaults come from [x] in rambleon.local.toml. Needs your X developer keys once: `ramble x login`."""
     archive, paths = _archive()
-    cfg = x_config(paths.repo_root)
+    cfg = _x_config(paths)
     style = style or cfg["style"]
     if style not in X_STYLES:
         console.print(f"[red]unknown style {style!r}[/red]; choose from: {', '.join(X_STYLES)}")
@@ -396,7 +449,7 @@ def x_login(check: bool = typer.Option(True, "--check/--no-check", help="Ask X w
         console.print(f"[red]{e}[/red]")
         raise typer.Exit(1)
     archive, paths = _archive()
-    cfg = x_config(paths.repo_root)
+    cfg = _x_config(paths)
     if cfg["auto"]:
         due = [f"{n['character'].get('displayName')} ({n['nightDate']})" for n in xpost.due_nights(archive, paths.exports_dir, cfg)]
         console.print("Auto-post is on. " + (f"The watcher posts these within a minute or two: {', '.join(due)}." if due else
@@ -416,7 +469,7 @@ def x_logout() -> None:
 def x_status() -> None:
     """Are the keys here, is auto-post on, and what was posted last?"""
     archive, paths = _archive()
-    cfg = x_config(paths.repo_root)
+    cfg = _x_config(paths)
     console.print(f"keys: {'found' if xpost.load_credentials() else 'none (run `ramble x login`)'}")
     console.print(f"auto-post: {'on' if cfg['auto'] else 'off ([x] auto = true in rambleon.local.toml turns it on)'}", markup=False)
     console.print(f"style: {cfg['style']} · link: {'yes' if cfg['link'] else 'no'} · picture: {'yes' if cfg['picture'] else 'no'} · lower case: {'yes' if cfg['lowercase'] else 'no'} · "
@@ -552,7 +605,7 @@ def _slug(archive: Archive, ref: str) -> str:
 @app.command()
 def guide(ref: str = typer.Argument("latest", help="character slug | latest"),
           no_ai: bool = typer.Option(False, "--no-ai", help="Only the factual guide and the prompt; do not call the Claude CLI."),
-          model: str = typer.Option(DEFAULT_MODEL, "--model"),
+          model: str = typer.Option(None, "--model", help=f"Claude model (default: [journal] model, else {DEFAULT_MODEL})."),
           voice: str = typer.Option(None, "--voice", help="Tone profile (see `ramble voices`)."),
           mode: str = typer.Option(None, "--mode", help="What to write from the facts: a bundled mode (--list) or a path to your own .md prompt."),
           list_modes: bool = typer.Option(False, "--list", help="List the bundled guide modes and exit."),
@@ -582,7 +635,7 @@ def guide(ref: str = typer.Argument("latest", help="character slug | latest"),
 @app.command()
 def summarize(ref: str = typer.Argument("latest"),
               no_ai: bool = typer.Option(False, "--no-ai", help="Only write the prompt; do not call the Claude CLI."),
-              model: str = typer.Option(DEFAULT_MODEL, "--model"),
+              model: str = typer.Option(None, "--model", help=f"Claude model (default: [journal] model, else {DEFAULT_MODEL})."),
               voice: str = typer.Option(None, "--voice", help="Journal voice profile (see `ramble voices`).")) -> None:
     """Write the journal prompt for a night and, if the Claude CLI is available, the AI-written chapter."""
     archive, paths = _archive()

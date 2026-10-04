@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 
 from .archive import Archive
+from .config import load_config
 from .install import link_status
 from .paths import ADDON_NAME, Paths, read_build_version, read_flavor
 
@@ -113,6 +114,16 @@ def run_doctor(paths: Paths, check_ai: bool = False) -> list[Check]:
         checks.append(Check("Character", "SEEN IN WTF", ", ".join(chars), True, essential=False))
     else:
         checks.append(Check("Character", "UNKNOWN", "no sessions archived yet", True, essential=False))
+
+    cfg = load_config(paths.repo_root)
+    if cfg.error:
+        checks.append(Check("Config", "CANNOT BE READ", f"{cfg.error} — auto-share and auto-post are off until it is fixed", False, essential=False))
+    elif cfg.warnings:
+        checks.append(Check("Config", f"{len(cfg.warnings)} WARNING(S)", f"{cfg.path}: " + "; ".join(cfg.warnings), False, essential=False))
+    elif cfg.exists:
+        checks.append(Check("Config", "FOUND", f"{cfg.path} (`ramble config` shows what is in effect)", True, essential=False))
+    else:
+        checks.append(Check("Config", "DEFAULTS", f"optional; settings would live in {cfg.path}", True, essential=False))
 
     claude = shutil.which("claude")
     if claude:
