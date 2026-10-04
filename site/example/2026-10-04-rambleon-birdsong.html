@@ -1,0 +1,95 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Chapter 13 — A Quiet Crossing to Stonetalon — Rambleon Birdsong</title>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
+h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
+figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.quests{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0}
+.quests .tabs{display:flex;gap:4px;padding:6px 8px 0;border-bottom:1px solid var(--line);background:rgba(90,53,16,.05)}
+.quests .tabs button{font:inherit;font-size:15px;padding:8px 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--soft);cursor:pointer;margin-bottom:-1px}
+.quests .tabs button:hover{color:var(--link)}.quests .tabs button[aria-selected=true]{color:#5a3510;border-color:var(--gold);font-weight:bold}
+.quests .tabs .n{display:inline-block;min-width:22px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(90,53,16,.1);font-size:12px;font-weight:normal;color:var(--soft);text-align:center}
+.quests .pane{display:none;padding:6px 0 4px}.quests .pane.on{display:block}
+.quests table{width:100%;border-collapse:collapse;font-size:15px}
+.quests th,.quests td{text-align:left;padding:7px 14px;border-top:1px solid rgba(201,180,138,.5);vertical-align:top}
+.quests thead th{font:700 12px/1 Cinzel,Georgia,serif;letter-spacing:1.5px;color:#5a3510;border-top:0;padding-top:10px}
+.quests tr.zone th{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;background:rgba(90,53,16,.06);letter-spacing:.5px}
+.quests td.where,.quests td.lv,.quests td.since{color:var(--soft);white-space:nowrap}.quests td.lv{text-align:right}
+.quests .caveat{font-size:13px;color:var(--faint);margin:0;padding:8px 14px 6px;border-top:1px solid rgba(201,180,138,.5)}
+@media(max-width:520px){.quests .tabs button{padding:8px 8px;font-size:14px}.quests th,.quests td{padding:6px 10px}.quests td.where{white-space:normal}}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+.roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 8px}
+.char{display:block;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;text-decoration:none;color:inherit}
+.char:hover{box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.char .cn{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510}
+.char .cl{display:block;font-size:15px;color:var(--ink)}.char .cm{display:block;font-size:13px;color:var(--faint)}
+.who{scroll-margin-top:12px}.who h2{font:700 26px/1.2 Cinzel,Georgia,serif;letter-spacing:.5px;color:#5a3510;margin:44px 0 4px;padding-bottom:6px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head><body id='top'>
+<nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='index.html#rambleon-birdsong'>All chapters</a><a href='guide-rambleon-birdsong.html'>Route guide</a><a href='../'>About Rambleon</a></nav>
+<h1>Chapter 13 — A Quiet Crossing to Stonetalon</h1>
+<div class='meta'>Rambleon Birdsong · October 4, 2026 · 31m in Azeroth</div>
+<div class='jump'><a href='#story'>Story</a><a href='#recap'>Recap</a><a href='#quests'>Quests</a><a href='#journey'>Journey</a></div>
+<div class='pager'><a class='prev' href='2026-10-03-rambleon-birdsong.html'>← Chapter 12 — Stardust in the Vale</a></div>
+<figure class='hero'><img src='2026-10-04-rambleon-birdsong/2026-10-04-rambleon-birdsong-01.jpg' alt='Entered Stonetalon Mountains'><figcaption>7:26 PM — Entered Stonetalon Mountains</figcaption></figure>
+<div class='journal' id='story'><p>Rambleon began the evening alone, the Vale&#x27;s business from the night before already settled behind him, Astranaar quiet in the gathering dusk. He took up a task there — the Gold Dust Exchange — only to set it down again almost as soon as he&#x27;d picked it up, the kind of errand that never quite takes hold. No one found him this time. There was no Cassidy at his shoulder, no Gabe or Night drifting through for a few borrowed minutes. Just the road, and Ashenvale&#x27;s long light fading toward evening.</p>
+<p>He moved quickly, the way a hunter does when the ground is known and there&#x27;s somewhere particular in mind. The Shrine of Aessina passed beneath his boots, then Lake Falathim, then down to the Zoram Strand where the trees give way to sand, and briefly out along the Veiled Sea before the land climbed again into Stonetalon Mountains — familiar heights from nights already behind him. He paused at Stonetalon Peak long enough to mark a Twilight Runner&#x27;s fall, the first blood of a short night, and a screenshot kept the moment of crossing that border for later remembering.</p>
+<p>Mirkfallon Lake held him longest. Basilisks moved along its edges, and he worked through four of them in turn, finding a kind of rhythm after the crowded, companionable chaos of the Ruins of Stardust the night before. No great tally this time, no new level to mark — twenty-two still, settled and unhurried — but the lake gave him something simpler: solitude, and the steady, unglamorous work of a hunter minding his craft.</p>
+<p>He turned back toward Stonetalon Mountains as the half hour wound down, the night short and unremarkable in the way some nights simply are. No deaths found him, no new names to carry forward, only the old ground of Ashenvale behind him and a little more of Stonetalon mapped now into memory.</p></div>
+<div class='recap' id='recap'>31m in Azeroth tonight.
+0 level(s).
+0 quests.
+9 new places.
+0 deaths.
+Travelled alone.
+Ramble on.</div>
+<div class='stats'><div class='stat'><b>0</b><span>Quests</span></div><div class='stat'><b>9</b><span>Places</span></div><div class='stat'><b>5</b><span>Enemies slain</span></div><div class='stat'><b>0</b><span>Loot</span></div><div class='stat'><b>0</b><span>Deaths</span></div><div class='stat'><b>0</b><span>People</span></div><div class='stat'><b>1,672</b><span>XP</span></div></div>
+<h2 id='quests'>Quests</h2><div class='quests'><div class='tabs' role='tablist'><button role='tab' aria-selected='true' data-pane='carried'>Carrying<span class='n'>34</span></button></div><div class='pane on' id='qpane-carried' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th><th>Since</th></tr></thead><tbody><tr><td class='quest'>Sathrah&#x27;s Sacrifice</td><td class='where'>Temple of the Moon</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Crown of the Earth</td><td class='where'>Dolanaar</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>Cave Mushrooms</td><td class='where'>Auberdine</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>The Family and the Fishing Pole</td><td class='where'>Auberdine</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>As Water Cascades</td><td class='where'>Auberdine</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>The Absent Minded Prospector</td><td class='where'>Auberdine</td><td class='since'>Chapter 6</td></tr><tr><td class='quest'>The Tower of Althalaxx</td><td class='where'>Maestra&#x27;s Post</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Raene&#x27;s Cleansing</td><td class='where'>Moonwell</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Unrequited Love</td><td class='where'>Auberdine</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Researching the Corruption</td><td class='where'>Auberdine</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>In Search of Thaelrid</td><td class='where'>Craftsmen&#x27;s Terrace</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Super Reaper 6000</td><td class='where'>Windshear Crag</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Knowledge in the Deeps</td><td class='where'>Blackfathom Deeps</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Retrieval for Mauren</td><td class='where'>Mage Quarter</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Poor Old Blanchy</td><td class='where'>The Jansen Stead</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Forgotten Heirloom</td><td class='where'>The Jansen Stead</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Harvesting the Harvesters</td><td class='where'>Saldean&#x27;s Farm</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Defias Brotherhood</td><td class='where'>Sentinel Tower</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The People&#x27;s Militia</td><td class='where'>Sentinel Tower</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Stormpike&#x27;s Delivery</td><td class='where'>Dwarven District</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Collecting Memories</td><td class='where'>Dwarven District</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Oh Brother...</td><td class='where'>Dwarven District</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Save Techbot&#x27;s Brain!</td><td class='where'>Tinker Town</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Find Bingles</td><td class='where'>Tinker Town</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>The Day After</td><td class='where'>Tinker Town</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Ineptitude + Chemicals = Fun</td><td class='where'>Tinker Town</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Reclaiming the Charred Vale</td><td class='where'>Stonetalon Peak</td><td class='since'>Chapter 10</td></tr><tr><td class='quest'>Thunderbrew</td><td class='where'>The Dagger Hills</td><td class='since'>Chapter 11</td></tr><tr><td class='quest'>Gyrodrillmatic Excavationators</td><td class='where'>Dwarven District</td><td class='since'>Chapter 11</td></tr><tr><td class='quest'>Westfall Stew</td><td class='where'>Westfall</td><td class='since'>Chapter 11</td></tr><tr><td class='quest'>... and that note you found</td><td class='where'>Alexston Farmstead</td><td class='since'>Chapter 11</td></tr><tr><td class='quest'>Ink Supplies</td><td class='where'>Library Wing</td><td class='since'>Chapter 11</td></tr><tr><td class='quest'>Supplies to Auberdine</td><td class='where'>Maestra&#x27;s Post</td><td class='since'>Chapter 12</td></tr><tr><td class='quest'>Fallen Sky Lake</td><td class='where'>Astranaar</td><td class='since'>Chapter 12</td></tr></tbody></table><p class='caveat'>As far as Rambleon knows: a quest picked up before it was installed, or abandoned before it recorded that, is not here.</p></div></div><script>(function(){var tabs=document.querySelectorAll('.quests [role=tab]');tabs.forEach(function(t){t.addEventListener('click',function(){tabs.forEach(function(o){o.setAttribute('aria-selected',o===t)});document.querySelectorAll('.quests .pane').forEach(function(p){p.classList.toggle('on',p.id==='qpane-'+t.dataset.pane)})})})})();</script>
+<h2 id='journey'>The Journey</h2><details class='journey' open><summary>17 moments, in order · fold</summary><ul>
+<li>7:20 PM — Began the adventure</li>
+<li>7:20 PM — Entered Astranaar (Ashenvale)</li>
+<li>7:23 PM — Abandoned &quot;Gold Dust Exchange&quot;</li>
+<li>7:24 PM — Entered Ashenvale</li>
+<li>7:25 PM — Entered The Shrine of Aessina (Ashenvale)</li>
+<li>7:25 PM — Entered Lake Falathim (Ashenvale)</li>
+<li>7:25 PM — Entered Ashenvale</li>
+<li>7:25 PM — Entered The Zoram Strand (Ashenvale)</li>
+<li>7:26 PM — Entered The Veiled Sea (Ashenvale)</li>
+<li>7:26 PM — Entered Stonetalon Mountains</li>
+<li>7:27 PM — Entered Stonetalon Peak (Stonetalon Mountains)</li>
+<li>7:28 PM — First Twilight Runner slain</li>
+<li>7:34 PM — Entered Stonetalon Mountains</li>
+<li>7:44 PM — Entered Mirkfallon Lake (Stonetalon Mountains)</li>
+<li>7:47 PM — First Blackened Basilisk slain</li>
+<li>7:48 PM — Entered Stonetalon Mountains</li>
+</ul></details><a class='totop' href='#top'>↑ Back to top</a>
+<div class='pager bottom'><a class='prev' href='2026-10-03-rambleon-birdsong.html'>← Chapter 12 — Stardust in the Vale</a></div>
+<footer>Recorded by Rambleon · session night-2026-10-04-rambleon-birdsong</footer></body></html>
