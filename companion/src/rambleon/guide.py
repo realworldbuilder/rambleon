@@ -570,7 +570,7 @@ def write_guide(archive: Archive, exports_dir: Path, slug: str, use_ai: bool = T
         if text is None:
             log(f"AI guide skipped: {diag}. The prompt is at {prompt_path}.")
         else:
-            sidecar = {"slug": slug, "displayName": guide["displayName"], "title": guide["title"], "mode": mode_name,
+            sidecar = {"formatVersion": 1, "slug": slug, "displayName": guide["displayName"], "title": guide["title"], "mode": mode_name,
                        "nights": list(guide["nightIds"]), "chapters": k, "prose": text.strip() + "\n",
                        "model": model, "voice": voice or DEFAULT_VOICE,
                        "createdAt": int(time.time())}

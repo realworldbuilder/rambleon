@@ -367,6 +367,9 @@ def load_ledger(archive: Archive) -> dict[str, Any]:
     return data if isinstance(data, dict) else {}
 
 
+LEDGER_VERSION = 1    # of one entry in posts/x.json; an entry without "v" is version 1
+
+
 def _record(archive: Archive, night_id: str, entry: dict[str, Any]) -> None:
     ledger = load_ledger(archive)
     ledger[night_id] = entry
@@ -382,6 +385,8 @@ class PostResult:
     image: Path | None = None
     ids: list[str] = field(default_factory=list)
     posted: bool = False
+    would_post: bool = False      # a dry run that found nothing in the way: the real call would post
+    has_link: bool = False        # the text carries the shared page's address
     message: str = ""
 
     @property
@@ -400,6 +405,7 @@ def post_night(archive: Archive, paths: Any, night: dict[str, Any], style: str =
     if link and not url:
         log("no link: this night's page is not on the site yet (`ramble share` puts it there)")
     result.texts = compose(night, journal, chapter_number(archive, night), style, url, lowercase)
+    result.has_link = bool(url)
     hero = hero_image(night, paths.exports_dir) if picture else None
     result.image = hero[0] if hero else None
     if earlier and not force:
@@ -407,6 +413,7 @@ def post_night(archive: Archive, paths: Any, night: dict[str, Any], style: str =
         result.message = "already posted" + (f": {result.url}" if result.url else "") + " (--force posts it again)"
         return result
     if dry_run:
+        result.would_post = True
         result.message = "dry run: nothing posted"
         return result
     if client is None:
@@ -429,7 +436,7 @@ def post_night(archive: Archive, paths: Any, night: dict[str, Any], style: str =
                 client.alt_text(media[0], hero[1])
             except XError as e:
                 log(f"picture description skipped: {e}")
-    entry = {"postedAt": int(time.time()), "style": style, "ids": result.ids, "texts": result.texts,
+    entry = {"v": LEDGER_VERSION, "postedAt": int(time.time()), "style": style, "ids": result.ids, "texts": result.texts,
              "image": result.image.name if media and result.image else None}
     for n, text in enumerate(result.texts):
         try:

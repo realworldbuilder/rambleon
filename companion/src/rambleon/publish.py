@@ -9,6 +9,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from . import __version__
 from .archive import Archive, atomic_write_bytes, is_trivial, load_json
 from .export import (_by_zone, _collapse_carried, _collapse_titles, _quest_label, _times, carried_over, clock, describe, duration,
                      export_filename, long_date, night_stats, place, quest_summary, render_markdown, render_recap)
@@ -102,6 +103,8 @@ def write_chapters_lua(chapters: list[dict[str, Any]], addon_src: Path) -> Path:
     lines.append("}")
     now = datetime.now()
     lines.append("RambleonChaptersMeta = {")
+    lines.append("  format = 1,")
+    lines.append(f"  companion = {lua_string(__version__)},")
     lines.append(f"  publishedAt = {int(now.timestamp())},")
     lines.append(f"  published = {lua_string(now.strftime('%B %-d, %Y at %-I:%M %p'))},")
     lines.append("}")

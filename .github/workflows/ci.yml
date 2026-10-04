@@ -18,8 +18,17 @@ jobs:
         run: scripts/test
       - name: The simulated session is the committed fixture
         run: git diff --exit-code -- companion/tests/fixtures
+      - name: The tag is the version
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: test "v$(grep -m1 '^version' companion/pyproject.toml | cut -d'"' -f2)" = "$GITHUB_REF_NAME"
       - name: Build the companion wheel
         run: cd companion && uv build --wheel
+      - name: The wheel carries the AddOn, the prompts and the page styles
+        run: |
+          unzip -l companion/dist/*.whl > wheel.txt
+          for f in addon/Rambleon/Rambleon.toc addon/Rambleon/EventTypes.lua prompts/journal.md prompts/guides/route.md assets/page.css assets/guide.css; do
+            grep -q "rambleon/$f" wheel.txt || { echo "missing from the wheel: $f"; exit 1; }
+          done
       - name: Package the AddOn
         run: |
           mkdir -p dist
@@ -39,14 +48,14 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
-      - name: Package the AddOn
-        run: |
-          mkdir -p dist
-          rm -f addon/Rambleon/Chapters.lua
-          (cd addon && zip -r "../dist/Rambleon-${GITHUB_REF_NAME}.zip" Rambleon -x '*.DS_Store')
+      - uses: actions/download-artifact@v4      # what the test job built and checked: the AddOn zip and the wheel
+        with:
+          name: rambleon-${{ github.sha }}
+          path: built
       - name: GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/*.zip
+          files: |
+            built/dist/*.zip
+            built/companion/dist/*.whl
           generate_release_notes: true

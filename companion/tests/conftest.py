@@ -18,6 +18,7 @@ def isolated(tmp_path, monkeypatch):
         if name.startswith("RAMBLEON_"):
             monkeypatch.delenv(name)
     monkeypatch.setenv("RAMBLEON_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("RAMBLEON_WOW_DIR", str(tmp_path / "no-wow"))      # never this Mac's World of Warcraft
     for target in ("rambleon.notify.notify", "rambleon.cli.notify", "rambleon.pipeline.notify"):
         monkeypatch.setattr(target, lambda *a, **k: None)
     for target in ("rambleon.summarize.claude_available", "rambleon.guide.claude_available"):

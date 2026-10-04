@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- A command that cannot do its work says why in one line and exits 1 (a missing night, a corrupt archive file, a
+  broken `rambleon.local.toml`, git or X saying no) instead of a traceback; `RAMBLEON_DEBUG=1` shows the traceback.
+- A release now carries the companion wheel next to the AddOn zip, and CI checks that the wheel holds the AddOn,
+  the prompts and the page styles, and that a tag matches the version.
+- Journal and guide sidecars, the finish marker, X ledger entries and `Chapters.lua` carry a format version
+  (a file without one is version 1).
 - **Your own writing styles, in your own folder.** `<home>/prompts/` (`~/Rambleon/prompts/` for a package install;
   gitignored in a checkout): `voices/<name>.md` is a voice of your own, `guides/<name>.md` a guide mode,
   `journal.md` replaces the rules every chapter is written by, and `theme.css` is added after the page styles on

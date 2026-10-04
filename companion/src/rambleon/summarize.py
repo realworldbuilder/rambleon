@@ -221,7 +221,7 @@ def summarize(session: dict[str, Any], archive: Archive, exports_dir: Path, use_
             title = line.lstrip("#").strip()
             break
     atomic_write_json(exports_dir / "journal" / f"{session['id']}.json", {
-        "sessionId": session["id"], "chapter": chapter, "title": title, "journal": journal,
+        "formatVersion": 1, "sessionId": session["id"], "chapter": chapter, "title": title, "journal": journal,
         "recap": recap or render_recap(session), "post": post, "model": model, "voice": voice or DEFAULT_VOICE,
         "createdAt": int(time.time()),
     })
