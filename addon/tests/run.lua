@@ -5,7 +5,7 @@ local addonDir = here .. "/../Rambleon"
 local WoW = dofile(here .. "/wowstub.lua")
 
 local ns = {}
-local files = { "Forever.lua", "Util.lua", "Core.lua", "Session.lua", "Journal.lua", "Events.lua", "UI.lua", "Commands.lua" }
+local files = { "Forever.lua", "Util.lua", "EventTypes.lua", "Core.lua", "Session.lua", "Journal.lua", "Events.lua", "UI.lua", "Commands.lua" }
 for _, f in ipairs(files) do
   local chunk, err = loadfile(addonDir .. "/" .. f)
   assert(chunk, err)
@@ -79,6 +79,10 @@ WoW.Fire("QUEST_TURNED_IN", 123, 450, 0)
 assertEq(ns.session.counters.questsAccepted, 2, "accepted")
 assertEq(ns.session.counters.questsCompleted, 1, "completed")
 assertEq(ns.session.events[#ns.session.events].title, "The Emerald Dreamcatcher", "title")
+
+-- The innkeeper makes Dolanaar home
+WoW.state.bind = "Dolanaar"; WoW.Fire("HEARTHSTONE_BOUND")
+assertEq(lastOfType("HEARTH_BOUND").name, "Dolanaar", "hearth bound")
 
 -- Level
 WoW.state.level = 11; WoW.Fire("PLAYER_LEVEL_UP", 11)
@@ -155,7 +159,13 @@ assertEq(firstKills, 2, "first kills")
 
 -- XP accounting across a level-up
 WoW.state.xp, WoW.state.xpMax = 950, 1000; WoW.Fire("PLAYER_XP_UPDATE", "player")
+-- A quest leaving the log: abandoned, unless it was handed in or was never a quest we knew
+WoW.state.questTitles[125] = "A Troubling Breeze"
+WoW.Fire("QUEST_ACCEPTED", 125); WoW.Fire("QUEST_REMOVED", 125)
+WoW.Fire("QUEST_REMOVED", 123); WoW.Fire("QUEST_REMOVED", 999)
 WoW.Advance(3)                                   -- clear the screenshot rate limit
+assertEq(ns.session.counters.questsAbandoned, 1, "one quest abandoned")
+assertEq(lastOfType("QUEST_ABANDONED").title, "A Troubling Breeze", "abandoned quest title")
 ns.HandleSlash("shots off")
 assertEq(RambleonDB.settings.autoScreenshots, false, "auto shots persisted off")
 WoW.state.level = 12; WoW.state.xp, WoW.state.xpMax = 100, 1200; WoW.Fire("PLAYER_LEVEL_UP", 12)
@@ -218,6 +228,9 @@ assertEq(ns.session.counters.achievements, 1, "achievement counter")
 WoW.state.inInstance = true; WoW.state.instanceType = "party"; WoW.state.instanceName = "Ragefire Chasm"
 WoW.Fire("UPDATE_INSTANCE_INFO")
 assertEq(lastOfType("INSTANCE_ENTER").name, "Ragefire Chasm", "instance entered")
+WoW.Fire("ENCOUNTER_END", 1444, "Jergosh the Invoker", 1, 5, 0)            -- a wipe is not a kill
+WoW.Fire("ENCOUNTER_END", 1443, "Taragaman the Hungerer", 1, 5, 1)
+assertEq(lastOfType("BOSS_KILL").name, "Taragaman the Hungerer", "boss kill")
 WoW.state.inInstance = false; WoW.state.instanceType = "none"
 WoW.Fire("UPDATE_INSTANCE_INFO")
 assertEq(lastOfType("INSTANCE_EXIT").name, "Ragefire Chasm", "the exit remembers which instance")
@@ -280,6 +293,30 @@ local function check(v, path)
 end
 check(RambleonDB, "RambleonDB")
 assertEq(#ns.failedEvents, 0, "no failed registrations in stub")
+
+-- One definition per event type: everything recorded is in EventTypes.lua, everything there was recorded here
+-- (a new type cannot ship without a line in this script), and no AddEvent call names a type it does not hold.
+do
+  local emitted = {}
+  for _, s in ipairs(RambleonDB.sessions) do
+    for _, ev in ipairs(s.events) do
+      emitted[ev.type] = true
+      assert(ns.EVENT_TYPES[ev.type], "event type missing from EventTypes.lua: " .. tostring(ev.type))
+      assert(ns.DescribeEvent(ev) ~= ev.type, "no description for " .. ev.type)
+    end
+  end
+  for eventType in pairs(ns.EVENT_TYPES) do
+    assert(emitted[eventType], "EventTypes.lua has " .. eventType .. " but the simulated session never records one")
+  end
+  for _, f in ipairs(files) do
+    local fh = assert(io.open(addonDir .. "/" .. f)); local source = fh:read("a"); fh:close()
+    for eventType in source:gmatch('AddEvent%("([A-Z_]+)"') do
+      assert(ns.EVENT_TYPES[eventType], f .. " records " .. eventType .. ", which is not in EventTypes.lua")
+    end
+  end
+  assertEq(ns.Count(ns.NewCounters()), 14, "counter keys")
+  for key in pairs(ns.NewCounters()) do assert(ended.counters[key] ~= nil, "session lacks counter " .. key) end
+end
 
 -- Write the fixture. The companion's tests count on this evening (two sessions, six minutes):
 -- anything that needs more time, marks or sessions belongs below, after the fixture.
@@ -364,6 +401,15 @@ do
   ns.InitDB()
   assert(type(RambleonDB.sessions) == "table" and RambleonDB.settings.autoScreenshots == true, "a fresh table on a cold start")
   RambleonDB.sessions = sessions
+end
+
+-- A type that is not in EventTypes.lua is still a memory: recorded, shown by its name, and said once
+do
+  local warned = #ns.warnings
+  ns.AddEvent("MYSTERY", {}); ns.AddEvent("MYSTERY", {})
+  assertEq(ns.DescribeEvent(table.remove(ns.session.events)), "MYSTERY", "unknown type shows its name")
+  table.remove(ns.session.events)
+  assertEq(#ns.warnings, warned + 1, "unknown type warned once")
 end
 
 -- An event this client does not know is recorded, not fatal

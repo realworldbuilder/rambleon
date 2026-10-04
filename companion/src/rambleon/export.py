@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from .archive import atomic_write_bytes
+from .events import describe, place, shown  # noqa: F401 — describe and place are imported from here all over
 from .screenshots import caption
 
 
@@ -25,67 +26,6 @@ def duration(seconds: int | None) -> str:
     if h:
         return f"{h}h {m:02d}m"
     return f"{m}m"
-
-
-def place(ev: dict[str, Any]) -> str | None:
-    return ev.get("subzone") or ev.get("zone")
-
-
-def describe(ev: dict[str, Any]) -> str:
-    t = ev.get("type")
-    if t == "SESSION_START":
-        return "Began the adventure" + (f" in {place(ev)}" if place(ev) else "")
-    if t == "RESUMED":
-        return "Picked the story back up"
-    if t == "SESSION_END":
-        return "Ended the adventure"
-    if t == "ZONE_ENTER":
-        if ev.get("subzone") and ev.get("zone"):
-            return f"Entered {ev['subzone']} ({ev['zone']})"
-        return f"Entered {ev.get('zone') or 'somewhere new'}"
-    if t == "LEVEL_UP":
-        return f"Reached Level {ev.get('level')}"
-    if t == "QUEST_ACCEPTED":
-        return f"Accepted \"{ev.get('title') or 'quest ' + str(ev.get('questID'))}\""
-    if t == "QUEST_COMPLETED":
-        return f"Completed \"{ev.get('title') or 'quest ' + str(ev.get('questID'))}\""
-    if t == "DEATH":
-        return f"Died in {place(ev) or 'the wilds'}"
-    if t == "REVIVED":
-        return "Back among the living"
-    if t == "GROUP_JOIN":
-        return f"Joined forces with {ev.get('name')}" + (f" ({ev['class']})" if ev.get("class") else "")
-    if t == "GROUP_LEAVE":
-        return f"Parted ways with {ev.get('name')}"
-    if t == "INSTANCE_ENTER":
-        return f"Entered {ev.get('name') or 'an instance'}"
-    if t == "INSTANCE_EXIT":
-        return "Left the instance"
-    if t == "ACHIEVEMENT":
-        return f"Earned achievement: {ev.get('name') or ev.get('id')}"
-    if t == "SCREENSHOT":
-        if ev.get("reason") == "LEVEL_UP":
-            return f"Screenshot (Level {ev.get('level')})"
-        if ev.get("reason") == "MARK":
-            return "Screenshot (marked moment)"
-        if ev.get("reason") == "ZONE_ENTER":
-            return f"Screenshot (entering {ev.get('zone')})"
-        return "Took a screenshot"
-    if t == "NOTE":
-        return f"Note: \"{ev.get('text')}\""
-    if t == "FIRST_KILL":
-        return f"First {ev.get('name')} slain"
-    if t == "LOOT":
-        q = f" ({ev['qualityName']})" if ev.get("qualityName") else ""
-        n = f" ×{ev['count']}" if (ev.get("count") or 1) > 1 else ""
-        return f"Looted {ev.get('name')}{n}{q}"
-    if t == "EQUIP":
-        return f"Equipped {ev.get('name')}" + (f" ({ev['qualityName']})" if ev.get("qualityName") else "")
-    if t == "OBJECTIVE_COMPLETE":
-        return f"{ev.get('text') or 'Objective complete'}" + (f" — \"{ev['title']}\"" if ev.get("title") else "")
-    if t == "MARK":
-        return "Marked moment" + (f" in {place(ev)}" if place(ev) else "")
-    return str(t)
 
 
 def render_markdown(session: dict[str, Any]) -> str:
@@ -108,7 +48,7 @@ def render_markdown(session: dict[str, Any]) -> str:
     lines.append("## Journey")
     lines.append("")
     for ev in session.get("events", []):
-        if ev.get("type") == "RESUMED":
+        if not shown(ev):
             continue
         lines.append(f"* {clock(ev.get('t'))} — {describe(ev)}")
     lines.append("")
@@ -203,7 +143,7 @@ def quest_summary(night: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
     """Quests of a night as lists, not counts.
 
     `completed`: QUEST_COMPLETED events in order, one per questID (sessions of one night can overlap).
-    `open`: QUEST_ACCEPTED events (one per questID) whose quest was not turned in that night.
+    `open`: QUEST_ACCEPTED events (one per questID) whose quest was neither turned in nor abandoned that night.
     """
     completed: list[dict[str, Any]] = []
     accepted: list[dict[str, Any]] = []
@@ -218,6 +158,9 @@ def quest_summary(night: dict[str, Any]) -> dict[str, list[dict[str, Any]]]:
         elif t == "QUEST_ACCEPTED" and key not in seen_acc:
             seen_acc.add(key)
             accepted.append(ev)
+        elif t == "QUEST_ABANDONED" and key in seen_acc:     # dropped; picking it up again later counts afresh
+            seen_acc.discard(key)
+            accepted = [a for a in accepted if _qkey(a) != key]
     open_quests = [ev for ev in accepted if _qkey(ev) not in seen_done]
     return {"completed": completed, "open": open_quests}
 
@@ -227,8 +170,9 @@ def carried_over(prior: list[dict[str, Any]], night: dict[str, Any]) -> list[tup
 
     Returns (the first QUEST_ACCEPTED event, the chapter it was accepted in), oldest first. `prior` is
     nights.earlier_nights() output, so chapter k is prior[k-1]. A quest accepted again in `night` is not
-    carried: it shows under that night's own "picked up". Abandoned quests are not recorded by the AddOn,
-    so this is what Rambleon knows, not the quest log.
+    carried: it shows under that night's own "picked up". A quest abandoned since (AddOn 0.4.0 records
+    that) is no longer carried; one abandoned before that still shows, so this is what Rambleon knows, not
+    the quest log.
     """
     carrying: dict[Any, tuple[dict[str, Any], int]] = {}
     for k, earlier in enumerate(prior, start=1):
@@ -236,10 +180,10 @@ def carried_over(prior: list[dict[str, Any]], night: dict[str, Any]) -> list[tup
             t = ev.get("type")
             if t == "QUEST_ACCEPTED":
                 carrying.setdefault(_qkey(ev), (ev, k))
-            elif t == "QUEST_COMPLETED":
+            elif t in ("QUEST_COMPLETED", "QUEST_ABANDONED"):
                 carrying.pop(_qkey(ev), None)
     for ev in night.get("events", []):
-        if ev.get("type") in ("QUEST_ACCEPTED", "QUEST_COMPLETED"):
+        if ev.get("type") in ("QUEST_ACCEPTED", "QUEST_COMPLETED", "QUEST_ABANDONED"):
             carrying.pop(_qkey(ev), None)
     return list(carrying.values())
 

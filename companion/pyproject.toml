@@ -32,6 +32,7 @@ packages = ["src/rambleon"]
 "../addon/Rambleon/Rambleon_Camelot.toc" = "rambleon/addon/Rambleon/Rambleon_Camelot.toc"
 "../addon/Rambleon/Forever.lua" = "rambleon/addon/Rambleon/Forever.lua"
 "../addon/Rambleon/Util.lua" = "rambleon/addon/Rambleon/Util.lua"
+"../addon/Rambleon/EventTypes.lua" = "rambleon/addon/Rambleon/EventTypes.lua"
 "../addon/Rambleon/Core.lua" = "rambleon/addon/Rambleon/Core.lua"
 "../addon/Rambleon/Session.lua" = "rambleon/addon/Rambleon/Session.lua"
 "../addon/Rambleon/Journal.lua" = "rambleon/addon/Rambleon/Journal.lua"

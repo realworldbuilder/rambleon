@@ -3,44 +3,7 @@ local ADDON, ns = ...
 ns.Journal = {}
 local J = ns.Journal
 
-local function place(ev)
-  return ev.subzone or ev.zone
-end
-
-function J.DescribeEvent(ev)
-  local t = ev.type
-  if t == "SESSION_START" then return "Began the adventure"
-  elseif t == "RESUMED" then return "Picked the story back up"
-  elseif t == "SESSION_END" then return "Ended the chapter"
-  elseif t == "ZONE_ENTER" then
-    if ev.subzone then return "Entered " .. ev.subzone .. " (" .. tostring(ev.zone) .. ")" end
-    return "Entered " .. tostring(ev.zone)
-  elseif t == "LEVEL_UP" then return "Reached Level " .. tostring(ev.level)
-  elseif t == "QUEST_ACCEPTED" then return 'Accepted "' .. tostring(ev.title or ("quest " .. tostring(ev.questID))) .. '"'
-  elseif t == "QUEST_COMPLETED" then return 'Completed "' .. tostring(ev.title or ("quest " .. tostring(ev.questID))) .. '"'
-  elseif t == "DEATH" then return "Died in " .. tostring(place(ev) or "the wilds")
-  elseif t == "REVIVED" then return "Back among the living"
-  elseif t == "GROUP_JOIN" then return "Joined forces with " .. tostring(ev.name)
-  elseif t == "GROUP_LEAVE" then return "Parted ways with " .. tostring(ev.name)
-  elseif t == "INSTANCE_ENTER" then return "Entered " .. tostring(ev.name or "an instance")
-  elseif t == "INSTANCE_EXIT" then return "Left " .. tostring(ev.name or "the instance")
-  elseif t == "ACHIEVEMENT" then return "Achievement: " .. tostring(ev.name)
-  elseif t == "SCREENSHOT" then
-    if ev.reason == "LEVEL_UP" then return "Screenshot (Level " .. tostring(ev.level) .. ")"
-    elseif ev.reason == "MARK" then return "Screenshot (marked moment)"
-    elseif ev.reason == "ZONE_ENTER" then return "Screenshot (entering " .. tostring(ev.zone) .. ")"
-    end
-    return "Took a screenshot"
-  elseif t == "NOTE" then return '"' .. tostring(ev.text) .. '"'
-  elseif t == "FIRST_KILL" then return "First " .. tostring(ev.name) .. " slain"
-  elseif t == "LOOT" then return "Looted " .. tostring(ev.name) .. (ev.qualityName and (" (" .. ev.qualityName .. ")") or "")
-  elseif t == "EQUIP" then return "Equipped " .. tostring(ev.name)
-  elseif t == "OBJECTIVE_COMPLETE" then
-    return tostring(ev.text or "Objective complete") .. (ev.title and (" — " .. ev.title) or "")
-  elseif t == "MARK" then return "Marked moment"
-  end
-  return t
-end
+J.DescribeEvent = ns.DescribeEvent     -- what each event type reads like: EventTypes.lua
 
 function J.RecentEvents(n)
   local s = ns.session

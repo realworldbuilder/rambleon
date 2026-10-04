@@ -12,6 +12,7 @@ from typing import Any
 
 from .archive import Archive, atomic_write_bytes, atomic_write_json
 from .config import character_overrides, journal_model, journal_voice, people_notes
+from .events import shown
 from .export import clock, describe, duration, export_filename, long_date, render_recap
 from .memory import build_memory, companion_suffix, render_memory
 from .screenshots import caption
@@ -69,7 +70,7 @@ def build_prompt(session: dict[str, Any], chapter: int, voice: str | None = None
         lines += [""] + story
     lines += ["", "## Chronological events (the only facts you may use)", ""]
     for ev in session.get("events", []):
-        if ev.get("type") == "RESUMED":
+        if not shown(ev):
             continue
         extra = ""
         if ev.get("type") == "ZONE_ENTER" and ev.get("x") is not None:

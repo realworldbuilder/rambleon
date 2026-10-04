@@ -144,8 +144,36 @@ handlers.QUEST_TURNED_IN = function(questID, xp, money)
   if not ns.EnsureSession() then return end
   questID = ns.Clean(questID)
   if type(questID) ~= "number" then return end
+  ns.turnedIn[questID] = true
   ns.AddEvent("QUEST_COMPLETED", { questID = questID, title = questTitle(questID),
                                    xp = ns.Clean(xp), money = ns.Clean(money) })
+end
+
+-- A quest leaves the log when it is handed in and when it is abandoned, and the client does not promise
+-- which of QUEST_REMOVED and QUEST_TURNED_IN comes first. Wait a moment, then see which it was.
+-- Only quests whose title we already know: the client also removes hidden bookkeeping quests.
+handlers.QUEST_REMOVED = function(questID)
+  questID = ns.Clean(questID)
+  if type(questID) ~= "number" then return end
+  local function settle()
+    if ns.turnedIn[questID] or not ns.questTitles[questID] then return end
+    if not ns.EnsureSession() then return end
+    ns.AddEvent("QUEST_ABANDONED", { questID = questID, title = ns.questTitles[questID] })
+  end
+  if C_Timer and C_Timer.After then C_Timer.After(1, settle) else settle() end
+end
+
+-- The innkeeper made this place home.
+handlers.HEARTHSTONE_BOUND = function()
+  if not ns.EnsureSession() then return end
+  local name = ns.CleanString((ns.SafeCall(GetBindLocation)))
+  if name then ns.AddEvent("HEARTH_BOUND", { name = name }) end
+end
+
+-- A dungeon or raid boss went down (not the combat log: the encounter's own end event).
+handlers.ENCOUNTER_END = function(encounterID, name, difficultyID, groupSize, success)
+  if ns.Clean(success) ~= 1 or not ns.EnsureSession() then return end
+  ns.AddEvent("BOSS_KILL", { name = ns.CleanString(name), encounterID = ns.Clean(encounterID) })
 end
 
 handlers.PLAYER_DEAD = function()

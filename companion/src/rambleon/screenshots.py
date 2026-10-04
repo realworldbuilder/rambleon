@@ -14,11 +14,12 @@ from pathlib import Path
 from typing import Any
 
 from .archive import Archive
+from .events import types_where
 
 SCREENSHOT_RE = re.compile(r"^WoWScrnShot_(\d{2})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\.(jpg|jpeg|png|tga)$", re.IGNORECASE)
 WINDOW = 60          # seconds of slack around the session when looking for files
 PAIR_WINDOW = 5      # seconds between a file's time and its SCREENSHOT event
-FALLBACK_SKIP = {"SCREENSHOT", "RESUMED", "SESSION_START", "SESSION_END"}
+FALLBACK_SKIP = types_where(shot_fallback=False)
 INHERIT = ("reason", "auto", "level", "zone", "subzone")
 
 

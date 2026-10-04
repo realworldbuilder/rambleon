@@ -54,6 +54,7 @@ function UnitIsUnit(a, b) return a == b end
 function IsInGroup() return next(WoW.state.group) ~= nil end
 function IsInRaid() return false end
 function GetNumGroupMembers() local n = 0; for _ in pairs(WoW.state.group) do n = n + 1 end; return n > 0 and n + 1 or 0 end
+function GetBindLocation() return WoW.state.bind end
 function GetAchievementInfo(id) return id, "Level 10", nil end
 function UnitXP() return WoW.state.xp or 0 end
 LOOT_ITEM_SELF = "You receive loot: %s."

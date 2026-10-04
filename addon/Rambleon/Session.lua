@@ -9,6 +9,7 @@ local HEARTBEAT = 30           -- seconds
 
 ns.session = nil
 ns.questTitles = {}
+ns.turnedIn = {}                -- questID -> true once handed in (a quest leaving the log was not abandoned)
 ns.currentGroup = {}           -- name -> { since = GetTime() }
 ns.lastZoneKey = nil
 ns.inInstance = nil             -- nil until the first look; then true or false
@@ -262,9 +263,7 @@ function ns.StartSession()
     playedSeconds = 0,
     character = character,
     client = ns.CaptureClient(),
-    counters = { levelsGained = 0, questsAccepted = 0, questsCompleted = 0, deaths = 0,
-                 zonesVisited = 0, notes = 0, marks = 0, screenshots = 0, achievements = 0,
-                 kills = 0, xpGained = 0, objectivesCompleted = 0, loot = 0 },
+    counters = ns.NewCounters(),
     zones = {},
     people = {},
     kills = {},                 -- name -> { count, xp, firstAt, lastAt }
@@ -382,11 +381,8 @@ end
 
 -- Events ---------------------------------------------------------------------
 
-local COUNTER_FOR = {
-  LEVEL_UP = "levelsGained", QUEST_ACCEPTED = "questsAccepted", QUEST_COMPLETED = "questsCompleted",
-  -- FIRST_KILL and OBJECTIVE_COMPLETE keep their own counters (kills, objectivesCompleted)
-  DEATH = "deaths", NOTE = "notes", MARK = "marks", SCREENSHOT = "screenshots", ACHIEVEMENT = "achievements",
-}
+-- The one way an event is recorded. What the type means (its line in the log, its counter) is in EventTypes.lua.
+local unknownTypes = {}
 
 function ns.AddEvent(eventType, fields)
   local s = ns.session
@@ -406,8 +402,13 @@ function ns.AddEvent(eventType, fields)
   if type(ev.level) == "number" and ev.level > (tonumber(s.character.endLevel) or 0) then
     s.character.endLevel = ev.level
   end
-  local counter = COUNTER_FOR[eventType]
-  if counter then s.counters[counter] = (s.counters[counter] or 0) + 1 end
+  local def = ns.EVENT_TYPES[eventType]
+  if def and def.counter then
+    s.counters[def.counter] = (s.counters[def.counter] or 0) + 1
+  elseif not def and not unknownTypes[eventType] then   -- still recorded: a memory is never dropped over a typo
+    unknownTypes[eventType] = true
+    ns.Warn("event type " .. tostring(eventType) .. " is not in EventTypes.lua")
+  end
   s.lastSeen = ev.t
   ns.dirty = true
   ns.Debug(eventType)
@@ -615,7 +616,6 @@ function ns.ScanObjectives()
               ns.doneObjectives[key] = true
               if ns.objectivesSeeded then
                 ns.AddEvent("OBJECTIVE_COMPLETE", { questID = info.questID, title = title, text = ns.CleanString(obj.text) })
-                s.counters.objectivesCompleted = (s.counters.objectivesCompleted or 0) + 1
               end
             end
           end
@@ -704,7 +704,6 @@ function ns.RecordLootFromChat(text)
   if not s then return end
   ns.AddEvent("LOOT", { itemID = item.itemID, name = item.name, quality = item.quality,
                         qualityName = QUALITY_NAMES[item.quality], count = tonumber(count) or 1 })
-  s.counters.loot = (s.counters.loot or 0) + 1
   stats.kept = stats.kept + 1
 end
 

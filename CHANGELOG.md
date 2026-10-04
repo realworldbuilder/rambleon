@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- **Three more things remembered** (AddOn): a quest you **abandon** (`QUEST_ABANDONED`; it leaves "Still open" and
+  "Carrying" on the story page and the catch-up list), the inn you make **home** (`HEARTH_BOUND`), and a dungeon
+  or raid **boss defeated** (`BOSS_KILL`, from the encounter's own end event, not the combat log; the route guide
+  lists them). The last two are unverified on Forever until seen in game; an event the client does not know is
+  skipped and shows under `/ramble debug`.
+- **One definition per event type.** `addon/Rambleon/EventTypes.lua` (how it reads in game, which counter it
+  bumps) and `companion/src/rambleon/events.py` (how it reads in the log, how nights are stitched, how the route
+  guide and the screenshot captions treat it). A new thing to remember is one entry on each side; tests fail if
+  the two disagree or the simulated session never records it. An event of a type the companion does not know yet
+  is shown by its name in plain words instead of in capitals, and never breaks a page.
 - **`rambleon.local.toml` is checked.** A key Rambleon does not know or a value of the wrong kind is a warning
   (`ramble doctor`, the watcher's log) and the default applies; a file that is not valid TOML is said out loud
   instead of silently switching auto-share and auto-post off. `ramble config` prints the settings in effect and

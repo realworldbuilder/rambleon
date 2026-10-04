@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from .archive import Archive, atomic_write_bytes, atomic_write_json, load_json
+from .events import types_where
 from .config import character_overrides, guide_mode, journal_model, journal_voice
 from .export import _collapse_titles, _quest_label, _times, duration, long_date, place
 from .memory import _chapters_phrase
@@ -25,9 +26,9 @@ from .summarize import DEFAULT_MODEL, DEFAULT_VOICE, claude_available, load_voic
 
 GUIDES_DIR = Path(__file__).parent / "prompts" / "guides"
 DEFAULT_MODE = "route"
-SKIP = {"SESSION_START", "SESSION_END", "RESUMED"}
-ANCHORS = {"QUEST_COMPLETED", "LEVEL_UP", "DEATH", "NOTE"}       # a visit with one of these is a stretch of its own
-PASSIVE = {"ZONE_ENTER", "SCREENSHOT", "REVIVED", "GROUP_LEAVE", "INSTANCE_EXIT"}   # being somewhere, not doing anything
+SKIP = types_where(guide="skip")
+ANCHORS = types_where(guide="anchor")      # a visit with one of these is a stretch of its own
+PASSIVE = types_where(guide="passive")     # being somewhere, not doing anything
 MIN_STRETCH = 20 * 60      # a visit with no anchor needs this much play, with something done, to stand alone
 MAX_FIRST_KILLS = 12
 MAX_LOOT = 10
@@ -169,6 +170,7 @@ def _chapter(number: int, run: dict[str, Any], seen_done: set[Any]) -> dict[str,
     notes: list[tuple[int, dict[str, Any]]] = []
     people: list[str] = []
     instances: list[str] = []
+    bosses: list[str] = []
     for ev in evs:
         t = ev.get("type")
         if ev["_zone"] == zone:
@@ -178,6 +180,10 @@ def _chapter(number: int, run: dict[str, Any], seen_done: set[Any]) -> dict[str,
             passing.append(ev["_zone"])
         if t == "QUEST_ACCEPTED":
             accepted.setdefault(_qkey(ev), ev)
+        elif t == "QUEST_ABANDONED":
+            accepted.pop(_qkey(ev), None)
+        elif t == "BOSS_KILL" and ev.get("name") and ev["name"] not in bosses:
+            bosses.append(ev["name"])
         elif t == "QUEST_COMPLETED":
             key = _qkey(ev)
             if key not in seen_done:
@@ -213,7 +219,7 @@ def _chapter(number: int, run: dict[str, Any], seen_done: set[Any]) -> dict[str,
         "startedAt": evs[0].get("t"), "endedAt": evs[-1].get("t"), "playedSeconds": _span(evs),
         "accepted": list(accepted.values()), "completed": list(completed.values()),
         "firstKills": first_kills[:MAX_FIRST_KILLS], "loot": loot[:MAX_LOOT],
-        "deaths": deaths, "deathPlaces": death_places, "notes": notes, "people": people, "instances": instances,
+        "deaths": deaths, "deathPlaces": death_places, "notes": notes, "people": people, "instances": instances, "bosses": bosses,
         "events": [(ev["_night"], ev["_idx"]) for ev in evs],
         "screenshots": [],
     }
@@ -342,6 +348,8 @@ def facts(ch: dict[str, Any]) -> list[tuple[str, str]]:
         out.append(("Company", ", ".join(ch["people"])))
     if ch["instances"]:
         out.append(("Instances", ", ".join(ch["instances"])))
+    if ch.get("bosses"):
+        out.append(("Bosses defeated", ", ".join(ch["bosses"])))
     if ch["screenshots"]:
         out.append(("Pictures", "; ".join(f"{s.get('caption')} (Chapter {k})" for k, s in ch["screenshots"])))
     return out

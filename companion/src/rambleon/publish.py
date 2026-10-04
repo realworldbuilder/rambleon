@@ -12,6 +12,7 @@ from typing import Any
 from .archive import Archive, atomic_write_bytes, is_trivial, load_json
 from .export import (_by_zone, _collapse_carried, _collapse_titles, _quest_label, _times, carried_over, clock, describe, duration,
                      export_filename, long_date, place, quest_summary, render_markdown, render_recap)
+from .events import shown
 from .nights import chapter_number as night_number, earlier_nights, nights
 from .paths import Paths
 from .screenshots import caption as shot_caption, event_index
@@ -406,7 +407,7 @@ def _quests_section(session: dict[str, Any], carried: list[tuple[dict[str, Any],
         rows = ["<tr>" + _cells(("quest", _quest_label(ev) + _times(n)), ("where", place(ev)), ("since", f"Chapter {k}")) + "</tr>"
                 for ev, n, k in _collapse_carried(carried)]
         panes.append(("carried", "Carrying", len(carried), _quest_table(["Quest", "Picked up at", "Since"], rows)
-                      + "<p class='caveat'>As far as Rambleon knows: quests abandoned, or picked up before it was installed, are not recorded.</p>"))
+                      + "<p class='caveat'>As far as Rambleon knows: a quest picked up before it was installed, or abandoned before it recorded that, is not here.</p>"))
     if not panes:
         return ""
     tabs = "".join(f"<button role='tab' aria-selected='{'true' if i == 0 else 'false'}' data-pane='{key}'>{label}<span class='n'>{n}</span></button>"
@@ -463,10 +464,10 @@ def render_html(session: dict[str, Any], journal: dict[str, Any] | None, number:
         else:
             by_event.setdefault(img["eventIndex"], []).append(img)
     pictured = {i for i in by_event} | ({hero["eventIndex"]} if hero and hero.get("eventIndex") is not None else set())
-    moments = [ev for ev in session.get("events", []) if ev.get("type") != "RESUMED"]
+    moments = [ev for ev in session.get("events", []) if shown(ev)]
     parts.append(f"<h2 id='journey'>The Journey</h2><details class='journey' open><summary>{len(moments)} moments, in order · fold</summary><ul>")
     for i, ev in enumerate(session.get("events", [])):
-        if ev.get("type") == "RESUMED":
+        if not shown(ev):
             continue
         if not (ev.get("type") == "SCREENSHOT" and i in pictured):   # the picture itself stands for the event
             parts.append(f"<li>{html.escape(clock(ev.get('t')))} — {html.escape(describe(ev))}</li>")

@@ -11,6 +11,7 @@
 
 Forever.lua
 Util.lua
+EventTypes.lua
 Chapters.lua
 Core.lua
 Session.lua

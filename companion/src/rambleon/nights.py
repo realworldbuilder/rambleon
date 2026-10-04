@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from .archive import Archive, load_json
+from .events import spec
 from .model import COUNTER_KEYS, SUSPEND_TIMEOUT
 from .screenshots import pair_screenshots
 
@@ -67,12 +68,8 @@ def build_night(sessions: list[dict[str, Any]], now: float | None = None) -> dic
     night["character"]["endLevel"] = last.get("character", {}).get("endLevel")
     for i, s in enumerate(sessions):
         for ev in s.get("events", []):
-            t = ev.get("type")
-            if t == "RESUMED":
-                continue
-            if t == "SESSION_START" and i > 0:
-                continue
-            if t == "SESSION_END" and i < len(sessions) - 1:
+            stitch = spec(ev.get("type")).stitch       # a relog is continuity: one beginning, one end
+            if stitch == "drop" or (stitch == "first" and i > 0) or (stitch == "last" and i < len(sessions) - 1):
                 continue
             night["events"].append(ev)
         _merge_keyed(night["zones"], [dict(z, _k=f"{z.get('zone')}|{z.get('subzone') or ''}") for z in s.get("zones", [])], "_k", ("visits",))

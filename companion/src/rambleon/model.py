@@ -4,20 +4,17 @@ from __future__ import annotations
 import re
 from typing import Any
 
+from .events import EVENTS
+
 SCHEMA_VERSION = 1
 NORMALIZED_VERSION = 3  # 2: displayName/slug derived with the surname rule, guid published in game; 3: death echoes dropped
 DEATH_ECHO = 30         # seconds: Forever build 70009 fires PLAYER_DEAD twice per death; AddOns before 0.3.1 recorded both
 SUSPEND_TIMEOUT = 600  # seconds; a suspended session older than this is treated as ended
-KEEP_ALL = True
 
-EVENT_TYPES = {
-    "SESSION_START", "RESUMED", "SESSION_END", "ZONE_ENTER", "LEVEL_UP", "QUEST_ACCEPTED", "QUEST_COMPLETED",
-    "DEATH", "REVIVED", "GROUP_JOIN", "GROUP_LEAVE", "INSTANCE_ENTER", "INSTANCE_EXIT", "ACHIEVEMENT",
-    "SCREENSHOT", "NOTE", "MARK", "FIRST_KILL", "OBJECTIVE_COMPLETE", "LOOT", "EQUIP",
-}
+EVENT_TYPES = set(EVENTS)   # what each type means lives in events.py
 STATES = {"active", "suspended", "ended"}
 COUNTER_KEYS = ["levelsGained", "questsAccepted", "questsCompleted", "deaths", "zonesVisited", "notes", "marks",
-                "screenshots", "achievements", "kills", "xpGained", "objectivesCompleted", "loot"]
+                "screenshots", "achievements", "kills", "xpGained", "objectivesCompleted", "loot", "questsAbandoned"]
 
 
 def slugify(text: str) -> str:
