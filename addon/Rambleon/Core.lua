@@ -13,8 +13,21 @@ function ns.OnAddonLoaded(name)
   ns.Debug("loaded v" .. ns.VERSION .. " (flavor " .. ns.flavorHint .. ")")
 end
 
+-- A first run: nothing remembered yet. Settings are not proof by themselves (the Forever client can forget
+-- SavedVariables on a cold start), so chapters published from the Mac count as "has been here before" too.
+function ns.IsFirstRun()
+  if ns.GetSetting("welcomed") or ns.dbRestored then return false end
+  local chapters = _G.RambleonChapters
+  return not (type(chapters) == "table" and #chapters > 0)
+end
+
+-- The one line Rambleon says at login.
 function ns.OnPlayerLogin()
-  ns.Print("v" .. ns.VERSION .. " — type /ramble to open your adventure log.")
+  if ns.IsFirstRun() then
+    ns.Print("v" .. ns.VERSION .. " — welcome. Your adventure is being remembered from now on; type /ramble to see it.")
+  else
+    ns.Print("v" .. ns.VERSION .. " — type /ramble to open your adventure log.")
+  end
 end
 
 function ns.DebugReport()

@@ -3,7 +3,20 @@ local ADDON, ns = ...
 ns.UI = {}
 local UI = ns.UI
 
-local WIDTH, HEIGHT = 380, 560
+local WIDTH, HEIGHT = 380, 578
+
+-- The rows under "Current Session": a key of Journal.Stats(), its label, and how to show it (default: as it is).
+local STAT_ROWS = {
+  { key = "played", label = "Time", format = function(v) return ns.FormatDuration(v) end },
+  { key = "area", label = "Current Area" },
+  { key = "level", label = "Level" },
+  { key = "questsCompleted", label = "Quests Completed" },
+  { key = "places", label = "Places Visited" },
+  { key = "kills", label = "Enemies Slain" },
+  { key = "loot", label = "Loot Worth Keeping" },
+  { key = "deaths", label = "Deaths" },
+  { key = "people", label = "People Met" },
+}
 local RECENT = 10
 local TITLE_FONT = "Fonts\\MORPHEUS.TTF"
 local BODY_FONT = "Fonts\\FRIZQT__.TTF"
@@ -81,22 +94,30 @@ local function build()
   panel.sectionSession:SetPoint("TOPLEFT", 26, y)
   y = y - 22
 
-  panel.stats = {}
-  local rows = {
-    { "time", "Time" }, { "area", "Current Area" }, { "level", "Level" },
-    { "quests", "Quests Completed" }, { "places", "Places Visited" }, { "kills", "Enemies Slain" },
-    { "loot", "Loot Worth Keeping" }, { "deaths", "Deaths" }, { "people", "People Met" },
-  }
-  for _, row in ipairs(rows) do
-    local k = label(panel, row[2], 12, INK_SOFT)
+  local function row(text)
+    local k = label(panel, text, 12, INK_SOFT)
     k:SetPoint("TOPLEFT", 30, y)
     local v = label(panel, "—", 12, INK)
     v:SetPoint("TOPLEFT", 160, y)
     v:SetWidth(WIDTH - 190)
     v:SetWordWrap(false)
-    panel.stats[row[1]] = v
     y = y - 17
+    return v
   end
+  panel.stats = {}
+  for _, r in ipairs(STAT_ROWS) do
+    panel.stats[r.key] = row(r.label)
+  end
+  -- The one setting worth a click: automatic pictures, on or off (same as /ramble shots on|off).
+  local picturesTop = y
+  panel.pictures = row("Pictures")
+  panel.picturesToggle = CreateFrame("Button", nil, panel)
+  panel.picturesToggle:SetPoint("TOPLEFT", 26, picturesTop + 2)
+  panel.picturesToggle:SetSize(WIDTH - 52, 17)
+  panel.picturesToggle:SetScript("OnClick", function()
+    ns.SetAutoShots(not ns.AutoShotsEnabled())
+    UI.Refresh()
+  end)
 
   y = y - 10
   panel.sectionJourney = label(panel, "Recent Journey", 14, GOLD, TITLE_FONT)
@@ -117,18 +138,16 @@ local function build()
   end
 
   panel.banner = label(panel, "", 11, GOLD)
-  panel.banner:SetPoint("BOTTOM", 0, 48)
+  panel.banner:SetPoint("BOTTOM", 0, 68)
   panel.banner:SetJustifyH("CENTER")
   panel.banner:SetWidth(WIDTH - 60)
 
   panel.footer = label(panel, "Your log saves itself when you log out. Chapters appear next login.", 10, INK_SOFT)
   panel.footer:SetPoint("BOTTOM", 0, 50); panel.footer:SetJustifyH("CENTER"); panel.footer:SetWidth(WIDTH - 50)
-  panel.banner:ClearAllPoints()
-  panel.banner:SetPoint("BOTTOM", 0, 68)
 
   local mark = button(panel, "MARK MOMENT", 112)
   mark:SetPoint("BOTTOMLEFT", 20, 18)
-  mark:SetScript("OnClick", function() if ns.MarkMoment() then UI.MomentRemembered() end end)
+  mark:SetScript("OnClick", function() ns.MarkMoment() end)
   local note = button(panel, "ADD NOTE", 100)
   note:SetPoint("LEFT", mark, "RIGHT", 6, 0)
   note:SetScript("OnClick", UI.PromptNote)
@@ -159,16 +178,12 @@ function UI.Refresh()
   panel.title:SetText(string.upper(ns.DisplayName()))
   local st = ns.Journal.Stats()
   if st then
-    panel.stats.time:SetText(ns.FormatDuration(st.played))
-    panel.stats.area:SetText(tostring(st.area))
-    panel.stats.level:SetText(tostring(st.level))
-    panel.stats.quests:SetText(tostring(st.questsCompleted))
-    panel.stats.places:SetText(tostring(st.places))
-    panel.stats.kills:SetText(tostring(st.kills))
-    panel.stats.loot:SetText(tostring(st.loot))
-    panel.stats.deaths:SetText(tostring(st.deaths))
-    panel.stats.people:SetText(tostring(st.people))
+    for _, r in ipairs(STAT_ROWS) do
+      local v = st[r.key]
+      panel.stats[r.key]:SetText(r.format and r.format(v) or tostring(v))
+    end
   end
+  panel.pictures:SetText(ns.AutoShotsEnabled() and "automatic  (click to turn off)" or "off  (click to turn on)")
   local recent = ns.Journal.RecentEvents(RECENT)
   for i = 1, RECENT do
     local ev = recent[i]
@@ -191,7 +206,16 @@ end
 
 function UI.Toggle()
   local p = UI.Get()
-  if p:IsShown() then p:Hide() else p:Show() end
+  if p:IsShown() then p:Hide() return end
+  p:Show()
+  UI.MaybeWelcome()
+end
+
+-- Once, the first time a new player opens the log: what this is, and that there is nothing to press.
+function UI.MaybeWelcome()
+  if not ns.IsFirstRun() then return end
+  ns.SetSetting("welcomed", true)
+  StaticPopup_Show("RAMBLEON_WELCOME")
 end
 
 -- Our own frames stay out of the pictures. Returns a function that shows them again.
@@ -347,16 +371,24 @@ StaticPopupDialogs["RAMBLEON_NOTE"] = {
   maxLetters = ns.NOTE_MAX,
   OnAccept = function(self)
     local text = self.editBox and self.editBox:GetText() or ""
-    if ns.AddNote(text) then ns.Print("Noted.") ; UI.Flash("Noted.", 3) end
+    UI.SaveNote(text)
   end,
   EditBoxOnEnterPressed = function(self)
     local parent = self:GetParent()
-    local text = self:GetText()
-    if ns.AddNote(text) then ns.Print("Noted.") ; UI.Flash("Noted.", 3) end
+    UI.SaveNote(self:GetText())
     parent:Hide()
   end,
   EditBoxOnEscapePressed = function(self) self:GetParent():Hide() end,
   OnShow = function(self) if self.editBox then self.editBox:SetText(""); self.editBox:SetFocus() end end,
+  timeout = 0, whileDead = true, hideOnEscape = true, preferredIndex = 3,
+}
+
+StaticPopupDialogs["RAMBLEON_WELCOME"] = {
+  text = "Rambleon quietly remembers your adventure: where you went, what you did, who you met.\n\n"
+    .. "There is nothing to press. Play, then log out; the companion on your Mac writes tonight's chapter, "
+    .. "and it is here to read next login (/ramble chapters).\n\n"
+    .. "MARK MOMENT keeps a moment, with a picture. ADD NOTE keeps your own words, which matter most.",
+  button1 = "BEGIN",
   timeout = 0, whileDead = true, hideOnEscape = true, preferredIndex = 3,
 }
 
@@ -367,6 +399,10 @@ StaticPopupDialogs["RAMBLEON_END"] = {
   OnAccept = function() UI.EndChapterAndReload() end,
   timeout = 0, whileDead = true, hideOnEscape = true, preferredIndex = 3,
 }
+
+function UI.SaveNote(text)
+  if ns.AddNote(text) then ns.Print("Noted."); UI.Flash("Noted.", 3) end
+end
 
 function UI.PromptNote()
   StaticPopup_Show("RAMBLEON_NOTE")

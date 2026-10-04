@@ -17,6 +17,8 @@ local function assertEq(a, b, msg) if a ~= b then error((msg or "") .. ": expect
 -- Boot
 WoW.Fire("ADDON_LOADED", "Rambleon")
 WoW.Fire("PLAYER_LOGIN")
+assertEq(#WoW.chat, 1, "chat stays quiet: one line at login")
+assert(WoW.chat[1]:find("welcome", 1, true), "a first login is welcomed in that one line")
 WoW.Fire("PLAYER_ENTERING_WORLD", true, false)
 WoW.Advance(2)                                   -- zone debounce fires
 assert(ns.session, "session should exist")
@@ -127,6 +129,12 @@ assertEq(WoW.screenshots, 3, "rate limit between automatic screenshots")
 ns.HandleSlash("status")
 ns.HandleSlash("")                               -- toggles panel (builds UI)
 assert(RambleonPanel:IsShown(), "panel shown")
+assertEq(WoW.lastPopup, "RAMBLEON_WELCOME", "the first time the log opens, a welcome")
+assertEq(RambleonDB.settings.welcomed, true, "welcomed once")
+WoW.lastPopup = nil
+ns.HandleSlash(""); ns.HandleSlash("")           -- closed and opened again
+assertEq(WoW.lastPopup, nil, "and never again")
+assert(not ns.IsFirstRun(), "no longer a first run")
 WoW.Advance(3)                                   -- clear the screenshot rate limit
 ns.HandleSlash("mark")                           -- MARK MOMENT with the panel open
 assert(not RambleonPanel:IsShown(), "panel hidden for the picture")
@@ -410,6 +418,55 @@ do
   assertEq(ns.DescribeEvent(table.remove(ns.session.events)), "MYSTERY", "unknown type shows its name")
   table.remove(ns.session.events)
   assertEq(#ns.warnings, warned + 1, "unknown type warned once")
+end
+
+-- Slash commands: every name and alias is in the help, the help is generated, an unknown word says so
+do
+  WoW.chat = {}
+  ns.HandleSlash("help")
+  local text = table.concat(WoW.chat, "\n")
+  for _, c in ipairs(ns.COMMANDS) do
+    assert(text:find("/ramble" .. (c.name ~= "" and (" " .. c.name) or ""), 1, true), "help lists " .. c.name)
+    for _, alias in ipairs(c.aliases or {}) do assert(text:find(alias, 1, true), "help lists the alias " .. alias) end
+  end
+  WoW.chat = {}
+  ns.HandleSlash("frobnicate")
+  assert(WoW.chat[1]:find("unknown command 'frobnicate'", 1, true), "unknown command")
+  assert(#WoW.chat > 3, "followed by the help")
+  ns.HandleSlash("read"); ns.HandleSlash("read")          -- an alias reaches the same command
+  WoW.chat = {}
+  ns.HandleSlash("dump")
+  assert(#WoW.chat > 0 and #WoW.chat <= 20, "dump prints the last events")
+end
+
+-- One way to mark a moment: the slash command, the keybinding and the panel button do the same thing
+do
+  local function marksAndLines()
+    local lines = 0
+    for _, line in ipairs(WoW.chat) do if line:find("Moment remembered.", 1, true) then lines = lines + 1 end end
+    return countOfType("MARK"), lines
+  end
+  local button
+  for _, f in ipairs(WoW.frames) do if f:GetText() == "MARK MOMENT" then button = f end end
+  assert(button, "the panel has a MARK MOMENT button")
+  WoW.chat = {}
+  local before = countOfType("MARK")
+  Rambleon.Mark()
+  button:GetScript("OnClick")()
+  local marks, lines = marksAndLines()
+  assertEq(marks, before + 2, "keybinding and button each mark once")
+  assertEq(lines, 2, "and each says so once")
+end
+
+-- The Pictures row on the panel is the shots setting
+do
+  ns.SetAutoShots(true)
+  ns.UI.Get():Show()
+  RambleonPanel.picturesToggle:GetScript("OnClick")()
+  assertEq(ns.AutoShotsEnabled(), false, "clicking Pictures turns automatic screenshots off")
+  assert(RambleonPanel.pictures:GetText():find("off", 1, true), "and the row says so")
+  RambleonPanel.picturesToggle:GetScript("OnClick")()
+  assertEq(ns.AutoShotsEnabled(), true, "and on again")
 end
 
 -- An event this client does not know is recorded, not fatal

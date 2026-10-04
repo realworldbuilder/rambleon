@@ -739,10 +739,12 @@ function ns.AddNote(text)
   return ns.AddEvent("NOTE", { text = text })
 end
 
+-- The slash command, the keybinding and the panel button all come through here.
 function ns.MarkMoment()
   if not ns.EnsureSession() then return nil end
   local ev = ns.AddEvent("MARK", {})
   ns.TakeScreenshot("MARK", {}, 0.2)
+  if ev and ns.UI and ns.UI.MomentRemembered then ns.UI.MomentRemembered() end
   return ev
 end
 

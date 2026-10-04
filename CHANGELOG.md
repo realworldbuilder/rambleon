@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- **A first run says hello.** The one login line welcomes a new player, and the first time the log opens a short
+  note explains that there is nothing to press. Never shown again, and never to someone who already has chapters.
+- The log panel has a **Pictures** row: click it to turn automatic screenshots on or off (same as `/ramble shots`).
+- `/ramble help` is generated from the command list, so it now shows every command and alias (`read`, `end`,
+  `screenshots`, `debug on|off`). The slash command, the keybinding and the button mark a moment the same way.
 - **Three more things remembered** (AddOn): a quest you **abandon** (`QUEST_ABANDONED`; it leaves "Still open" and
   "Carrying" on the story page and the catch-up list), the inn you make **home** (`HEARTH_BOUND`), and a dungeon
   or raid **boss defeated** (`BOSS_KILL`, from the encounter's own end event, not the combat log; the route guide

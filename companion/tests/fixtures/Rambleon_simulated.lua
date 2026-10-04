@@ -558,6 +558,6 @@ RambleonDB = {
 ["settings"] = {
 ["autoScreenshots"] = true,
 ["debug"] = false,
-["welcomed"] = false,
+["welcomed"] = true,
 },
 }
