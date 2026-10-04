@@ -11,9 +11,9 @@ journal chapter written from what actually happened, readable in game and ready 
 
 **See a real journal:** https://realworldbuilder.github.io/rambleon/example/
 
-| A night's story page | The route guide: how the character actually leveled |
-|---|---|
-| ![A story page: chapter title, the night's hero screenshot, the chapter](docs/img/story-page.jpg) | ![The route guide: zone stretches with level ranges, prose and facts](docs/img/route-guide.jpg) |
+| In game: `/ramble` | A night's story page | The route guide: how the character actually leveled |
+|---|---|---|
+| ![The adventure log panel in game: tonight's numbers and the recent journey](docs/img/panel.jpg) | ![A story page: chapter title, the night's hero screenshot, the chapter](docs/img/story-page.jpg) | ![The route guide: zone stretches with level ranges, prose and facts](docs/img/route-guide.jpg) |
 
 Rambleon is a **memory layer**, not a meter. It never automates anything, never reads protected combat data, and
 never needs the network in game. Think Strava recap, travel journal, captain's log.

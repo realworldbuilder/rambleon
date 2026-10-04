@@ -45,8 +45,9 @@ help from us.
       shapes unverified), rare and elite kills (a field on `FIRST_KILL` from `UnitClassification`), new spells and talents.
 - [x] **Verify** loot events and screenshot pairing in game. Both confirmed by the archive: loot since 10-02,
       paired pictures since 09-23.
-- [ ] **README for humans**: a story page, the index and the route guide are pictured, and "what leaves my Mac" is
-      written (0.4.0). Still open: pictures of the in-game panel and the chapters reader (they need the game).
+- [ ] **README for humans**: the in-game panel (a 0.3.0 screenshot, before the Pictures row), a story page and the
+      route guide are pictured, and "what leaves my Mac" is written. Still open: a picture of the chapters reader
+      (no screenshot of it exists yet).
 - [x] **License file, CHANGELOG, releases**, a GitHub Actions job that runs `scripts/test` and builds the zip and the wheel.
 
 ## Phase B — Worth pasting unedited

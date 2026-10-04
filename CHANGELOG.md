@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- The panel's "Moment remembered." line no longer overlaps the footer text beneath it.
+- README: the in-game panel is pictured.
+
 ## 0.4.0 — 2026-10-04
 
 Finished and extendable: nothing a night depends on can fail silently any more, and the three things people

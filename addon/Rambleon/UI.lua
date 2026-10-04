@@ -138,7 +138,7 @@ local function build()
   end
 
   panel.banner = label(panel, "", 11, GOLD)
-  panel.banner:SetPoint("BOTTOM", 0, 68)
+  panel.banner:SetPoint("BOTTOM", 0, 82)      -- clear of the footer, which wraps to two lines
   panel.banner:SetJustifyH("CENTER")
   panel.banner:SetWidth(WIDTH - 60)
 
