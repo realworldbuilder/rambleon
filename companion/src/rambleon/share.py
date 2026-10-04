@@ -17,7 +17,8 @@ from .archive import Archive
 from .export import export_filename
 from .nights import nights as list_nights, resolve_night
 from .guide import write_guide
-from .publish import export_html, guide_page_name, write_html_index
+from .pages import PROJECT_URL, guide_page_name
+from .publish import export_html, write_html_index
 from .screenshots import refresh_session_screenshots
 
 Runner = Callable[..., subprocess.CompletedProcess]
@@ -53,7 +54,7 @@ def repo_checkout(repo_root: Path, runner: Runner = subprocess.run) -> Path:
     top = Path(r.stdout.strip()) if r.returncode == 0 and r.stdout.strip() else None
     if top is None or not (top / "site").is_dir() or not (top / ".github" / "workflows" / "pages.yml").exists():
         raise ShareError("ramble share needs the Rambleon git checkout (the one with site/ and the Pages workflow). "
-                         "Clone https://github.com/realworldbuilder/rambleon and point RAMBLEON_HOME at it.")
+                         f"Clone {PROJECT_URL} and point RAMBLEON_HOME at it.")
     return top
 
 

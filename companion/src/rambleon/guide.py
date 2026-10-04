@@ -13,18 +13,19 @@ import time
 from pathlib import Path
 from typing import Any, Callable
 
+from . import prompts
 from .archive import Archive, atomic_write_bytes, atomic_write_json, load_json
 from .events import types_where
 from .config import character_overrides, guide_mode, journal_model, journal_voice
 from .export import _collapse_titles, _quest_label, _times, duration, long_date, place
 from .memory import _chapters_phrase
 from .nights import nights as list_nights
-from .publish import (CSS, FONTS, _figure, _page_name, _paragraphs, chapter_title, guide_page_name as default_page_name,
-                      index_anchor, load_journal, prepare_images, top_nav)
+from .pages import (figure as _figure, guide_page_name as default_page_name, index_anchor, page_name as _page_name,
+                    paragraphs as _paragraphs, shell, top_nav)
+from .publish import chapter_title, load_journal, prepare_images
 from .screenshots import caption as shot_caption, event_index
 from .summarize import DEFAULT_MODEL, DEFAULT_VOICE, claude_available, load_voice, run_claude
 
-GUIDES_DIR = Path(__file__).parent / "prompts" / "guides"
 DEFAULT_MODE = "route"
 SKIP = types_where(guide="skip")
 ANCHORS = types_where(guide="anchor")      # a visit with one of these is a stretch of its own
@@ -39,7 +40,8 @@ ELSEWHERE = "Elsewhere"
 # Modes
 
 def available_modes() -> list[str]:
-    return sorted(p.stem for p in GUIDES_DIR.glob("*.md"))
+    """Bundled guide modes and the player's own (<home>/prompts/guides/*.md)."""
+    return sorted(prompts.available("guides"))
 
 
 def default_mode(repo_root: Path | None = None) -> str:
@@ -48,14 +50,8 @@ def default_mode(repo_root: Path | None = None) -> str:
 
 def load_mode(name: str | None) -> tuple[str, str]:
     """(mode name, prompt text). `name` is a bundled mode or a path to your own prompt file."""
-    name = name or default_mode()
-    candidate = Path(name).expanduser()
-    if (name.endswith(".md") or "/" in name) and candidate.is_file():
-        return candidate.stem, candidate.read_text(encoding="utf-8").strip()
-    path = GUIDES_DIR / f"{name}.md"
-    if not path.exists():
-        raise ValueError(f"unknown guide mode {name!r}; available: {', '.join(available_modes())} (or a path to a .md file)")
-    return name, path.read_text(encoding="utf-8").strip()
+    mode, text, _ = prompts.load("guides", name or default_mode())
+    return mode, text
 
 
 def guide_page_name(slug: str, mode: str | None = None) -> str:
@@ -460,23 +456,6 @@ def needs_prose(guide: dict[str, Any], sidecar: dict[str, Any] | None) -> bool:
 # ---------------------------------------------------------------------------------------------------
 # The page
 
-GUIDE_CSS = """
-body.guide{max-width:1040px}
-.guide-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:36px;align-items:start}
-.toc{position:sticky;top:16px;font-size:14px}.toc ol{list-style:none;margin:0;padding:0}.toc li{margin:0 0 8px}
-.toc a{display:flex;gap:10px;text-decoration:none;color:var(--soft)}.toc a:hover{color:var(--link)}
-.toc b{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;min-width:20px}.toc small{display:block;color:var(--faint)}
-p.intro{font-size:19px;color:var(--soft);margin:0 0 28px}
-section.stretch{margin:0 0 40px}section.stretch h2{margin-top:0}section.stretch h2 .n{color:var(--gold);margin-right:8px}
-section.stretch h2 .lv{font-size:14px;color:var(--faint);margin-left:10px;letter-spacing:1px;text-transform:uppercase}
-.where,.from{color:var(--soft);font-size:15px}.prose{margin:14px 0}.prose p{margin:0 0 14px}
-.facts{display:grid;grid-template-columns:max-content 1fr;gap:4px 14px;margin:14px 0}
-.facts dt{color:var(--faint);font-size:13px;text-transform:uppercase;letter-spacing:1px}.facts dd{margin:0}
-ul.notes li{font-style:italic}
-@media(max-width:760px){.guide-layout{grid-template-columns:1fr}.toc{position:static}.facts{grid-template-columns:1fr;gap:2px}}
-"""
-
-
 def render_guide_html(guide: dict[str, Any], sidecar: dict[str, Any] | None, exports_dir: Path,
                       siblings: set[str] | None = None) -> str:
     _, poss = _pronouns(guide["character"].get("gender"))
@@ -490,10 +469,8 @@ def render_guide_html(guide: dict[str, Any], sidecar: dict[str, Any] | None, exp
         meta.append(f"prose retold through Chapter {written_through}")
     if guide["open"]:
         meta.append("a night is still in progress")
-    parts = [f"<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>",
-             f"<title>{html.escape(guide['title'])}</title>{FONTS}<style>{CSS}{GUIDE_CSS}</style></head><body id='top' class='guide'>",
-             top_nav(("All chapters", index_anchor(guide["slug"])), ("About Rambleon", "../")),
-             f"<h1>{html.escape(guide['title'])}</h1>",
+    nav = top_nav(("All chapters", index_anchor(guide["slug"])), ("About Rambleon", "../"))
+    parts = [f"<h1>{html.escape(guide['title'])}</h1>",
              f"<div class='meta'>{html.escape(' · '.join(meta))}</div>",
              "<div class='guide-layout'><aside class='toc'><ol>"]
     for ch in guide["chapters"]:
@@ -534,8 +511,9 @@ def render_guide_html(guide: dict[str, Any], sidecar: dict[str, Any] | None, exp
                                                         for k, ev in ch["notes"]) + "</ul>")
         parts.append("</section>")
     parts.append("<a class='totop' href='#top'>↑ Back to top</a></main></div>")
-    parts.append(f"<footer>Recorded by Rambleon · {guide['nightCount']} night{'s' if guide['nightCount'] != 1 else ''}</footer></body></html>")
-    return "\n".join(parts)
+    return shell(html.escape(guide["title"]), nav, "\n".join(parts),
+                 f"Recorded by Rambleon · {guide['nightCount']} night{'s' if guide['nightCount'] != 1 else ''}",
+                 body_attrs=" id='top' class='guide'", guide=True)
 
 
 def _first_picture(ch: dict[str, Any], guide: dict[str, Any], exports_dir: Path, siblings: set[str] | None) -> dict[str, Any] | None:
@@ -569,6 +547,9 @@ def write_guide(archive: Archive, exports_dir: Path, slug: str, use_ai: bool = T
     model = journal_model(model) or DEFAULT_MODEL
     guide = build_guide(archive, slug, exports_dir)
     mode_name, mode_text = load_mode(mode)
+    if prompts.is_yours(prompts.load("guides", mode or default_mode())[2]):
+        for name in prompts.stray_placeholders(mode_text, "guides"):
+            log(f"guide mode {mode_name}: {{{name}}} is not something Rambleon fills in; it goes to the writer as written")
     md_path = exports_dir / "markdown" / f"guide-{slug}.md"
     atomic_write_bytes(md_path, render_guide_markdown(guide).encode("utf-8"))
     prompt = build_guide_prompt(guide, mode_text, voice)

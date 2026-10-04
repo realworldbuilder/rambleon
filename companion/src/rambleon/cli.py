@@ -17,20 +17,20 @@ from . import __version__
 from .archive import Archive
 from .doctor import apply_fixes, run_doctor
 from .archive import atomic_write_bytes
-from .export import carried_over, duration, export_filename, export_session, render_catchup, render_markdown
+from .export import carried_over, duration, export_filename, export_session, night_stats, render_catchup, render_markdown
 from .install import install_addon
 from .paths import resolve_paths
 from . import service as svc
 from .nights import earlier_nights, nights as list_nights, resolve_night
 from .notify import notify
 from .publish import write_html_index
-from .config import X_STYLES, effective, load_config, x_config
+from .config import X_STYLES, effective, journal_voice, load_config, x_config
 from .guide import available_modes, default_mode, write_guide
 from .share import ShareError, share as run_share
-from . import pipeline, xpost
+from . import pipeline, prompts, xpost
 from .watch import Finalizer
 from .wowstate import logged_out_since
-from .summarize import DEFAULT_MODEL, DEFAULT_VOICE, available_voices
+from .summarize import DEFAULT_MODEL, DEFAULT_VOICE
 from .watch import ingest_once, reprocess as run_reprocess, watch as run_watch
 
 app = typer.Typer(help="Rambleon — your Azeroth adventure journal, Mac side.", no_args_is_help=True, add_completion=False)
@@ -323,10 +323,13 @@ def config() -> None:
 
 @app.command()
 def voices() -> None:
-    """List journal voice profiles (companion/src/rambleon/prompts/voices/*.md). Default: golden."""
-    for v in available_voices():
-        marker = " (default)" if v == DEFAULT_VOICE else ""
-        console.print(f"{v}{marker}")
+    """List journal voice profiles: the bundled ones and your own. Default: golden, or `[journal] voice`."""
+    default = journal_voice() or DEFAULT_VOICE
+    for name, path in sorted(prompts.available("voices").items()):
+        marker = " (default)" if name == default else ""
+        console.print(f"{name}{marker}  [dim]{'yours' if prompts.is_yours(path) else 'bundled'}[/dim]", highlight=False)
+    console.print(f"[dim]Your own: put <name>.md in {escape(str(prompts.user_dir() / 'voices'))}, or pass --voice /path/to/file.md[/dim]",
+                  highlight=False, soft_wrap=True)
 
 
 @app.command()
@@ -341,10 +344,10 @@ def nights() -> None:
     for col in ("Night", "Character", "Duration", "Lv", "Quests", "Places", "Kills", "Deaths", "People", "Sessions", "State"):
         table.add_column(col)
     for n in rows:
-        c = n["counters"]; ch = n["character"]
-        lv = f"{ch.get('startLevel', '?')}→{ch.get('endLevel', '?')}" if ch.get("startLevel") != ch.get("endLevel") else str(ch.get("endLevel", "?"))
-        table.add_row(n["nightDate"], str(ch.get("displayName")), duration(n.get("playedSeconds")), lv, str(c.get("questsCompleted", 0)),
-                      str(len(n["zones"])), str(c.get("kills", 0)), str(c.get("deaths", 0)), str(len(n["people"])),
+        st = night_stats(n)
+        lv = f"{st['startLevel'] or '?'}→{st['endLevel'] or '?'}" if st["startLevel"] != st["endLevel"] else str(st["endLevel"] or "?")
+        table.add_row(n["nightDate"], str(n["character"].get("displayName")), st["duration"], lv, str(st["quests"]),
+                      str(st["places"]), str(st["kills"]), str(st["deaths"]), str(st["people"]),
                       str(len(n["sessionIds"])), n["state"])
     console.print(table)
 

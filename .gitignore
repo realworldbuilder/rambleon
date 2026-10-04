@@ -6,6 +6,7 @@ exports/*
 
 # Local overrides (WoW paths etc.)
 rambleon.local.toml
+/prompts/
 .env
 
 # Python

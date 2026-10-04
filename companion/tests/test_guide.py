@@ -7,7 +7,7 @@ from rambleon import guide as guide_mod
 from rambleon.archive import atomic_write_json
 from rambleon.guide import (build_guide, build_guide_prompt, export_guide_html, load_mode, needs_prose, render_guide_markdown,
                             sidecar_path, split_prose, stretches, write_guide)
-from rambleon.publish import _page_name
+from rambleon.pages import page_name as _page_name
 from test_memory import three_nights
 
 SLUG = "rambleon-birdsong"

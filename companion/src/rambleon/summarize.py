@@ -10,6 +10,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+from . import prompts
 from .archive import Archive, atomic_write_bytes, atomic_write_json
 from .config import character_overrides, journal_model, journal_voice, people_notes
 from .events import shown
@@ -17,21 +18,17 @@ from .export import clock, describe, duration, export_filename, long_date, rende
 from .memory import build_memory, companion_suffix, render_memory
 from .screenshots import caption
 
-RULES_PATH = Path(__file__).parent / "prompts" / "journal.md"
-VOICES_DIR = Path(__file__).parent / "prompts" / "voices"
 DEFAULT_VOICE = "golden"
 
 
 def available_voices() -> list[str]:
-    return sorted(p.stem for p in VOICES_DIR.glob("*.md"))
+    """Bundled voices and the player's own (<home>/prompts/voices/*.md)."""
+    return sorted(prompts.available("voices"))
 
 
 def load_voice(name: str | None) -> str:
-    name = name or os.environ.get("RAMBLEON_VOICE") or DEFAULT_VOICE
-    path = VOICES_DIR / f"{name}.md"
-    if not path.exists():
-        raise ValueError(f"unknown voice {name!r}; available: {', '.join(available_voices())}")
-    return path.read_text(encoding="utf-8").strip()
+    """The text of a voice: a name from `ramble voices`, or a path to a .md file of your own."""
+    return prompts.load("voices", name or os.environ.get("RAMBLEON_VOICE") or DEFAULT_VOICE)[1]
 RECAP_MARKER = "---RECAP---"
 POST_MARKER = "---POST---"
 DEFAULT_MODEL = "sonnet"
@@ -48,7 +45,7 @@ def build_prompt(session: dict[str, Any], chapter: int, voice: str | None = None
         if isinstance(v, (str, int, float, bool)) and k not in ("name", "slug"):
             c[k] = v
     cnt = session.get("counters", {})
-    rules = RULES_PATH.read_text(encoding="utf-8").replace("{voice}", load_voice(voice))
+    rules = prompts.journal_rules()[0].replace("{voice}", load_voice(voice))
     people = sorted(session.get("people", []), key=lambda p: -(p.get("seconds") or 0))
     lines = [rules.replace("{chapter}", str(chapter)), "", "=" * 72, "", "## Character", ""]
     lines.append(f"- Name: {c.get('displayName')}")
@@ -199,6 +196,10 @@ def summarize(session: dict[str, Any], archive: Archive, exports_dir: Path, use_
     else:
         chapter = archive.chapter_number(session)
     prompt = build_prompt(session, chapter, voice, memory)
+    rules_text, rules_path = prompts.journal_rules()
+    if prompts.is_yours(rules_path):
+        for name in prompts.stray_placeholders(rules_text, "journal"):
+            log(f"{rules_path.name}: {{{name}}} is not something Rambleon fills in; it goes to the writer as written")
     prompt_path = exports_dir / "prompts" / export_filename(session, "-prompt")
     atomic_write_bytes(prompt_path, prompt.encode("utf-8"))
     result: dict[str, Path | None] = {"prompt": prompt_path, "journal": None, "recap": None}

@@ -137,5 +137,17 @@ def earlier_nights(archive: Archive, night: dict[str, Any]) -> list[dict[str, An
             if (n.get("startedAt") or 0) < started and n.get("id") != night.get("id")]
 
 
+def chapter_numbers(all_nights: list[dict[str, Any]]) -> dict[str, int]:
+    """night id -> chapter number, for nights() output (oldest first): each character's nights count from 1.
+    For callers that number many nights at once; chapter_number() reads the archive again for each."""
+    count: dict[str, int] = {}
+    numbers: dict[str, int] = {}
+    for n in all_nights:
+        slug = n.get("character", {}).get("slug") or "unknown"
+        count[slug] = count.get(slug, 0) + 1
+        numbers[n["id"]] = count[slug]
+    return numbers
+
+
 def chapter_number(archive: Archive, night: dict[str, Any]) -> int:
     return len(earlier_nights(archive, night)) + 1

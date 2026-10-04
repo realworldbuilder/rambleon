@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- **Your own writing styles, in your own folder.** `<home>/prompts/` (`~/Rambleon/prompts/` for a package install;
+  gitignored in a checkout): `voices/<name>.md` is a voice of your own, `guides/<name>.md` a guide mode,
+  `journal.md` replaces the rules every chapter is written by, and `theme.css` is added after the page styles on
+  every story page, index and route guide. A file of yours with a bundled name wins. `--voice` now also takes a
+  path to a `.md` file, as `--mode` did. `ramble voices` shows which are bundled and which are yours. A `{name}`
+  in your prompt that Rambleon does not fill in is pointed out when the prompt is written.
+- Story page, index and route guide share one page shell (`pages.py`) and their styles live in
+  `assets/page.css` and `assets/guide.css`. Story pages are byte-for-byte what they were; the index and the guide
+  differ only by line breaks in `<head>`. Writing a page or the index reads the archive once instead of once per chapter.
 - **`ramble finish [tonight|date]`**: do for a night everything the watcher does when you log out (log, chapter,
   route guide, story page, index, chapters in game), for a night it missed or to write one again. `--share` also
   puts the page on your site (asks first).

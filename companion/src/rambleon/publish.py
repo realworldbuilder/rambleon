@@ -11,9 +11,11 @@ from typing import Any
 
 from .archive import Archive, atomic_write_bytes, is_trivial, load_json
 from .export import (_by_zone, _collapse_carried, _collapse_titles, _quest_label, _times, carried_over, clock, describe, duration,
-                     export_filename, long_date, place, quest_summary, render_markdown, render_recap)
+                     export_filename, long_date, night_stats, place, quest_summary, render_markdown, render_recap)
 from .events import shown
-from .nights import chapter_number as night_number, earlier_nights, nights
+from .pages import (PROJECT_URL, figure as _figure, guide_page_name, index_anchor, page_name as _page_name,  # noqa: F401
+                    paragraphs as _paragraphs, shell, top_nav)
+from .nights import chapter_numbers, earlier_nights, nights
 from .paths import Paths
 from .screenshots import caption as shot_caption, event_index
 
@@ -22,11 +24,6 @@ MAX_LOG_CHARS = 8000
 RESIZER = shutil.which("sips")   # macOS image tool; web copies are 1600 px JPEGs when it is present
 WEB_WIDTH = 1600
 HERO_REASONS = ("LEVEL_UP", "MARK")
-
-
-def guide_page_name(slug: str) -> str:
-    """The route guide page (guide.py writes it); story pages and the index link to it when it exists."""
-    return f"guide-{slug}.html"
 
 
 def journal_sidecar_path(exports_dir: Path, session_id: str) -> Path:
@@ -69,8 +66,10 @@ def recent_nights_per_character(all_nights: list[dict[str, Any]], keep: int = MA
 
 def build_chapters(archive: Archive, exports_dir: Path) -> list[dict[str, Any]]:
     chapters = []
-    for session in recent_nights_per_character(nights(archive)):
-        number = night_number(archive, session)
+    all_nights = nights(archive)                      # read once; every chapter is numbered from this list
+    numbers = chapter_numbers(all_nights)
+    for session in recent_nights_per_character(all_nights):
+        number = numbers[session["id"]]
         journal = load_journal(exports_dir, session["id"])
         chapters.append({
             "id": session["id"],
@@ -123,19 +122,13 @@ def character_line(c: dict[str, Any]) -> str:
     return " · ".join(x for x in (who, c.get("faction"), f"Level {level}" if level else "") if x)
 
 
-def index_anchor(slug: str) -> str:
-    """index.html, at this character's chapters (the index gives each character an id)."""
-    return "index.html" + (f"#{slug}" if slug else "")
-
-
-def _index_card(archive: Archive, exports_dir: Path, night: dict[str, Any], page: Path) -> str:
+def _index_card(exports_dir: Path, night: dict[str, Any], page: Path, number: int) -> str:
     journal = load_journal(exports_dir, night["id"])
-    number = night_number(archive, night)
-    cnt = night.get("counters", {})
+    st = night_stats(night)
     hero = pick_hero(prepare_images(night, page.with_suffix("")))
     thumb = f"<img class='thumb' src='{html.escape(hero['src'])}' alt=''>" if hero else "<span class='noshot'></span>"
-    facts = [long_date(night.get("startedAt")), duration(night.get("playedSeconds")), _count(cnt.get("questsCompleted", 0), "quest"),
-             _count(cnt.get("kills", 0), "kill"), _count(len(night.get("people", [])), "companion")]
+    facts = [long_date(night.get("startedAt")), st["duration"], _count(st["quests"], "quest"),
+             _count(st["kills"], "kill"), _count(st["people"], "companion")]
     title = chapter_title(night, journal, number)
     heading = title.split(" — ", 1)[1] if " — " in title else title
     return (f"<li><a class='card' href='{html.escape(page.name)}'>{thumb}<span class='body'><span class='n'>Chapter {number}</span>"
@@ -148,18 +141,20 @@ def write_html_index(archive: Archive, exports_dir: Path, only: set[str] | None 
     One character: the page is theirs. Several: a roster at the top, then a section per character (most recently
     played first) with its own chapters and route guide, so two journals never read as one."""
     groups: dict[str, dict[str, Any]] = {}   # slug → the character as of their latest night, and their cards
-    for night in reversed(nights(archive)):
+    all_nights = nights(archive)
+    numbers = chapter_numbers(all_nights)
+    for night in reversed(all_nights):
         page = exports_dir / "html" / export_filename(night).replace(".md", ".html")
         if only is not None and page.name not in only:
             continue
         if not page.exists():
-            export_html(night, archive, exports_dir)
+            export_html(night, archive, exports_dir, all_nights=all_nights)
         c = night.get("character", {})
         group = groups.setdefault(c.get("slug") or "unknown", {"character": c, "latest": night.get("startedAt"), "cards": []})
-        group["cards"].append(_index_card(archive, exports_dir, night, page))
+        group["cards"].append(_index_card(exports_dir, night, page, numbers[night["id"]]))
     total = sum(len(g["cards"]) for g in groups.values())
     chapters = lambda n: f"{n} chapter{'s' if n != 1 else ''}"
-    nav_links = [("About Rambleon", "../"), ("GitHub", "https://github.com/realworldbuilder/rambleon")]
+    nav_links = [("About Rambleon", "../"), ("GitHub", PROJECT_URL)]
     if len(groups) <= 1:
         slug, group = next(iter(groups.items()), ("", {"character": {}, "cards": []}))
         name = html.escape(group["character"].get("displayName", "") or "Rambleon")
@@ -185,9 +180,7 @@ def write_html_index(archive: Archive, exports_dir: Path, only: set[str] | None 
                             "<ul class='chapters'>" + "".join(group["cards"]) + "</ul></section>")
         body = (f"<h1>Adventure Journal</h1><div class='meta'>{len(groups)} characters · {chapters(total)} · newest first</div>"
                 "<div class='roster'>" + "".join(roster) + "</div>" + "".join(sections))
-    doc = (f"<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
-           f"<title>{title}</title>{FONTS}<style>{CSS}</style></head><body>"
-           + top_nav(*nav_links) + body + "<footer>Recorded by Rambleon</footer></body></html>")
+    doc = shell(title, top_nav(*nav_links), body, "Recorded by Rambleon")
     out = out or exports_dir / "html" / "index.html"
     atomic_write_bytes(out, doc.encode("utf-8"))
     return out
@@ -210,76 +203,13 @@ def _count(n: int, noun: str) -> str:
 # ---------------------------------------------------------------------------------------------------
 # HTML story page (for Substack, notes, or just reading in a browser)
 
-FONTS = ("<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>"
-         "<link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'>")
-
-CSS = """
-:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
-*{box-sizing:border-box}html{scroll-behavior:smooth}
-body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
-a{color:var(--link)}a:hover{color:#5a3510}
-nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
-nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
-nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
-h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
-h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
-h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
-.meta{color:var(--soft);margin-bottom:16px}
-.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
-.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
-.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
-.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
-.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
-.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
-.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
-figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
-.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
-footer{margin-top:48px;font-size:13px;color:var(--faint)}
-figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
-details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
-.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
-.quests{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0}
-.quests .tabs{display:flex;gap:4px;padding:6px 8px 0;border-bottom:1px solid var(--line);background:rgba(90,53,16,.05)}
-.quests .tabs button{font:inherit;font-size:15px;padding:8px 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--soft);cursor:pointer;margin-bottom:-1px}
-.quests .tabs button:hover{color:var(--link)}.quests .tabs button[aria-selected=true]{color:#5a3510;border-color:var(--gold);font-weight:bold}
-.quests .tabs .n{display:inline-block;min-width:22px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(90,53,16,.1);font-size:12px;font-weight:normal;color:var(--soft);text-align:center}
-.quests .pane{display:none;padding:6px 0 4px}.quests .pane.on{display:block}
-.quests table{width:100%;border-collapse:collapse;font-size:15px}
-.quests th,.quests td{text-align:left;padding:7px 14px;border-top:1px solid rgba(201,180,138,.5);vertical-align:top}
-.quests thead th{font:700 12px/1 Cinzel,Georgia,serif;letter-spacing:1.5px;color:#5a3510;border-top:0;padding-top:10px}
-.quests tr.zone th{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;background:rgba(90,53,16,.06);letter-spacing:.5px}
-.quests td.where,.quests td.lv,.quests td.since{color:var(--soft);white-space:nowrap}.quests td.lv{text-align:right}
-.quests .caveat{font-size:13px;color:var(--faint);margin:0;padding:8px 14px 6px;border-top:1px solid rgba(201,180,138,.5)}
-@media(max-width:520px){.quests .tabs button{padding:8px 8px;font-size:14px}.quests th,.quests td{padding:6px 10px}.quests td.where{white-space:normal}}
-.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
-.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
-.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
-.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
-.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
-.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
-.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
-.card .m{color:var(--soft);font-size:14px}
-.roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 8px}
-.char{display:block;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;text-decoration:none;color:inherit}
-.char:hover{box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
-.char .cn{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510}
-.char .cl{display:block;font-size:15px;color:var(--ink)}.char .cm{display:block;font-size:13px;color:var(--faint)}
-.who{scroll-margin-top:12px}.who h2{font:700 26px/1.2 Cinzel,Georgia,serif;letter-spacing:.5px;color:#5a3510;margin:44px 0 4px;padding-bottom:6px}
-@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
-"""
-
-
-def top_nav(*links: tuple[str, str], home: str = "index.html") -> str:
-    """The same slim bar on every page: wordmark home, then the page's own links."""
-    return (f"<nav class='top'><a class='brand' href='{html.escape(home)}'>Rambleon</a>"
-            + "".join(f"<a href='{html.escape(href)}'>{html.escape(label)}</a>" for label, href in links) + "</nav>")
-
-
-def neighbours(archive: Archive, session: dict[str, Any], siblings: set[str] | None = None) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
-    """(previous night, next night) around this one, skipping nights whose page is not in `siblings` when given."""
+def neighbours(archive: Archive, session: dict[str, Any], siblings: set[str] | None = None,
+               own: list[dict[str, Any]] | None = None) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    """(previous night, next night) around this one, skipping nights whose page is not in `siblings` when given.
+    `own`: this character's nights, when the caller has them already."""
     if session.get("kind") != "night":
         return None, None
-    ordered = nights(archive, session.get("character", {}).get("slug"))
+    ordered = own if own is not None else nights(archive, session.get("character", {}).get("slug"))
     ids = [n["id"] for n in ordered]
     if session["id"] not in ids:
         return None, None
@@ -292,28 +222,15 @@ def neighbours(archive: Archive, session: dict[str, Any], siblings: set[str] | N
     return pick(reversed(ordered[:i])), pick(ordered[i + 1:])
 
 
-def _page_name(session: dict[str, Any]) -> str:
-    return export_filename(session).replace(".md", ".html")
-
-
-def _pager(archive: Archive, prev_: dict[str, Any] | None, next_: dict[str, Any] | None, exports_dir: Path, cls: str = "") -> str:
+def _pager(numbers: dict[str, int], prev_: dict[str, Any] | None, next_: dict[str, Any] | None, exports_dir: Path, cls: str = "") -> str:
     if not prev_ and not next_:
         return ""
     def link(n, arrow_left):
-        title = chapter_title(n, load_journal(exports_dir, n["id"]), night_number(archive, n))
+        title = chapter_title(n, load_journal(exports_dir, n["id"]), numbers[n["id"]])
         text = f"← {title}" if arrow_left else f"{title} →"
         return f"<a class='{'prev' if arrow_left else 'next'}' href='{html.escape(_page_name(n))}'>{html.escape(text)}</a>"
     return (f"<div class='pager{' ' + cls if cls else ''}'>" + (link(prev_, True) if prev_ else "")
             + (link(next_, False) if next_ else "") + "</div>")
-
-
-def _paragraphs(text: str) -> str:
-    out = []
-    for block in [b.strip() for b in text.replace("\r", "").split("\n\n") if b.strip()]:
-        if block.startswith("#"):
-            continue
-        out.append("<p>" + html.escape(block).replace("\n", "<br>") + "</p>")
-    return "\n".join(out)
 
 
 def _web_copy(src: Path, image_dir: Path, stem: str) -> Path | None:
@@ -362,12 +279,6 @@ def pick_hero(images: list[dict[str, Any]]) -> dict[str, Any] | None:
             if img.get("reason") == reason:
                 return img
     return images[0] if images else None
-
-
-def _figure(img: dict[str, Any], cls: str = "") -> str:
-    cap = f"{clock(img.get('takenAt'))} — {img['caption']}"
-    return (f"<figure{' class=' + repr(cls) if cls else ''}><img src='{html.escape(img['src'])}' alt='{html.escape(img['caption'])}'>"
-            f"<figcaption>{html.escape(cap)}</figcaption></figure>")
 
 
 QUESTS_SCRIPT = ("<script>(function(){var tabs=document.querySelectorAll('.quests [role=tab]');tabs.forEach(function(t){"
@@ -424,7 +335,6 @@ def render_html(session: dict[str, Any], journal: dict[str, Any] | None, number:
     """`guide`: the route guide page to link from the top bar, when one exists beside this page.
     `carried`: carried_over() output, quests still open from earlier chapters."""
     c = session.get("character", {})
-    cnt = session.get("counters", {})
     title = chapter_title(session, journal, number)
     name = c.get("displayName", "Unknown")
     notes = [ev for ev in session.get("events", []) if ev.get("type") == "NOTE"]
@@ -432,11 +342,8 @@ def render_html(session: dict[str, Any], journal: dict[str, Any] | None, number:
     quests = _quests_section(session, carried)
     jumps = (([("Story", "#story")] if has_story else []) + [("Recap", "#recap")] + ([("Quests", "#quests")] if quests else [])
              + [("Journey", "#journey")] + ([("Notes", "#notes")] if notes else []))
-    parts = [f"<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>",
-             f"<title>{html.escape(title)} — {html.escape(name)}</title>",
-             f"{FONTS}<style>{CSS}</style></head><body id='top'>",
-             top_nav(("All chapters", index_anchor(c.get("slug", ""))), *([("Route guide", guide)] if guide else []), ("About Rambleon", "../")),
-             f"<h1>{html.escape(title)}</h1>",
+    nav = top_nav(("All chapters", index_anchor(c.get("slug", ""))), *([("Route guide", guide)] if guide else []), ("About Rambleon", "../"))
+    parts = [f"<h1>{html.escape(title)}</h1>",
              f"<div class='meta'>{html.escape(name)} · {html.escape(long_date(session.get('startedAt')))} · {html.escape(duration(session.get('playedSeconds')))} in Azeroth</div>",
              "<div class='jump'>" + "".join(f"<a href='{h}'>{t}</a>" for t, h in jumps) + "</div>",
              pager]
@@ -448,9 +355,9 @@ def render_html(session: dict[str, Any], journal: dict[str, Any] | None, number:
         parts.append("<div class='journal' id='story'>" + _paragraphs(journal["journal"]) + "</div>")
     recap = (journal or {}).get("recap") or render_recap(session)
     parts.append("<div class='recap' id='recap'>" + html.escape(recap.strip()) + "</div>")
-    stats = [("Quests", cnt.get("questsCompleted", 0)), ("Places", len(session.get("zones", []))),
-             ("Enemies slain", cnt.get("kills", 0)), ("Loot", cnt.get("loot", 0)), ("Deaths", cnt.get("deaths", 0)),
-             ("People", len(session.get("people", []))), ("XP", f"{cnt.get('xpGained', 0):,}")]
+    st = night_stats(session)
+    stats = [("Quests", st["quests"]), ("Places", st["places"]), ("Enemies slain", st["kills"]), ("Loot", st["loot"]),
+             ("Deaths", st["deaths"]), ("People", st["people"]), ("XP", f"{st['xp']:,}")]
     parts.append("<div class='stats'>" + "".join(f"<div class='stat'><b>{html.escape(str(v))}</b><span>{html.escape(k)}</span></div>" for k, v in stats) + "</div>")
     parts.append(quests)
     # Pictures sit on the timeline at their moment; the hero is not repeated.
@@ -479,20 +386,30 @@ def render_html(session: dict[str, Any], journal: dict[str, Any] | None, number:
     if notes:
         parts.append("<h2 id='notes'>Notes</h2><ul>" + "".join(f"<li>{html.escape(str(ev.get('text')))}</li>" for ev in notes) + "</ul>")
     parts.append(pager_bottom)
-    parts.append(f"<footer>Recorded by Rambleon · session {html.escape(session.get('id', ''))}</footer></body></html>")
-    return "\n".join(p for p in parts if p)
+    return shell(f"{html.escape(title)} — {html.escape(name)}", nav, "\n".join(p for p in parts if p),
+                 f"Recorded by Rambleon · session {html.escape(session.get('id', ''))}", body_attrs=" id='top'")
 
 
-def export_html(session: dict[str, Any], archive: Archive, exports_dir: Path, siblings: set[str] | None = None) -> Path:
-    """Write the story page. `siblings` limits previous/next links to pages that will sit next to it (e.g. the shared set)."""
-    number = night_number(archive, session) if session.get("kind") == "night" else archive.chapter_number(session)
+def export_html(session: dict[str, Any], archive: Archive, exports_dir: Path, siblings: set[str] | None = None,
+                all_nights: list[dict[str, Any]] | None = None) -> Path:
+    """Write the story page. `siblings` limits previous/next links to pages that will sit next to it (e.g. the shared set).
+    `all_nights`: nights() output when the caller has it, so writing many pages reads the archive once."""
+    slug = session.get("character", {}).get("slug")
+    if session.get("kind") == "night":
+        own = [n for n in all_nights if n.get("character", {}).get("slug") == slug] if all_nights is not None else nights(archive, slug)
+        numbers = chapter_numbers(own)
+        started = session.get("startedAt") or 0
+        prior = [n for n in own if (n.get("startedAt") or 0) < started and n.get("id") != session.get("id")]   # earlier_nights()
+        number = len(prior) + 1
+    else:
+        own, numbers, prior, number = [], {}, earlier_nights(archive, session), archive.chapter_number(session)
     journal = load_journal(exports_dir, session["id"])
     out = exports_dir / "html" / _page_name(session)
     image_dir = out.with_suffix("")  # exports/html/<date>-<slug>/  next to the page
-    prev_, next_ = neighbours(archive, session, siblings)
-    page = render_html(session, journal, number, image_dir, pager=_pager(archive, prev_, next_, exports_dir),
-                       pager_bottom=_pager(archive, prev_, next_, exports_dir, "bottom"),
-                       guide=_guide_link(exports_dir, session.get("character", {}).get("slug", ""), siblings),
-                       carried=carried_over(earlier_nights(archive, session), session))
+    prev_, next_ = neighbours(archive, session, siblings, own)
+    page = render_html(session, journal, number, image_dir, pager=_pager(numbers, prev_, next_, exports_dir),
+                       pager_bottom=_pager(numbers, prev_, next_, exports_dir, "bottom"),
+                       guide=_guide_link(exports_dir, slug or "", siblings),
+                       carried=carried_over(prior, session))
     atomic_write_bytes(out, page.encode("utf-8"))
     return out
