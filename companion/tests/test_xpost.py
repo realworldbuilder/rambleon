@@ -202,8 +202,8 @@ def test_autoposter_holds_while_playing_then_posts_once(tmp_path):
     assert poster.tick(now) == [] and x.calls == []                 # [x] auto is off
     (tmp_path / "rambleon.local.toml").write_text('[x]\nauto = true\ndelay = 45\nstyle = "post"\n')
     assert x_config(tmp_path)["delay"] == 45
-    if night["nightDate"] == xpost.night_date(int(now + 60)):       # (a run across the 5 a.m. cutoff has no "tonight")
-        assert poster.tick(now + 60) == [] and x.calls == []        # still in the world, and it is tonight's chapter
+    assert night["nightDate"] == xpost.night_date(int(now + 60))    # the fixture's evening is a fixed one
+    assert poster.tick(now + 60) == [] and x.calls == []            # still in the world, and it is tonight's chapter
     playing["yes"] = False
     assert poster.tick(now + 90) == []                              # scans once a minute
     [result] = poster.tick(now + 120)

@@ -213,10 +213,14 @@ assertEq(lastOfType("SCREENSHOT").reason, "MANUAL", "a failed screenshot records
 assertEq(ns.shotStatus, "failed", "shot status failed")
 assertEq(ns.pendingShot, nil, "pending shot cleared after failure")
 WoW.Fire("ACHIEVEMENT_EARNED", 6)
+assertEq(lastOfType("ACHIEVEMENT").name, "Level 10", "achievement name")
+assertEq(ns.session.counters.achievements, 1, "achievement counter")
 WoW.state.inInstance = true; WoW.state.instanceType = "party"; WoW.state.instanceName = "Ragefire Chasm"
 WoW.Fire("UPDATE_INSTANCE_INFO")
+assertEq(lastOfType("INSTANCE_ENTER").name, "Ragefire Chasm", "instance entered")
 WoW.state.inInstance = false; WoW.state.instanceType = "none"
 WoW.Fire("UPDATE_INSTANCE_INFO")
+assertEq(lastOfType("INSTANCE_EXIT").name, "Ragefire Chasm", "the exit remembers which instance")
 
 -- End chapter through the UI path
 WoW.Advance(280)
@@ -277,10 +281,90 @@ end
 check(RambleonDB, "RambleonDB")
 assertEq(#ns.failedEvents, 0, "no failed registrations in stub")
 
--- Write the fixture
+-- Write the fixture. The companion's tests count on this evening (two sessions, six minutes):
+-- anything that needs more time, marks or sessions belongs below, after the fixture.
 local fixtureDir = here .. "/../../companion/tests/fixtures"
 local text = WoW.SerializeSavedVariables({ "RambleonDB" })
 local fh = assert(io.open(fixtureDir .. "/Rambleon_simulated.lua", "wb"))
 fh:write(text); fh:close()
-print(string.format("OK — %d sessions, %d events in session 1, fixture written (%d bytes)",
-  #RambleonDB.sessions, #ended.events, #text))
+local summary = string.format("%d sessions, %d events in session 1, fixture written (%d bytes)",
+  #RambleonDB.sessions, #ended.events, #text)
+
+-- After the fixture ---------------------------------------------------------------------------------
+
+local function countOfType(t)
+  local n = 0
+  for _, ev in ipairs(ns.session.events) do if ev.type == t then n = n + 1 end end
+  return n
+end
+
+-- Log out and straight back in. `change` may alter the suspended session first.
+local function relog(change)
+  local saved = ns.session
+  ns.SuspendSession()
+  if change then change(saved) end
+  ns.session = nil
+  ns.enteredWorld = false
+  WoW.Fire("PLAYER_ENTERING_WORLD", true, false); WoW.Advance(2)
+  return saved
+end
+
+-- Resuming goes by GUID; the name decides only when a session has none
+ns.session = nil; ns.enteredWorld = false
+WoW.Fire("PLAYER_ENTERING_WORLD", true, false); WoW.Advance(2)
+assertEq(ns.session.state, "active", "back in the world")
+local before = relog(function(s) s.character.name = "Rambleon Birdsong" end)   -- the older build's spelling
+assert(ns.session == before, "same GUID resumes whatever the name looks like")
+before = relog(function(s) s.character.guid = "Player-70-SOMEONE" end)
+assert(ns.session ~= before, "another GUID with the same name is another character")
+before = relog(function(s) s.character.guid = nil end)
+assert(ns.session == before, "a session without a GUID resumes by name")
+before = relog(function(s) s.lastSeen = ns.Now() - 601 end)
+assert(ns.session ~= before, "no resume after the ten-minute window")
+
+-- Only the last ten finished sessions stay in SavedVariables (the Mac owns history)
+for i = 1, 12 do table.insert(RambleonDB.sessions, 1, { id = "old-" .. i, state = "ended" }) end
+ns.PruneSessions()
+local kept, hasActive = 0, false
+for _, s in ipairs(RambleonDB.sessions) do
+  if s.state == "active" then hasActive = (s == ns.session) else kept = kept + 1 end
+end
+assertEq(kept, 10, "ten finished sessions kept"); assert(hasActive, "the active session survives pruning")
+
+-- An event this client does not know is recorded, not fatal
+assertEq(ns.SafeRegister(ns.eventFrame, "BOGUS_EVENT"), false, "unknown event refused")
+assertEq(table.remove(ns.failedEvents), "BOGUS_EVENT", "and remembered for /ramble debug")
+
+-- A long note is cut, not lost
+assertEq(#ns.AddNote(string.rep("a", 600)).text, 500, "note limit")
+
+-- A dungeon: a /reload inside is not a second arrival, and the loading screen out is the exit
+WoW.state.inInstance = true; WoW.state.instanceType = "party"; WoW.state.instanceName = "The Deadmines"
+WoW.Fire("PLAYER_ENTERING_WORLD", false, false); WoW.Advance(2)
+assertEq(lastOfType("INSTANCE_ENTER").name, "The Deadmines", "entered through a loading screen")
+local enters = countOfType("INSTANCE_ENTER")
+relog()
+assertEq(countOfType("INSTANCE_ENTER"), enters, "resuming inside does not enter again")
+WoW.state.inInstance = false; WoW.state.instanceType = "none"
+WoW.Fire("PLAYER_ENTERING_WORLD", false, false); WoW.Advance(2)
+assertEq(lastOfType("INSTANCE_EXIT").name, "The Deadmines", "left through a loading screen")
+
+-- The chapters reader: stays out of the pictures, keeps the published date as written, clamps its pages
+_G.RambleonChapters = {
+  { id = "a", slug = "rambleon-birdsong", date = "Oct 2", title = "Chapter 1", journal = "First.", startedAt = 1 },
+  { id = "b", slug = "rambleon-birdsong", date = "Oct 3", title = "Chapter 2", journal = "Second.", startedAt = 2 },
+}
+_G.RambleonChaptersMeta = { published = "October 3, 9:14 PM" }
+ns.UI.ShowChapter(99)
+assertEq(ns.UI.chapterIndex, 2, "NEWER stops at the last chapter")
+assert(RambleonChaptersFrame.subtitle:GetText():find("published October 3, 9:14 PM", 1, true), "published date keeps its capitals")
+ns.UI.ShowChapter(-3)
+assertEq(ns.UI.chapterIndex, 1, "OLDER stops at the first chapter")
+assert(RambleonChaptersText:GetText():find("First.", 1, true), "first chapter shown")
+WoW.Advance(5)
+ns.HandleSlash("mark")
+assert(not RambleonChaptersFrame:IsShown(), "chapters reader hidden for the picture")
+WoW.Advance(1)
+assert(RambleonChaptersFrame:IsShown(), "chapters reader back after the picture")
+
+print("OK — " .. summary)

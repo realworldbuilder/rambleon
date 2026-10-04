@@ -5,9 +5,10 @@ _G.WoW = WoW
 
 unpack = unpack or table.unpack
 -- Wall-clock time follows the simulated clock, so the fixture's events are spaced like a real evening.
-local t0 = os.time() - 3600   -- the simulated evening happened an hour ago
+-- The evening is a fixed one (2026-09-20 18:00 UTC): the fixture is the same bytes on every run.
+local t0 = 1789927200
 time = function() return t0 + math.floor(WoW.clock - 1000) end
-date = os.date
+date = function(fmt, t) return os.date(fmt, t or time()) end
 tinsert = table.insert
 UISpecialFrames = {}
 StaticPopupDialogs = {}
@@ -29,7 +30,7 @@ WoW.state = {
 }
 
 function GetTime() return WoW.clock end
-function GetServerTime() return os.time() end
+function GetServerTime() return time() end
 function GetBuildInfo() return "1.60.1", "69913", "Sep 17 2026", 16001 end
 function GetLocale() return "enUS" end
 function GetRealZoneText() return WoW.state.zone end
