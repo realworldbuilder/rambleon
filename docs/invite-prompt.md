@@ -16,7 +16,7 @@ the following, telling me what each step does before you run it, and stopping to
    Classic-beta client, and expects the mainline-style 12.x AddOn API). Tell me which WoW folders you find.
 2. Install the companion:
    - `brew install uv` if `uv` is missing (install Homebrew first if that is missing too, and tell me).
-   - `uv tool install "git+https://github.com/realworldbuilder/rambleon#subdirectory=companion"`
+   - `uv tool install "git+https://github.com/realworldbuilder/rambleon@v0.4.0#subdirectory=companion"`
    - `ramble setup` — it finds my WoW folder, links the AddOn into `Interface/AddOns`, installs a background
      watcher that survives reboots, and opens my empty journal. If it cannot find WoW, ask me for the path and set
      `RAMBLEON_WOW_DIR`. Run `ramble doctor` afterwards and show me the result.

@@ -10,7 +10,8 @@ Only strings, numbers, booleans and tables are ever stored (`ns.Clean` enforces 
 ```lua
 RambleonDB = {
   schemaVersion = 1,
-  addonVersion = "0.1.0",
+  addonVersion = "0.4.0",
+  settings = { autoScreenshots = true, debug = false, welcomed = false },   -- defaults in Session.lua; see below
   sessions = {                     -- array, oldest first; at most 10 non-active sessions are kept in WoW
     {
       id = "2026-09-21T201547Z_rambleon-birdsong",
@@ -19,14 +20,14 @@ RambleonDB = {
       startedAt = 1790000000,      -- epoch seconds, time()
       startedServerTime = ...,     -- GetServerTime(), for cross-checking clocks
       lastSeen = ...,              -- bumped every event and every 30 s heartbeat
-      endedAt = ..., endReason = "end_chapter" | ...,
+      endedAt = ..., endReason = "save" | ...,       -- "save" from /ramble save; older sessions say "end_chapter"
       playedSeconds = 8040,
       resumes = 0,
       character = { name, fullName, realmFromFullName, realm, normalizedRealm, race, raceFile, class, classFile,
-                    faction, guid, startLevel, endLevel },
+                    faction, gender, guid, surname, displayName, startLevel, endLevel },
       client = { version, build, buildDate, tocVersion, projectId, flavorHint, flavor, addonVersion, locale },
       counters = { levelsGained, questsAccepted, questsCompleted, deaths, zonesVisited, notes, marks, screenshots, achievements,
-                   kills, xpGained, objectivesCompleted, loot },
+                   kills, xpGained, objectivesCompleted, loot, questsAbandoned },
       zones = { { zone, subzone, mapID, firstSeen, lastSeen, visits }, ... },
       people = { { name, class, classFile, firstSeen, lastSeen, seconds, joins }, ... },
       kills = { ["Timberling"] = { count = 12, xp = 540, firstAt = ..., lastAt = ... }, ... },
@@ -39,15 +40,21 @@ RambleonDB = {
 
 ### Event types
 
+The list itself is code: `addon/Rambleon/EventTypes.lua` (how each reads in game, which counter it bumps) and its
+twin `companion/src/rambleon/events.py` (how the companion's outputs treat it). Tests keep the two and this table's
+types in step; `docs/extending.md` shows how to add one.
+
 | type | fields |
 |---|---|
 | `SESSION_START`, `RESUMED`, `SESSION_END {reason}` | |
 | `ZONE_ENTER` | `zone`, `subzone`, `mapID`, `x`, `y` (map percent, one decimal; absent in instances) |
 | `LEVEL_UP` | `level` |
-| `QUEST_ACCEPTED`, `QUEST_COMPLETED` | `questID`, `title` (+ `xp`, `money` on completion) |
+| `QUEST_ACCEPTED`, `QUEST_COMPLETED`, `QUEST_ABANDONED` | `questID`, `title` (+ `xp`, `money` on completion). Abandoned (0.4.0): the quest left the log without being turned in |
 | `DEATH`, `REVIVED` | |
 | `GROUP_JOIN {name, class}`, `GROUP_LEAVE {name}` | |
-| `INSTANCE_ENTER {name, instanceType}`, `INSTANCE_EXIT` | |
+| `INSTANCE_ENTER {name, instanceType}`, `INSTANCE_EXIT {name}` | the exit was never recorded before 0.4.0 |
+| `BOSS_KILL {name, encounterID}` | a dungeon or raid encounter ended in a kill (`ENCOUNTER_END`; 0.4.0) |
+| `HEARTH_BOUND {name}` | an innkeeper made this place home (0.4.0) |
 | `ACHIEVEMENT {id, name}` | |
 | `SCREENSHOT` | `reason` (`LEVEL_UP` \| `MARK` \| `ZONE_ENTER` \| `MANUAL`), `auto`, and for automatic shots the `level`/`zone`/`subzone` of the moment; the companion finds the file by time |
 | `NOTE {text}`, `MARK` | |
@@ -58,13 +65,22 @@ RambleonDB = {
 
 Every event also carries `level`, and `zone`/`subzone` unless it is a zone event itself.
 
-`RambleonDB.settings = { autoScreenshots = true|false }` is the only per-character setting (`/ramble shots on|off`).
+`RambleonDB.settings`: `autoScreenshots` (`/ramble shots on|off`, or the Pictures row on the panel), `debug`
+(`/ramble debug on|off`), `welcomed` (the first-run note has been shown). Missing keys get their defaults at load;
+keys the AddOn does not know are left alone. The companion never reads settings.
+
+**Versions.** `schemaVersion` (1) is the shape of `RambleonDB`. Adding an event type, an event field, a counter or a
+setting does not change it: both sides ignore what they do not know. Bump it only when existing data must be
+rewritten to be read, and add the rewrite to `ns.MIGRATIONS[n]` in `Session.lua` (run once at load, oldest first;
+data from a newer Rambleon is left untouched). `normalizedVersion` (3) is the companion's own: bump it in `model.py`
+when normalization changes what an old raw snapshot turns into, so `ramble reprocess` is worth running.
 
 ### States
 
 - `active` while playing. `PLAYER_LOGOUT` (logout and `/reload`) turns it into `suspended`.
-- END CHAPTER turns it into `ended`. Recording anything afterwards starts a new session automatically.
-- On load, a `suspended` session for the same character seen < 10 minutes ago is resumed (`RESUMED` event).
+- `/ramble save` (the save popup) turns it into `ended`. Recording anything afterwards starts a new session automatically.
+- On load, a `suspended` session for the same character (by GUID; by name for sessions without one) seen
+  < 10 minutes ago is resumed (`RESUMED` event).
 
 ## 2. The Lua subset the companion parses
 
@@ -87,11 +103,11 @@ It accepts what Blizzard's serializer emits (observed on this machine, see `envi
 
 ```json
 {
-  "schemaVersion": 1, "normalizedVersion": 1,
+  "schemaVersion": 1, "normalizedVersion": 3,
   "id": "2026-09-21T201547Z_rambleon-birdsong",
   "addonState": "ended", "state": "ended",
   "startedAt": 1790000000, "startedServerTime": 1790000001, "endedAt": 1790008040, "lastSeen": 1790008040,
-  "playedSeconds": 8040, "endReason": "end_chapter", "resumes": 0,
+  "playedSeconds": 8040, "endReason": "save", "resumes": 0,
   "character": { "...raw fields...", "displayName": "Rambleon Birdsong", "slug": "rambleon-birdsong" },
   "client": { "...": "..." },
   "counters": { "levelsGained": 2, "...": 0 },
@@ -128,7 +144,7 @@ archive/
   sessions/normalized/history/  previous versions of any normalized file that was replaced
   screenshots/<session>/   copies of the night's screenshots (default; `--no-copy-screenshots` keeps references only)
   index.json               rebuilt after every change
-  posts/x.json             what `ramble post` sent to X: night id → { postedAt, style, ids, texts, image, partial? }
+  posts/x.json             what `ramble post` sent to X: night id → { v, postedAt, style, ids, texts, image, partial? }
   watch.pid                present while `ramble watch` runs
 ```
 
@@ -146,13 +162,34 @@ archive/
 - `social/<date>-<slug>-catchup.txt` — plain-text quest list for a friend (`ramble catchup`).
 - `markdown/guide-<slug>.md`, `prompts/guide-<slug>-<mode>-prompt.md`, `html/guide-<slug>.html` — the route guide
   (`ramble guide`): every night of one character cut into zone stretches. `guide/<slug>-<mode>.json` is its sidecar:
-  `slug, displayName, title, mode, nights (ids the prose covers), chapters, prose, model, voice, createdAt`;
+  `formatVersion, slug, displayName, title, mode, nights (ids the prose covers), chapters, prose, model, voice, createdAt`;
   `markdown/guide-<slug>-<mode>-prose.md` the same prose as a file. A mode other than the configured default writes
   `html/guide-<slug>-<mode>.html` beside the linked page.
-- `journal/<night id>.json` — the chapter as written: `sessionId, chapter, title, journal, recap, post, model, voice, createdAt`
+- `journal/<night id>.json` — the chapter as written: `formatVersion, sessionId, chapter, title, journal, recap, post, model, voice, createdAt`
   (`post`: the one-line telling for a social feed, from the prompt's `---POST---` section; absent before 2026-10-01).
   The story page, `Chapters.lua` and the prompts for later nights all read it: `memory.py` hands the writer the previous
   chapter's text, the last three chapters' titles and a companion history built from the normalized nights. Deleting
   a sidecar costs a title and the previous-chapter text, never a fact.
 
+- `finished/<night id>.json` — the marker `pipeline.py` writes when every step has run over a night:
+  `formatVersion, nightId, endedAt, events (how many the night held), finishedAt, steps (name → ok | skipped: … | failed: …)`.
+  A night with no marker, or one that has grown since, is what a restarted watcher finishes (`ramble status` lists
+  them). Nights finished before markers existed count when their journal sidecar, or else their story page, is newer
+  than the night's last minute.
+- `html/` — story pages, `index.html`, `guide-<slug>.html`, and an image folder per page.
+
+Files with a `formatVersion` (and X ledger entries with `v`, `Chapters.lua` with `RambleonChaptersMeta.format`) are
+at version 1; a file without the field is version 1 too.
+
 Generated artifacts are downstream of the archive and can always be regenerated. Raw history is never edited.
+
+## 6. The player's own files (`<home>/`)
+
+`<home>` is `~/Rambleon` for a package install and the checkout when running from one (`RAMBLEON_HOME` overrides).
+
+- `rambleon.local.toml` — settings; every key optional. `ramble config` prints what is in effect and warns about
+  keys it does not know. Sections: `[share] auto`; `[x] auto, style, link, picture, lowercase, delay, characters`;
+  `[guide] mode`; `[journal] voice, model`; `[characters."<slug>"]` (character fields to override, e.g. `gender`);
+  `[people."<Name>"] note`.
+- `prompts/voices/*.md`, `prompts/guides/*.md`, `prompts/journal.md`, `prompts/theme.css` — your own voices, guide
+  modes, chapter rules and page styles (`docs/extending.md`).

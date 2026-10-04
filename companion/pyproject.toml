@@ -1,6 +1,6 @@
 [project]
 name = "rambleon"
-version = "0.3.0"
+version = "0.4.0"
 description = "Rambleon Mac companion: archives World of Warcraft: Forever adventure sessions and turns them into journals."
 readme = "README.md"
 requires-python = ">=3.11"

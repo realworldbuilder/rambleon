@@ -34,3 +34,15 @@ def test_versions_agree():
     from rambleon import __version__
     project = tomllib.loads((REPO / "companion" / "pyproject.toml").read_text())
     assert project["project"]["version"] == __version__ == toc_version("Rambleon.toc") == toc_version("Rambleon_Camelot.toc")
+
+
+def test_a_release_is_announced_everywhere():
+    """The version has a CHANGELOG heading, and every pinned install line installs that version."""
+    from rambleon import __version__
+    assert re.search(rf"^## {re.escape(__version__)}\b", (REPO / "CHANGELOG.md").read_text(), re.M)
+    pinned = []
+    for doc in ("README.md", "companion/README.md", "docs/invite-prompt.md", "site/index.html"):
+        pins = re.findall(r"rambleon@v([0-9][0-9A-Za-z.]*)#subdirectory=companion", (REPO / doc).read_text())
+        assert pins, f"{doc} has no pinned install line"
+        pinned += pins
+    assert set(pinned) == {__version__}

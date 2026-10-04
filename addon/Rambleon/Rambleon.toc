@@ -2,7 +2,7 @@
 ## Title: |cffd9a760RAMBLEON|r
 ## Notes: Your Azeroth Adventure Journal. Quietly remembers where you went, what you did, and who you met.
 ## Author: William Hussey
-## Version: 0.3.0
+## Version: 0.4.0
 ## IconTexture: Interface\Icons\INV_Misc_Book_09
 ## SavedVariablesPerCharacter: RambleonDB
 ## X-Website: https://github.com/realworldbuilder/rambleon

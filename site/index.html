@@ -82,7 +82,7 @@ history on your own Mac.</p>
 <div class='req'><span>macOS</span><span>World of Warcraft: Forever</span><span>Homebrew</span><span>Claude Code, optional, for AI chapters</span></div>
 <p>Three commands. The last one finds your WoW folder, links the AddOn in, starts the background watcher and opens your empty journal.</p>
 <pre><button class='copy'>Copy</button>brew install uv
-uv tool install "git+https://github.com/realworldbuilder/rambleon#subdirectory=companion"
+uv tool install "git+https://github.com/realworldbuilder/rambleon@v0.4.0#subdirectory=companion"
 ramble setup</pre>
 <p>Then play. In game <code>/ramble</code> opens the panel and <code>/ramble note &lt;text&gt;</code> adds your own words. Logging out is the save. Add <code>--no-ai</code> to <code>ramble setup</code> if you do not want the Claude step.</p>
 </div>
@@ -93,7 +93,7 @@ ramble setup</pre>
 1. Check the ground: this must be macOS with World of Warcraft installed (Rambleon was built on WoW: Forever, the Classic-beta client, and expects the mainline-style 12.x AddOn API). Tell me which WoW folders you find.
 2. Install the companion:
    - `brew install uv` if `uv` is missing (install Homebrew first if that is missing too, and tell me).
-   - `uv tool install &quot;git+https://github.com/realworldbuilder/rambleon#subdirectory=companion&quot;`
+   - `uv tool install &quot;git+https://github.com/realworldbuilder/rambleon@v0.4.0#subdirectory=companion&quot;`
    - `ramble setup` — it finds my WoW folder, links the AddOn into `Interface/AddOns`, installs a background watcher that survives reboots, and opens my empty journal. If it cannot find WoW, ask me for the path and set `RAMBLEON_WOW_DIR`. Run `ramble doctor` afterwards and show me the result.
 3. AI-written chapters are optional. If I have Claude Code installed and logged in (`claude`, then `/login`), the companion uses it to write the chapter at the end of the night. If not, tell me I still get the timeline, the factual log, the story page and a prompt file I can paste anywhere, and offer `ramble setup --no-ai`.
 4. Explain the in-game side in a few lines: start WoW (or relog so it sees the AddOn), `/ramble` opens the panel, `/ramble note &lt;text&gt;` adds my own words (the best thing I can give the writer), `/ramble mark` remembers a moment and takes a picture, `/ramble chapters` shows past chapters, and logging out is the save. There is no end button.

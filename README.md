@@ -11,11 +11,15 @@ journal chapter written from what actually happened, readable in game and ready 
 
 **See a real journal:** https://realworldbuilder.github.io/rambleon/example/
 
+| A night's story page | The route guide: how the character actually leveled |
+|---|---|
+| ![A story page: chapter title, the night's hero screenshot, the chapter](docs/img/story-page.jpg) | ![The route guide: zone stretches with level ranges, prose and facts](docs/img/route-guide.jpg) |
+
 Rambleon is a **memory layer**, not a meter. It never automates anything, never reads protected combat data, and
 never needs the network in game. Think Strava recap, travel journal, captain's log.
 
 **Status:** early, real, and used nightly by its author on the **World of Warcraft: Forever** beta, on **macOS**.
-Windows and other WoW flavours are on the roadmap. MIT licensed.
+Other WoW flavours and Windows are not supported yet. MIT licensed.
 
 ## What a night looks like
 
@@ -43,13 +47,14 @@ You need [Homebrew](https://brew.sh) and WoW installed. Then:
 
 ```bash
 brew install uv
-uv tool install "git+https://github.com/realworldbuilder/rambleon#subdirectory=companion"
+uv tool install "git+https://github.com/realworldbuilder/rambleon@v0.4.0#subdirectory=companion"
 ramble setup
 ```
 
 `ramble setup` finds your WoW folder, links the AddOn into it, starts a background watcher that survives reboots,
 and opens your (empty) journal. Start WoW, or log out to the character screen and back in so it sees the AddOn.
-That is the whole setup.
+That is the whole setup. The line above installs release 0.4.0; leave out `@v0.4.0` for the newest code on `main`,
+and run the same line again (with `--force`) to upgrade, then `ramble service install` to restart the watcher.
 
 For AI-written chapters, install [Claude Code](https://claude.com/claude-code) and log in once (`claude`, then
 `/login`). Without it you still get the timeline, the story page, and a prompt file you can paste into any assistant.
@@ -59,21 +64,52 @@ To remove it: `ramble uninstall` (your archive stays unless you ask for it to go
 ## Playing with it
 
 - `/ramble` opens the panel: time, place, level, quests, places, kills, loot, deaths, people, and the recent journey.
+  The first time, it says what Rambleon is; after that it stays out of the way.
 - `/ramble note the cave is extremely cursed` — your own words are the best evidence the writer gets.
 - `/ramble mark` — remember this moment and take a picture (there is a keybinding for it under AddOns).
-- Level ups and the first step into a new zone are photographed too; `/ramble shots off` if you would rather not.
+- Level ups and the first step into a new zone are photographed too; `/ramble shots off` (or the Pictures row on the
+  panel) if you would rather not.
 - `/ramble chapters` — read past chapters in game; click the text, Ctrl-A, Ctrl-C.
 - Log out when you are done. That is the save. A few seconds later the chapter is written on your Mac.
 
 On the Mac: `ramble nights` lists chapters, `ramble page tonight` opens the story page, `ramble summarize tonight
 --voice field-journal` rewrites a chapter in another voice, `ramble guide --open` shows the route guide (how you actually leveled, stretch by stretch; `--mode season` retells it
 for you instead of for a stranger), `ramble share tonight` puts a chapter (pictures included) on
-your GitHub Pages site after asking, `ramble doctor --fix` repairs a broken link or a stopped watcher. `ramble --help`
-has the rest.
+your GitHub Pages site after asking (it needs your own fork of this repository, checked out, with Pages on),
+`ramble finish tonight` writes a night's chapter and pages again from scratch (or for a night the watcher missed),
+`ramble doctor --fix` repairs a broken link or a stopped watcher. `ramble --help` has the rest.
+
+### Your files and settings
+
+Everything of yours is in one folder: `~/Rambleon/` (when you run from a git checkout, the checkout).
+
+| | |
+|---|---|
+| `archive/` | your history: every session as plain JSON, and the raw files WoW wrote, byte for byte |
+| `exports/` | everything made from it (logs, chapters, pages); can always be rebuilt |
+| `rambleon.local.toml` | your settings; optional, every key has a default. `ramble config` shows what is in effect and warns about a key it does not know |
+| `prompts/` | your own voices, guide modes, chapter rules and page theme ([docs/extending.md](docs/extending.md)) |
+
+```toml
+# ~/Rambleon/rambleon.local.toml — all optional
+[journal]
+voice = "field-journal"     # the voice the watcher writes in (`ramble voices`), or a path to your own .md
+model = "sonnet"            # the Claude model
+
+[guide]
+mode = "route"              # or "season", or a mode of your own
+
+[characters."rambleon-birdsong"]
+gender = "male"             # a fact about a character the game did not record
+
+[people."Cassidy"]
+note = "my friend from work"   # your own words about a companion; the writer gets them as evidence
+```
+
+A voice of your own is a text file: put `saga.md` in `~/Rambleon/prompts/voices/` and write with `--voice saga`.
 
 Want every chapter on your site the moment it is written, no questions asked? Put this in `rambleon.local.toml`
-next to your checkout (the file is gitignored, so it only affects that Mac) and restart the watcher with
-`ramble service install`:
+(it only affects that Mac) and restart the watcher with `ramble service install`:
 
 ```toml
 [share]
@@ -104,9 +140,9 @@ and it installs Rambleon for them.
 
 ## What it records, and what it never records
 
-Recorded: where you went, quests accepted and completed and their objectives, levels, experience, kills that gave
-experience (from the chat line), uncommon-or-better loot, deaths, who you grouped with and for how long, dungeons,
-achievements, screenshots (yours, and the ones it takes at level ups, marks and new zones), your notes and marks, playtime.
+Recorded: where you went, quests accepted, completed and abandoned and their objectives, levels, experience, kills
+that gave experience (from the chat line), uncommon-or-better loot, deaths, who you grouped with and for how long,
+dungeons and the bosses you defeated in them, the inn you made home, achievements, screenshots (yours, and the ones it takes at level ups, marks and new zones), your notes and marks, playtime.
 
 Never: damage numbers or the combat log, chat content, other players beyond your group roster as the game shows it,
 anything Blizzard marks protected or secret. Nothing leaves your Mac. If you use the AI step, the only thing sent is
@@ -131,13 +167,16 @@ scripts/bootstrap        # uv, the companion env, `ramble` on PATH (editable)
 scripts/test             # luac -p, a simulated session under a WoW API stub, pytest
 ```
 
-`CLAUDE.md` explains the philosophy and the rules; `docs/` has the environment notes, the Forever API findings,
-the data model, a running progress log, and the roadmap.
+[CONTRIBUTING.md](CONTRIBUTING.md) has the rules in short. [docs/extending.md](docs/extending.md) shows the three
+things Rambleon is built to have added: a new thing to remember (one entry in the AddOn's `EventTypes.lua` and one in
+the companion's `events.py`), a new output (one step in `pipeline.py`), and a new voice, guide mode or page theme
+(a file, no code). `docs/` also has the Forever API findings, the data model, a running progress log and the roadmap.
 
 ## Roadmap, briefly
 
-One-command setup (done), then chapter quality (rating loop, voices, a share card), then memory over time
-(character timeline, people you have played with, weekly recaps, an adventure map), then a small menu-bar app.
+One-command setup and a base to build on (done), then chapter quality (a rating loop, more voices, a share card),
+then memory over time (character timeline, people you have played with, weekly recaps, an adventure map), then a
+small menu-bar app.
 See `docs/roadmap.md`.
 
 Ramble on.

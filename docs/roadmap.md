@@ -1,6 +1,6 @@
 # Rambleon — plan to offer it to other players
 
-Updated 2026-09-22 after two nights of real use. "Productize" here means: a stranger who plays WoW: Forever on a
+Updated 2026-10-04 (release 0.4.0), after two weeks of nightly use. "Productize" here means: a stranger who plays WoW: Forever on a
 Mac can install it in one sitting, never think about it again, and get a chapter they want to paste somewhere.
 Free and open. Money, if ever, is a tip jar or a nicer Mac app later; never a gate on the data.
 
@@ -15,56 +15,63 @@ Free and open. Money, if ever, is a tip jar or a nicer Mac app later; never a ga
 - "Is it there yet?" will be every user's first support question. Show state everywhere: publish time in game,
   a notification on the Mac, the story page opening itself.
 
-## Decisions that are William's (not yet made)
+## Decisions (made 2026-09-22)
 
-1. **Name and identity.** "Rambleon" is the character's name. Fine as the product name? (I think yes: it sounds like
-   "ramble on", and the sign-off is already "Ramble on.")
-2. **Where it lives.** A public GitHub repo (`rambleon`) under your account, now or after Phase A?
-3. **License.** MIT (simplest, most permissive) vs. something with attribution requirements. Recommendation: MIT.
-4. **Platform scope for the first offer.** Mac only (what we can test) vs. promising Windows. Recommendation: Mac
-   first, say so plainly, keep the Python core portable.
-5. **AI stance.** Recommendation: prompt file always; Claude CLI if present; bring-your-own API key next; local
-   Ollama as the privacy option. Never a hosted service that sees other people's play data unless they opt in.
+1. **Name.** Rambleon: the character's name, and "ramble on".
+2. **Where it lives.** Public on GitHub: `realworldbuilder/rambleon`.
+3. **License.** MIT.
+4. **Platform for the first offer.** Mac only, said plainly. The Python core stays portable; Windows is not planned yet.
+5. **AI stance.** The prompt file always; the Claude CLI when it is there. Never a hosted service that sees other
+   people's play data. A hosted site is shelved (2026-09-25) until the core has earned it.
 
-## Phase A — Works for a stranger (target: two weeks)
+## Phase A — Works for a stranger
 
 Done when a friend with WoW Forever and a Mac installs it from the README and gets a chapter on night one with no
 help from us.
 
-- [ ] **One-command setup.** `ramble setup`: doctor → install AddOn → install service → open the index page.
+- [x] **One-command setup.** `ramble setup`: doctor → install AddOn → install service → open the index page.
       Detects a missing `claude` login and says exactly what to do.
-- [ ] **Install without the repo.** AddOn as a versioned zip (GitHub release, later CurseForge/Wago). Companion via
+- [x] **Install without the repo.** AddOn as a versioned zip (GitHub release, later CurseForge/Wago). Companion via
       `uv tool install` from the GitHub URL, or a Homebrew tap. `RAMBLEON_HOME` defaults to `~/Rambleon` for non-dev installs.
-- [ ] **Self-healing.** `ramble doctor --fix`: recreate a deleted symlink (Battle.net updater), restart a stale
-      service, rebuild the index. The service restarts itself when the companion is upgraded.
+- [x] **Self-healing.** `ramble doctor --fix`: recreate a deleted symlink (Battle.net updater), restart a stale
+      service, rebuild the index. A watcher that was down or crashed finishes the nights it owes when it starts
+      (0.4.0). Still open: the service restarting itself when the companion is upgraded.
 - [ ] **Multi-character, multi-flavor.** Already per-character on disk; make the CLI show and select characters, and
       handle `_retail_`/`_classic_` folders if present (TOC work + a test pass).
-- [ ] **First-run in game.** A one-time welcome in the panel: what it records, what it never records, `/ramble note`.
-- [ ] **Capture gaps players will hit next.** Hearthstone bound/used, flight paths, rare/elite kills marked,
-      new spells/talents learned, dungeon boss kills. Each one small; each one behind the "six months later" test.
-- [ ] **Verify** loot events and screenshot pairing in game (still unconfirmed).
-- [ ] **README for humans**: screenshots of the panel, the chapters reader, a story page; a "what leaves my Mac"
-      section (nothing, unless you run the AI step, and then only the prompt).
-- [ ] **License file, CHANGELOG, version bump to 0.2.0**, a GitHub Actions job that runs `scripts/test` and builds the zip.
+- [x] **First-run in game.** A welcome in the one login line and a one-time note the first time the log opens (0.4.0).
+- [ ] **Capture gaps players will hit next.** Done in 0.4.0: abandoned quests, hearthstone bound, dungeon boss
+      kills, leaving an instance. Still open, each one entry in `EventTypes.lua` and `events.py` (`docs/extending.md`):
+      hearthstone *used* (spellcast data may be secret on 12.x), flight paths (`UI_INFO_MESSAGE` / `UnitOnTaxi`, argument
+      shapes unverified), rare and elite kills (a field on `FIRST_KILL` from `UnitClassification`), new spells and talents.
+- [x] **Verify** loot events and screenshot pairing in game. Both confirmed by the archive: loot since 10-02,
+      paired pictures since 09-23.
+- [ ] **README for humans**: a story page, the index and the route guide are pictured, and "what leaves my Mac" is
+      written (0.4.0). Still open: pictures of the in-game panel and the chapters reader (they need the game).
+- [x] **License file, CHANGELOG, releases**, a GitHub Actions job that runs `scripts/test` and builds the zip and the wheel.
 
-## Phase B — Worth pasting unedited (target: the two weeks after)
+## Phase B — Worth pasting unedited
 
 - [ ] **Rating loop.** `ramble rate tonight 👍|👎 "note"` stored next to the journal sidecar; a `ramble review` that
       shows chapters and ratings side by side so the rules can be tuned on evidence.
 - [ ] **Evidence density.** Quest text at accept time (`C_QuestLog.GetQuestInfo`), zone/subzone first-visit flags,
       "first time in Darnassus" moments, time-of-day in the character's world.
-- [ ] **Voices.** Two or three good ones, chosen per night or per character. Keep `golden` and `field-journal`;
-      add a terse "captain's log". A `ramble voices try tonight` that renders all voices for comparison.
+- [ ] **Voices.** Your own voices, guide modes, journal rules and page theme live in `<home>/prompts/` (0.4.0), and
+      `[journal] voice` picks one for the watcher. Still open: a terse "captain's log" in the box, and
+      `ramble voices try tonight` to render every voice for comparison.
 - [x] **X.** `ramble post` and `[x] auto`: one post per night (title, the writer's one-line telling, hero picture) or
-      the whole chapter as a thread. Built 2026-10-01; not yet run against the live API.
+      the whole chapter as a thread. Built 2026-10-01; the live API refused the first try (the developer app was not enrolled in a project), so no
+      post has gone out yet.
 - [ ] **Recap card.** A PNG share card (title, date, stats, one line) generated from the story page for socials.
 - [x] **Screenshots on the timeline** in the story page, captioned by the moment (auto shots at level ups, marks, new
-      zones; hero picture; `ramble share`). Done 2026-09-22; in-game verification pending.
+      zones; hero picture; `ramble share`). Done 2026-09-22; in use since 09-23.
 - [x] **Chapter continuity.** The writer gets the last three chapters as one factual line each, the previous chapter's
       text, and each companion's history (familiar or new, first met when and where, hours before tonight), with a rule
       against re-narrating old nights. `memory.py`. Done 2026-09-26.
 
-## Phase C — Memory over time (a month out)
+## Phase C — Memory over time
+
+Each of these is a new output: one step in `pipeline.py` and a body inside `pages.shell` (`docs/extending.md`).
+
 
 - [ ] Character timeline page (level curve, nights, places, companions, deaths) from the index alone.
 - [ ] People page: first met, last seen, hours together, nights shared.
@@ -90,6 +97,16 @@ voice picker. Signed and notarised .dmg. This is where a "buy me a coffee" could
 
 ## Next three things (in order)
 
-1. `ramble setup` + `doctor --fix` + install-without-the-repo (Phase A core).
-2. Verify loot and screenshots in game; add hearthstone/flight path/rare capture.
-3. README with pictures, license, first GitHub release.
+1. Play a night on 0.4.0 and tick off "To verify in game" in `docs/progress.md` (abandoned quest, hearth, a boss,
+   leaving a dungeon, the welcome, the Pictures row).
+2. Get one post out on X for real, or take X out of the README until it has worked once.
+3. Phase B's rating loop, so the writing rules are tuned on evidence; then the People page (Phase C).
+
+## Deliberately left for later
+
+- Splitting `Session.lua` (790 lines). The cut lines are clear (`Capture.lua` for kills, objectives and loot;
+  `Screenshots.lua`), but it is a pure move whose only risk shows in game.
+- A Blizzard Settings panel category. `/ramble shots` and the Pictures row cover the one setting; the Settings API
+  is unverified on Forever.
+- Localization (the AddOn's own text is English; chat parsing already uses the client's localized formats).
+- Other WoW flavours, Windows, plugin loading from third-party packages, the journal on its own branch.

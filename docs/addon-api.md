@@ -65,24 +65,27 @@ matches chapters by it (slug only as a fallback for old files). Group members ar
 | `PLAYER_LEVEL_UP` | `LEVEL_UP` | arg1 = new level |
 | `QUEST_ACCEPTED` | `QUEST_ACCEPTED` | retail passes `(questID)`, classic `(index, questID)`; both handled. Title from `C_QuestLog.GetTitleForQuestID`, retried once after 1 s |
 | `QUEST_TURNED_IN` | `QUEST_COMPLETED` | `(questID, xp, money)` |
+| `QUEST_REMOVED` | `QUEST_ABANDONED` | `(questID)`. Fires for a turn-in too, in an order the client does not promise, so the AddOn waits a second and records only a quest that was not turned in and whose title it already knew (hidden bookkeeping quests have none). **Unverified on Forever as of 2026-10-04** |
+| `HEARTHSTONE_BOUND` | `HEARTH_BOUND {name}` | name from `GetBindLocation()`. **Unverified on Forever as of 2026-10-04** |
+| `ENCOUNTER_END` | `BOSS_KILL {name, encounterID}` | `(encounterID, name, difficultyID, groupSize, success)`; only `success == 1`. Not the combat log. **Unverified on Forever as of 2026-10-04** |
 | `PLAYER_DEAD` / `PLAYER_UNGHOST` / `PLAYER_ALIVE` | `DEATH` / `REVIVED` | **build 70009 fires `PLAYER_DEAD` twice per death**, 1–4 s apart (every death from 09-24 to 10-01 was recorded twice; 09-22 and the second character were not). The AddOn ignores a repeat within 30 s and skips `UnitIsFeignDeath`; `normalize.drop_death_echoes` does the same for old recordings (`ramble reprocess`). Revival only logged if `UnitIsDeadOrGhost` is false |
 | `CHAT_MSG_LOOT` | `LOOT` (uncommon+) | the item link in the line uses the 12.x **named colour** `|cnIQ2:|Hitem:…`, not `|cff1eff00`; the parser read only the hex form until 0.3.1, which is why no night before 10-02 has loot. `/ramble debug` now shows `loot: N chat lines, M read, K kept` and the last line it could not read |
 | `GROUP_ROSTER_UPDATE` | `GROUP_JOIN` / `GROUP_LEAVE`, people table | roster diff, names guarded against secret values, time together accumulated on heartbeat |
-| `UPDATE_INSTANCE_INFO` | `INSTANCE_ENTER` / `INSTANCE_EXIT` | via `IsInInstance()` transitions |
+| `UPDATE_INSTANCE_INFO`, `PLAYER_ENTERING_WORLD` | `INSTANCE_ENTER` / `INSTANCE_EXIT {name}` | via `IsInInstance()` transitions. Until 0.4.0 every loading screen reset the remembered state, so the exit (which is a loading screen) was never recorded: 18 enters, 0 exits in the archive |
 | `ACHIEVEMENT_EARNED` | `ACHIEVEMENT` | pcall-registered; may not exist |
 | `SCREENSHOT_SUCCEEDED` | `SCREENSHOT {reason, auto, level, zone, subzone}` | no payload; the companion pairs the file by time. `reason` is `LEVEL_UP`, `MARK`, `ZONE_ENTER` when the AddOn took the picture (`auto = true`), else `MANUAL` |
 | `SCREENSHOT_FAILED` | — | clears the pending reason; `/ramble debug` shows `last: failed` |
 
 Deliberately not recorded: chat content, anything from the combat log, protected or secret values.
 
-### Automatic screenshots (0.3.0, unverified on Forever as of 2026-09-22)
+### Automatic screenshots (0.3.0; working on Forever, pictures paired nightly since 2026-09-23)
 
 The AddOn calls the global `Screenshot()` (retail API; other addons use it for level-up shots) from `ns.TakeScreenshot`
 in `Session.lua`: one second after `PLAYER_LEVEL_UP` (the glow), 0.2 s after `/ramble mark`, and one second after the
 `ZONE_ENTER` for the first visit to a new main zone tonight. Guards: `type(Screenshot) == "function"`, `pcall`, a 3 s
 rate limit, `RambleonDB.settings.autoScreenshots` (`/ramble shots on|off`). The reason is parked in `ns.pendingShot`
 and consumed by `SCREENSHOT_SUCCEEDED` (15 s TTL), so a manual screenshot in between would inherit it (rare, accepted).
-The UI is never hidden. Files land in `<WoW>/Screenshots/WoWScrnShot_MMDDYY_HHMMSS.<jpg|tga|png>` per the
+Rambleon's own panel and chapters reader are hidden for the picture and shown again after; the game's UI is not touched. Files land in `<WoW>/Screenshots/WoWScrnShot_MMDDYY_HHMMSS.<jpg|tga|png>` per the
 `screenshotFormat` CVar; the companion converts to JPEG for the web (sips) and can only *display* jpg/png.
 
 ## SavedVariables mechanics and the Forever beta bug

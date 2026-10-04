@@ -25,7 +25,7 @@ Before adding a feature or recording an event: **"Will this help the player reme
 If it would not be interesting to read six months later, it does not belong. Memories, not telemetry.
 The player's own words (`/ramble note`) always outrank anything the API can tell us.
 
-## How it works (current, 2026-09-22)
+## How it works (current, 2026-10-04, release 0.4.0)
 
 ```
 WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and /reload)
@@ -46,13 +46,17 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
   (`ramble x login`; OAuth 1.0a, stdlib only, pay-per-use API, a link in a post costs ~13× more so `link` is off by
   default). `[x] auto = true` in `rambleon.local.toml`: the watcher's `AutoPoster` posts a night once it is over, its
   chapter covers the last session, it has been quiet for `delay` minutes and (for tonight's) the player is not in the world.
-  `archive/posts/x.json` is the ledger: a night is never posted twice. Unverified against the live API as of 10-01.
+  `archive/posts/x.json` is the ledger: a night is never posted twice. No post has gone out yet: the first live try
+  (10-01) was refused because the developer app was not attached to a project.
 - **A chapter is a night**: every session of one evening (5 a.m. cutoff) stitched together in `nights.py`.
   Reloads and relogs are continuity, not breaks (the AddOn resumes a session seen < 10 min ago).
 - **Finalization**: the watcher writes the chapter the moment the player leaves (WoW quit, or `Logs/Client.log`
   shows a logout after the last save), ten minutes after the last write as fallback, or at once after `/ramble save`.
-  Then: export → AI journal (if the Claude CLI is logged in) → route guide (facts always; prose only when a night is new to it)
-  → story page + index → publish to the game → macOS notification.
+  Then the steps of `pipeline.STEPS`, each guarded so one failure never skips the rest: late screenshots → Markdown
+  log → AI journal (if the Claude CLI is logged in; the prompt always) → route guide (facts always; prose only when a
+  night is new to it) → story page → index → publish to the game → share (only with `[share] auto`) → macOS notification.
+  A marker in `exports/finished/` says a night is done; a watcher that was down or crashed finishes what it owes when
+  it starts (nights of the last two days), and `ramble finish [tonight|date]` does the same by hand.
 - **Route guide**: one page per character, `exports/html/guide-<slug>.html`, linked from every story page and the index,
   and copied by `ramble share`. `guide.py` cuts the nights into zone stretches (a visit stands alone when a quest was
   turned in, a level reached, a death or a note happened there, or 20+ minutes with something done; anything else folds
@@ -62,9 +66,16 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
   `--mode /your/file.md`. `RAMBLEON_GUIDE_MODE` or `[guide] mode = "..."` in `rambleon.local.toml` sets the watcher's.
   Sidecar `exports/guide/<slug>-<mode>.json` remembers which nights the prose covers.
 - **Voices**: `companion/src/rambleon/prompts/voices/*.md`. Default `golden` (warm, close third person, Christie
-  Golden-like); `field-journal` (dry, observational). `--voice`, `RAMBLEON_VOICE`, `ramble voices`.
-- **Local facts**: `rambleon.local.toml` (gitignored) overrides character fields for sessions recorded before the
-  AddOn captured them (e.g. gender), and `[people."Name"] note = "..."` gives the writer your own words about a companion.
+  Golden-like); `field-journal` (dry, observational). `--voice` (a name or a path to a .md), `RAMBLEON_VOICE`,
+  `[journal] voice`, `ramble voices`.
+- **The player's own prompts**: `<home>/prompts/` (`~/Rambleon/prompts/`, or the checkout's gitignored `prompts/`):
+  `voices/*.md`, `guides/*.md`, `journal.md` (replaces the chapter rules), `theme.css` (added to every page).
+  Theirs win over bundled files of the same name. `prompts.py`.
+- **Local settings**: `rambleon.local.toml` (gitignored; `~/Rambleon/` for a package install). `config.py` reads it
+  into a typed `Config`; unknown keys and bad values are warnings, broken TOML is said out loud, `ramble config`
+  prints what is in effect. `[characters."slug"]` overrides character fields for sessions recorded before the AddOn
+  captured them (e.g. gender); `[people."Name"] note = "..."` gives the writer your own words about a companion;
+  `[journal] voice / model`, `[guide] mode`, `[share] auto`, `[x] ...`.
 - **Memory between chapters**: `memory.py` builds what the writer may remember (last three chapters as facts, the
   previous chapter's text, each companion's history) from earlier nights and their journal sidecars. Rule 6 in
   `prompts/journal.md` says how it may be used: continue the story, never retell it.
@@ -72,14 +83,19 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
 ## Layout
 
 - `addon/Rambleon/` — the AddOn. `Rambleon_Camelot.toc` (Forever, Interface 16001) + `Rambleon.toc` fallback.
+  `EventTypes.lua` (every event type: its line in the log, its counter), `Session.lua` (DB, settings, the session,
+  recorders, screenshots), `Events.lua` (game event → handler), `Journal.lua`, `UI.lua`, `Commands.lua` (`ns.COMMANDS`).
   `Chapters.lua` is generated by the companion and gitignored. `Bindings.xml` is loaded by name; never list it in a TOC.
 - `addon/tests/` — Lua 5.5 stub + `run.lua`: a scripted session that also emits the parser fixture.
 - `companion/` — Python ≥ 3.11, uv, typer. `src/rambleon/`: `paths` (find WoW/WTF), `luaparse` (safe SV parser),
   `normalize`, `archive`, `watch` (+ `Finalizer`), `wowstate` (logout detection), `nights`, `export`, `summarize`,
-  `publish` (Chapters.lua, HTML), `service` (launchd), `notify`, `config`, `doctor`, `install`, `cli`,
+  `publish` (Chapters.lua, story page, index), `service` (launchd), `notify`, `config`, `doctor`, `install`, `cli`,
   `model` (schema constants), `screenshots` (pairs files with SCREENSHOT events, captions), `share` (GitHub Pages),
   `memory` (what earlier chapters lend the prompt), `guide` (the route guide: stretches, modes, page),
-  `xpost` (X: keys, signing, composing the post or thread, ledger, the watcher's auto-post).
+  `xpost` (X: keys, signing, composing the post or thread, ledger, the watcher's auto-post),
+  `events` (every event type: describe, guide role, stitching; twin of `EventTypes.lua`),
+  `pipeline` (the after-night steps, the finish marker, what is unfinished), `pages` (the HTML shell, top bar, CSS
+  from `assets/*.css`), `prompts` (bundled and the player's own voices, modes, rules, theme).
 - The companion wheel **bundles the AddOn** via an explicit per-file `force-include` list in `companion/pyproject.toml`.
   Adding a file to `addon/Rambleon/` means adding it there too, or `uv tool install` users get a broken AddOn.
   Without a checkout, `install.py` seeds `~/Rambleon/addon/Rambleon` from the bundled copy.
@@ -87,8 +103,9 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
 - `exports/` — regenerable, gitignored: `markdown/`, `prompts/`, `journal/` (sidecars), `guide/` (guide sidecars), `html/`, `social/`.
 - `site/` — GitHub Pages (`.github/workflows/pages.yml`): landing page + `example/`, a committed snapshot of
   Rambleon Birdsong's story pages. Refresh with `ramble share`; pushing makes the journal public.
-- `docs/` — `environment.md` (this Mac), `addon-api.md` (Forever facts + the SV bug), `data-model.md`,
-  `progress.md` (running log; read "To verify next session" first), `roadmap.md` (product plan).
+- `docs/` — `extending.md` (how to add an event type, an output step, a voice), `environment.md` (this Mac),
+  `addon-api.md` (Forever facts + the SV bug), `data-model.md`, `progress.md` (running log; read "To verify in game"
+  at the top first), `roadmap.md` (product plan). `CONTRIBUTING.md` at the root.
 
 ## What we know about the Forever client (verified in game)
 
@@ -102,7 +119,11 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
   across `/reload`. Design assumes nothing: the Mac owns history.
 - `UnitLevel` at logout can be stale; end level is derived from event levels on both sides.
 - Kills come from the "X dies, you gain N experience." chat line (no combat log). Loot from the chat loot line
-  (uncommon+ only). Unverified in game as of 09-22: LOOT events, `Screenshot()` and file pairing.
+  (uncommon+ only; the link uses the named colour `|cnIQ2:`). `Screenshot()` and file pairing work (nightly since 09-23),
+  LOOT since 10-02.
+- Unverified in game as of 10-04 (all new in 0.4.0; the list is at the top of `docs/progress.md`): `QUEST_REMOVED` →
+  abandoned quests, `HEARTHSTONE_BOUND`, `ENCOUNTER_END` → boss kills, `INSTANCE_EXIT` through a loading screen,
+  the welcome popup, the Pictures row. `EQUIP` has never appeared in the archive.
 
 ## Coding rules
 
@@ -115,6 +136,11 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
 - Chat stays quiet: one login line. Debug output only behind `/ramble debug on`.
 - Never call `ReloadUI` without the user confirming via the `/ramble save` popup.
 - Lists of client globals (`COMBATLOG_XPGAIN_*`, `LOOT_ITEM_*`) can contain nils: never `ipairs` over them directly.
+- A new event type is one entry in `EventTypes.lua`, one `ns.AddEvent` call, one line in `addon/tests/run.lua` and its
+  twin in the companion's `events.py`; tests fail if the two sides disagree. A new slash command is one entry in
+  `ns.COMMANDS`; a new setting one line in `DEFAULTS` (`Session.lua`), read with `ns.GetSetting`.
+- Tests that need more clock time, marks or sessions go after the fixture is written in `run.lua`: the companion's
+  tests count on that evening (two sessions, six minutes).
 
 **Companion:**
 - Never execute SavedVariables as Lua; use `luaparse.py`. Raw snapshot first, parse second. Atomic writes.
@@ -123,6 +149,12 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
   no session persistence, an empty cwd and a writer's system prompt; never `--bare` (it bypasses the keychain login).
 - Printed WTF paths go through `Paths.redact()`.
 - Restart the watcher after changing companion code (`ramble service install` again); a running process keeps old modules.
+- A new output after a night is a `Step` in `pipeline.STEPS`, never another line in `cli.py`. Anything that leaves the
+  Mac runs unattended only when `rambleon.local.toml` opted in. A new setting is a dataclass field and a rule in
+  `config.SECTIONS`. A new page is a body inside `pages.shell`.
+- Commands are declared with `@command(app)`: expected failures become one red line and exit 1 (`RAMBLEON_DEBUG=1`
+  for the traceback). Tests run with their own `RAMBLEON_HOME`, in UTC, with no notification, Claude CLI or X keys
+  (`tests/conftest.py`); never point a manual test at the checkout as home while its config has `auto = true`.
 
 **Journal writing:** only what was recorded. Names of people, quest-givers and places only from the evidence.
 Feelings only as reactions to recorded events. Pronouns from the recorded gender, else name/they. Rules in
@@ -141,22 +173,26 @@ ramble share tonight            # copy the page + pictures into site/example, co
 ```
 
 `/console scriptErrors 1` shows Lua errors in game. `scripts/bootstrap` sets up uv and `ramble` from scratch.
-CI (`.github/workflows/ci.yml`) runs `scripts/test`, builds the wheel and zips the AddOn; a `v*` tag makes a GitHub
-release. Record user-facing changes in `CHANGELOG.md` and bump `companion/pyproject.toml` version on release.
+CI (`.github/workflows/ci.yml`) runs `scripts/test`, builds the wheel and zips the AddOn (not for pushes that only
+touch `site/`); a `v*` tag makes a GitHub release with both. Record user-facing changes in `CHANGELOG.md`. A release
+bumps the version in four places that tests keep equal (`companion/pyproject.toml`, `rambleon/__init__.py`, both TOCs),
+gives the CHANGELOG a `## <version>` heading and updates the pinned `@v<version>` install lines (README, companion
+README, `docs/invite-prompt.md`, `site/index.html`); push, wait for green CI, then tag.
 
 ## Command cheat sheet
 
 In game: `/ramble` · `status` · `note <text>` · `mark` · `shots [on|off]` · `chapters` · `save` · `debug [on|off]` · `dump` · `help`.
 Keybindings under AddOns: Open Adventure Log, Mark Moment.
 
-Mac: `ramble setup [--no-ai]` · `doctor [--fix]` · `uninstall` · `install [--copy]` · `service install|uninstall|status` · `watch [--no-ai] [--no-auto] [--voice]`
+Mac: `ramble setup [--no-ai]` · `doctor [--fix] [--check-ai]` · `config` · `version` · `uninstall` · `install [--copy]` · `service install|uninstall|status` · `watch [--no-ai] [--no-auto] [--voice]`
 · `ingest` · `reprocess` · `status` · `sessions` · `nights` · `show latest` · `export tonight|YYYY-MM-DD|--all`
-· `summarize tonight [--voice] [--no-ai]` · `page tonight` · `publish` · `share [tonight|date|--all] [--yes] [--dry-run]` · `voices`
+· `finish [tonight|date] [--no-ai] [--voice] [--model] [--share]` · `summarize tonight [--voice] [--no-ai]` · `page tonight` · `publish` · `share [tonight|date|--all] [--yes] [--dry-run]` · `voices`
 · `post [tonight|date] [--style post|thread] [--link] [--no-picture] [--yes] [--dry-run] [--force]` · `x login|logout|status`
 · `catchup [tonight|date] [--copy]` · `guide [slug|latest] [--no-ai] [--voice] [--mode route|season|file.md] [--list] [--open]`.
 
 ## Where this is going
 
-See `docs/roadmap.md`. Short version: make it install in one command for a stranger, make the chapter good
-enough to paste unedited, then memory over time (timeline, people, weekly recaps, map). Free and open; the
+See `docs/roadmap.md`. Short version: it installs in one command and has a base to build on (0.4.0); next, make the
+chapter good enough to paste unedited, then memory over time (timeline, people, weekly recaps, map), each a new
+pipeline step. Free and open; the
 player's data never leaves the Mac unless they run the AI step, and even then only the prompt does.

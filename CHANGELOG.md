@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.4.0 — 2026-10-04
+
+Finished and extendable: nothing a night depends on can fail silently any more, and the three things people
+ask to add (something new to remember, something new made from a night, a different way of writing it) are
+each one entry in one place. `docs/extending.md` shows how.
+
 - A command that cannot do its work says why in one line and exits 1 (a missing night, a corrupt archive file, a
   broken `rambleon.local.toml`, git or X saying no) instead of a traceback; `RAMBLEON_DEBUG=1` shows the traceback.
 - A release now carries the companion wheel next to the AddOn zip, and CI checks that the wheel holds the AddOn,

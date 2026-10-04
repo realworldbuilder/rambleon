@@ -1,5 +1,46 @@
 # Progress
 
+## To verify in game (the one list; newest release first)
+
+0.4.0, none of it seen in the real client yet. `/ramble debug` lists any event the client refused to register.
+
+- **Chapters reader out of the pictures**: `/ramble chapters`, then `/ramble mark` → the reader vanishes for the
+  picture and comes back; it is not in the screenshot.
+- **Leaving a dungeon**: walk out of an instance → `/ramble dump` shows "Left <name>". A `/reload` inside does not
+  add a second "Entered <name>". (`IsInInstance()` must already be right at `PLAYER_ENTERING_WORLD`.)
+- **Abandon a quest** → "Abandoned "<title>"" about a second later; turning a quest in does not produce one.
+  Watch for noise: abandons that are not yours (world quests, hidden quests) would show here.
+- **Set your hearthstone** at an innkeeper → "Made <inn> home". `HEARTHSTONE_BOUND` may not exist on Forever.
+- **Kill a dungeon boss** → "Defeated <name>". `ENCOUNTER_END` may not exist on Forever.
+- **Welcome**: not shown to Rambleon Birdsong (chapters exist). On a character with no chapters: the login line
+  says "welcome", and the first `/ramble` shows the note once.
+- **Pictures row** on the panel: sits under "People Met", does not overlap "Recent Journey"; a click toggles it.
+- **`/ramble debug on`** survives `/reload` (it will not survive a cold start while the SavedVariables bug lasts).
+- Still open from 10-02: one death in game → exactly one "Died in …" line. (Loot is confirmed: LOOT events in every
+  night since 10-02. `EQUIP` has never been seen in the archive: equip a green and check `/ramble dump`.)
+- X: no post has gone out yet (the first live try was refused: the developer app was not attached to a project).
+
+## 2026-10-04 — 0.4.0: finished and extendable
+
+One pass over the whole thing, phase by phase (tests, reliability, settings, events, AddOn, pipeline, pages and
+prompts, CLI, docs). What changed and why is in `CHANGELOG.md`; how to build on it is
+in `docs/extending.md`. For whoever picks this up next:
+
+- **Reliability.** CI had been red since 10-03: the X auto-post test depended on the wall clock through the Lua
+  stub's `os.time()`. The scripted evening is now a fixed one (2026-09-20 18:00 UTC) and the fixture is the same
+  bytes on every run. The watcher guards everything that runs after a night, and finishes nights it owes at start
+  (`exports/finished/` markers). `ramble share` commits only `site/example`.
+- **One definition of each thing.** Event types: `EventTypes.lua` and `events.py`. After-night steps:
+  `pipeline.STEPS`. Slash commands: `ns.COMMANDS`. Settings: `DEFAULTS` in `Session.lua`, `SECTIONS` in `config.py`.
+  Pages: `pages.shell`. Prompts: `prompts.py` and the player's `<home>/prompts/`.
+- **Found on the way.** `INSTANCE_EXIT` had never been recorded (18 enters, 0 exits): every loading screen reset
+  `ns.inInstance`. The chapters reader was never hidden for screenshots (a `local` declared after its use).
+  Resume matched by name although the name changed between builds.
+- **Checked on a copy of the real archive** (never the live one: its config has auto-share and auto-post on):
+  no existing night is seen as unfinished; `ramble finish latest --no-ai` runs every step; story pages render
+  byte-for-byte as before, the index and guide differ only by line breaks in `<head>`.
+- **Not done on purpose**: see "Deliberately left for later" in `docs/roadmap.md`.
+
 ## 2026-10-02 — Deaths were counted twice
 
 - Looking into why the chapters dwelt on dying: the raw archive showed every DEATH recorded twice, 1–4 s apart, with
@@ -12,11 +53,6 @@
 - Prompts: a death is a fact, not a verdict. One dry sentence per chapter at most, never the title or the post,
   never a reason the record lacks. Same in the route and season guide modes. Chapter 10 and the route guide were
   rewritten; chapters 1–9 keep their old prose (correct counts on their pages and recaps only where regenerated).
-
-### To verify next session
-- Loot a green: `/ramble debug` should say `loot: … 1 kept` and `/ramble dump` show "Looted …". If `read` stays 0,
-  paste the `last unread loot line`.
-- One death in game → exactly one "Died in …" line in `/ramble dump` and one DEATH in the night's JSON.
 
 ## 2026-09-21 — Day one
 
@@ -130,39 +166,10 @@ In game, in order, with `/console scriptErrors 1`:
 On the Mac after logout: `ls "<WoW>/_classic_beta_/Screenshots/"` (note the extension), `ls archive/screenshots/*/`,
 `ramble page tonight` (hero + timeline pictures), then `ramble share tonight` only if it should be public.
 
-### To verify next session
-- `Screenshot()` exists and fires `SCREENSHOT_SUCCEEDED` on Forever: `/ramble debug` → `auto shots: on, Screenshot(): available, last: ok`
-  after a `/ramble mark`; a file appears in `_classic_beta_/Screenshots/` (which format? `screenshotFormat` CVar).
-- Level-up picture shows the glow (1 s delay); zone picture is not a loading-screen fade (1 s after the debounce).
-- Two marks within 3 s → one file; a subzone walk → no picture; `/ramble shots off` survives a cold start?
-- After logout: `archive/screenshots/<session>/` populated, story page shows the hero + timeline pictures,
-  `ramble share --dry-run` lists them.
-- Loot capture in the real client (the three greens came before the loot code was loaded; no LOOT events yet).
-- Whether `/ramble chapters` shows tonight's chapter after login (published at 23:27, republished after reprocess).
-- Whether logout detection fires (watch.log will say "logged out — writing the chapter").
-
 ### Known issue found tonight
 - The standalone `claude` CLI on this Mac reports "OAuth access token has been revoked", so `ramble summarize` skipped
   the AI chapter and only wrote the prompt (correct degraded behaviour). Fix on the Mac: run `claude` in a terminal
   and `/login`, then `ramble summarize latest` again.
-
-### Next: first in-game test (needs the player)
-1. `ramble watch` in a terminal.
-2. Log in as Rambleon Birdsong. If Rambleon is greyed out in the AddOns list, enable "Load out of date AddOns" and
-   report the interface number the game expects.
-3. `/ramble` → panel titled RAMBLEON BIRDSONG. Walk somewhere new, accept/finish a quest, `/ramble mark`,
-   `/ramble note hello from azeroth`, `/ramble debug` (paste the output).
-4. END CHAPTER → END & SAVE. If the UI does not reload, type `/reload`.
-5. The watcher prints `captured …`. Then `ramble export latest` and `ramble summarize latest`.
-
-### Open questions (resolve on first in-game test)
-- What `UnitFullName("player")` / `GetRealmName()` return on Forever for a two-part name (`/ramble debug`, session JSON).
-- Whether `C_UI.Reload()` works from the END & SAVE button or is protected on Forever.
-- Whether `QUEST_TURNED_IN` fires with a questID on this build.
-- How chatty `ZONE_CHANGED` subzone transitions are in starting zones (debounce is 1.5 s).
-- Whether the per-character SV file lands under `WTF/Account/<acct>/70/Rambleon-Birdsong/SavedVariables/`.
-- Whether `QuestBG-Parchment` atlas exists (harmless either way) and how the panel looks.
-- Any events listed under "failed events" in `/ramble debug`.
 
 ### 2026-09-24 — Forever build 70009 changed the player's name API; only one chapter showed in game
 - Symptom: `/ramble chapters` listed only tonight's chapter. Cause: the client update (69977 → 70009, "Sep 23 2026")
@@ -190,6 +197,3 @@ On the Mac after logout: `ls "<WoW>/_classic_beta_/Screenshots/"` (note the exte
   quests are not recorded (no QUEST_REMOVED handler in the AddOn), so the carry-over is what Rambleon saw.
 - Restart the watcher (`ramble service install`) so the next finished chapter gets the section.
 
-### Later
-- Milestone 2: nicer timeline, satisfying MARK MOMENT, minimap button or keybind polish, Tier 2 events (loot, hearth).
-- Milestone 3: chapter numbering across many sessions, recap cards, weekly recap.
