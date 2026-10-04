@@ -68,6 +68,20 @@ class Finalizer:
         except Exception as e:  # noqa: BLE001 — the archive is safe; `ramble finish` writes the chapter by hand
             self.log(f"could not write the chapter for {session.get('id')}: {type(e).__name__}: {e}")
 
+    def recover(self, nights: list[dict[str, Any]]) -> None:
+        """At start: nights the pipeline still owes (pipeline.unfinished). The pending list lives in memory, so a
+        watcher that was restarted or crashed would otherwise never write them. A night that is over is written
+        now; one that may still be going waits like any save."""
+        for night in nights:
+            name = night.get("character", {}).get("displayName")
+            if night.get("state") == "ended":
+                self.log(f"{name}'s night of {night.get('nightDate')} was never finished — writing the chapter")
+                self._run(night)
+            else:
+                slug = night.get("character", {}).get("slug", "unknown")
+                self.pending[slug] = ((night.get("endedAt") or time.time()) + self.timeout, night)
+                self.log(f"{name}'s night of {night.get('nightDate')} is still open; the chapter is written once they have left")
+
     def tick(self) -> None:
         now = time.time()
         check_logout = self.logged_out is not None and now - self._last_check >= 5

@@ -23,15 +23,14 @@ from .paths import resolve_paths
 from . import service as svc
 from .nights import earlier_nights, nights as list_nights, resolve_night
 from .notify import notify
-from .publish import export_html, publish_chapters, write_html_index
-from .screenshots import refresh_session_screenshots
-from .config import X_STYLES, effective, load_config, share_auto, x_config
+from .publish import write_html_index
+from .config import X_STYLES, effective, load_config, x_config
 from .guide import available_modes, default_mode, write_guide
 from .share import ShareError, share as run_share
-from . import xpost
+from . import pipeline, xpost
 from .watch import Finalizer
 from .wowstate import logged_out_since
-from .summarize import DEFAULT_MODEL, DEFAULT_VOICE, available_voices, summarize as run_summarize
+from .summarize import DEFAULT_MODEL, DEFAULT_VOICE, available_voices
 from .watch import ingest_once, reprocess as run_reprocess, watch as run_watch
 
 app = typer.Typer(help="Rambleon — your Azeroth adventure journal, Mac side.", no_args_is_help=True, add_completion=False)
@@ -174,41 +173,20 @@ def install(copy: bool = typer.Option(False, "--copy", help="Copy the AddOn inst
 
 
 def _finish_night(archive: Archive, paths, use_ai: bool, model: str | None = None, voice: str | None = None):
-    """What happens when a night is over: export, journal, HTML, publish to the game."""
+    """The watcher's part: every step of pipeline.STEPS for the night a session belongs to."""
     def run(session: dict) -> None:
-        night = resolve_night(archive, session["id"]) or session
-        # Screenshots taken after the last SavedVariables write are only on disk: pair them now.
-        if refresh_session_screenshots(archive, paths, night.get("sessionIds") or [session["id"]]):
-            night = resolve_night(archive, session["id"]) or session
-        md = export_session(night, paths.exports_dir)
-        log(f"exported {md.name}")
-        if use_ai:
-            run_summarize(night, archive, paths.exports_dir, use_ai=True, model=model, log=log, voice=voice)
-        try:   # the route guide: facts every time, prose only when this night is new to it; the story page links to it
-            g = write_guide(archive, paths.exports_dir, night["character"].get("slug", "unknown"), use_ai=use_ai,
-                            model=model, voice=voice, log=log, only_if_new=True)
-            log(f"route guide {g['html']}")
-        except Exception as e:  # noqa: BLE001 — the chapter must still be written and published
-            log(f"route guide skipped: {e}")
-        page = export_html(night, archive, paths.exports_dir)
-        log(f"story page {page}")
-        write_html_index(archive, paths.exports_dir)
-        _, n = publish_chapters(archive, paths)
-        log(f"published {n} chapter(s) to the game — they show under /ramble chapters after the next login or /reload")
-        shared = ""
-        if share_auto(paths.repo_root):   # this Mac opted in via rambleon.local.toml: the page goes to GitHub Pages
-            try:
-                result = run_share(archive, paths, [night["id"]], yes=True, log=log)
-                log(f"share: {result.message}")
-                for url in result.urls:
-                    log(url)
-                shared = " Shared." if result.pushed else ""
-            except ShareError as e:
-                log(f"share failed (the chapter is safe on this Mac): {e}")
-        c = night.get("counters", {})
-        notify("Rambleon", f"{night['character'].get('displayName')}: {duration(night.get('playedSeconds'))} in Azeroth, "
-                           f"{c.get('questsCompleted', 0)} quests, {c.get('kills', 0)} kills. Chapter written.{shared}")
+        pipeline.finish_night(archive, paths, session["id"], log=log, use_ai=use_ai, model=model, voice=voice, unattended=True)
     return run
+
+
+def _steps(ref: str | None, only: set[str], **options) -> pipeline.NightContext:
+    """Run some of the pipeline's steps by hand; a step that failed is the command's failure."""
+    archive, paths = _archive()
+    ctx = pipeline.run_steps(pipeline.NightContext(archive=archive, paths=paths, night=_night(ref) if ref is not None else None,
+                                                   log=log, **options), only=only)
+    if ctx.failed:
+        raise typer.Exit(1)
+    return ctx
 
 
 @app.command()
@@ -226,6 +204,11 @@ def watch(interval: float = typer.Option(1.0, help="Seconds between polls."),
         raise typer.Exit(1)
     finalizer = None if no_auto else Finalizer(_finish_night(archive, paths, use_ai=not no_ai, model=model, voice=voice), log,
                                                logged_out=lambda since: logged_out_since(paths.wow_dir, since))
+    if finalizer:
+        try:   # what a watcher that was down (or crashed) still owes
+            finalizer.recover(pipeline.unfinished(archive, paths.exports_dir))
+        except Exception as e:  # noqa: BLE001 — never a reason not to watch
+            log(f"could not look for unfinished nights: {type(e).__name__}: {e}")
     # `[x] auto = true` in rambleon.local.toml: a finished chapter is told on X once the night has gone quiet.
     poster = None if no_auto else xpost.AutoPoster(archive, paths, log, notify=notify,
                                                    in_world=lambda since: not logged_out_since(paths.wow_dir, since))
@@ -264,10 +247,30 @@ def watch(interval: float = typer.Option(1.0, help="Seconds between polls."),
 @app.command()
 def publish() -> None:
     """Write the latest chapters into the AddOn (Chapters.lua) so /ramble chapters can show them in game."""
+    ctx = _steps(None, {"game", "index"})
+    console.print(f"{ctx.outputs['game']}. In WoW: /reload, then /ramble chapters. Web index: {ctx.outputs['index']}", soft_wrap=True)
+
+
+@app.command()
+def finish(ref: str = typer.Argument("latest", help="tonight | latest | YYYY-MM-DD | night id"),
+           no_ai: bool = typer.Option(False, "--no-ai", help="Only the prompts; do not call the Claude CLI."),
+           model: str = typer.Option(None, "--model", help=f"Claude model (default: [journal] model, else {DEFAULT_MODEL})."),
+           voice: str = typer.Option(None, "--voice", help="Journal voice profile (see `ramble voices`)."),
+           share_it: bool = typer.Option(False, "--share", help="Also put the page on your GitHub Pages site (asks first).")) -> None:
+    """Do for a night everything the watcher does when you log out: log, chapter, route guide, story page,
+    index, chapters in game. For a night the watcher missed, or to write one again."""
     archive, paths = _archive()
-    path, n = publish_chapters(archive, paths)
-    index = write_html_index(archive, paths.exports_dir)
-    console.print(f"published {n} chapter(s) → {path}. In WoW: /reload, then /ramble chapters. Web index: {index}")
+    try:
+        ctx = pipeline.finish_night(archive, paths, ref, log=log, use_ai=not no_ai, model=model, voice=voice,
+                                    share=share_it, confirm=lambda q: typer.confirm(q, default=False))
+    except ValueError as e:
+        console.print(f"[red]{escape(str(e))}[/red]")
+        raise typer.Exit(1)
+    for name, result in ctx.results.items():
+        color = "red" if result.startswith("failed") else "dim" if result.startswith("skipped") else "green"
+        console.print(f"  {name}: [{color}]{escape(result)}[/{color}]", highlight=False)
+    if ctx.failed:
+        raise typer.Exit(1)
 
 
 service_app = typer.Typer(help="Run the watcher in the background at login (launchd), no terminal needed.")
@@ -349,12 +352,7 @@ def nights() -> None:
 @app.command()
 def page(ref: str = typer.Argument("latest"), open_it: bool = typer.Option(True, "--open/--no-open")) -> None:
     """Build the HTML story page for a night (journal, recap, screenshots, timeline) and open it in the browser."""
-    archive, paths = _archive()
-    session = _night(ref)
-    if refresh_session_screenshots(archive, paths, session.get("sessionIds") or []):
-        session = _night(ref)
-    out = export_html(session, archive, paths.exports_dir)
-    console.print(f"story page {out}")
+    out = _steps(ref, {"screenshots", "page"}).outputs["page"]
     if open_it and sys.platform == "darwin":
         subprocess.run(["open", str(out)], check=False)
 
@@ -506,6 +504,7 @@ def status() -> None:
     """Archive overview and the latest session."""
     archive, paths = _archive()
     sessions = archive.list_sessions()
+    owed = pipeline.unfinished(archive, paths.exports_dir)
     pid = archive.watcher_pid()
     console.print(f"Archive: {paths.archive_dir} — {len(sessions)} session(s)")
     console.print(f"Watcher: {'running (pid ' + str(pid) + ')' if pid else 'not running'}")
@@ -519,6 +518,9 @@ def status() -> None:
         s = sessions[-1]
         console.print(f"Latest: {s['character']} — {datetime.fromtimestamp(s['startedAt']):%B %-d, %Y %-I:%M %p} — "
                       f"{duration(s.get('playedSeconds'))} — {s['events']} events — {s['state']}")
+    for night in owed:
+        console.print(f"[yellow]Not finished:[/yellow] {night['character'].get('displayName')}, {night['nightDate']} — the watcher writes it "
+                      f"when it starts, or run `ramble finish {night['nightDate']}`", highlight=False)
 
 
 @app.command()
@@ -638,20 +640,10 @@ def summarize(ref: str = typer.Argument("latest"),
               model: str = typer.Option(None, "--model", help=f"Claude model (default: [journal] model, else {DEFAULT_MODEL})."),
               voice: str = typer.Option(None, "--voice", help="Journal voice profile (see `ramble voices`).")) -> None:
     """Write the journal prompt for a night and, if the Claude CLI is available, the AI-written chapter."""
-    archive, paths = _archive()
-    session = _night(ref)
-    try:
-        result = run_summarize(session, archive, paths.exports_dir, use_ai=not no_ai, model=model, log=log, voice=voice)
-    except ValueError as e:
-        console.print(f"[red]{e}[/red]")
-        raise typer.Exit(1)
-    for k, v in result.items():
+    ctx = _steps(ref, {"journal", "page", "game"}, use_ai=not no_ai, model=model, voice=voice)
+    for k, v in ctx.outputs["journal"].items():
         if v:
-            console.print(f"{k}: {v}")
-    page_path = export_html(session, archive, paths.exports_dir)
-    console.print(f"story page: {page_path}")
-    _, n = publish_chapters(archive, paths)
-    console.print(f"published {n} chapter(s) to the game — /reload in WoW, then /ramble chapters")
+            console.print(f"{k}: {v}", soft_wrap=True)
 
 
 def main() -> None:

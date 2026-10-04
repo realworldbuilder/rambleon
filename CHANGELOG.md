@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- **`ramble finish [tonight|date]`**: do for a night everything the watcher does when you log out (log, chapter,
+  route guide, story page, index, chapters in game), for a night it missed or to write one again. `--share` also
+  puts the page on your site (asks first).
+- **A restarted watcher catches up.** A night whose chapter was never (fully) written, because the watcher was
+  down, restarted or hit an error, is finished when the watcher next starts; `ramble status` lists such nights.
+  Nights older than two days are left to `ramble finish`. A chapter that already covers the night is not paid for twice.
+- What happens after a night is now a list of steps (`pipeline.py`); one failing step no longer skips the rest, so
+  a page that cannot be written never keeps the chapter out of the game. `ramble watch --no-ai` now still writes
+  the journal prompt, as `ramble summarize --no-ai` always did.
 - **A first run says hello.** The one login line welcomes a new player, and the first time the log opens a short
   note explains that there is nothing to press. Never shown again, and never to someone who already has chapters.
 - The log panel has a **Pictures** row: click it to turn automatic screenshots on or off (same as `/ramble shots`).

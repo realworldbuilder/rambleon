@@ -95,13 +95,12 @@ def test_share_auto_is_off_unless_this_machine_says_so(tmp_path):
 
 
 def test_finished_night_is_shared_when_auto_is_on(tmp_path, monkeypatch):
-    from rambleon import cli
+    from rambleon import cli, pipeline
     repo = checkout(tmp_path)
     archive, paths = archived(tmp_path, repo)
     (repo / "addon" / "Rambleon").mkdir(parents=True)
     calls: list = []
-    monkeypatch.setattr(cli, "notify", lambda *a, **k: None)
-    monkeypatch.setattr(cli, "run_share", lambda archive_, paths_, refs, **kw: calls.append((refs, kw)) or type(
+    monkeypatch.setattr(pipeline, "run_share", lambda archive_, paths_, refs, **kw: calls.append((refs, kw)) or type(
         "R", (), {"message": "pushed", "urls": ["https://x/y.html"], "pushed": True})())
     session = archive.load_session("latest")
     cli._finish_night(archive, paths, use_ai=False, model="sonnet")(session)

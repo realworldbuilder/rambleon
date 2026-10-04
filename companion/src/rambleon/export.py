@@ -108,6 +108,19 @@ def render_markdown(session: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def night_stats(session: dict[str, Any]) -> dict[str, Any]:
+    """The numbers of a night (or a session), under the names every page, table and notification uses."""
+    cnt = session.get("counters", {})
+    c = session.get("character", {})
+    return {
+        "duration": duration(session.get("playedSeconds")),
+        "levels": cnt.get("levelsGained", 0), "startLevel": c.get("startLevel"), "endLevel": c.get("endLevel"),
+        "quests": cnt.get("questsCompleted", 0), "accepted": cnt.get("questsAccepted", 0),
+        "places": len(session.get("zones", [])), "kills": cnt.get("kills", 0), "loot": cnt.get("loot", 0),
+        "deaths": cnt.get("deaths", 0), "people": len(session.get("people", [])), "xp": cnt.get("xpGained", 0),
+    }
+
+
 def render_recap(session: dict[str, Any]) -> str:
     """The short shareable recap, from the numbers alone. The AI version replaces it when available."""
     cnt = session.get("counters", {})
