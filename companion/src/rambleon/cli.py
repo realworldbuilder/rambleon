@@ -81,10 +81,11 @@ def _print_checks(checks) -> None:
 
 
 @app.command()
-def doctor(fix: bool = typer.Option(False, "--fix", help="Repair what can be repaired (AddOn link, background service).")) -> None:
+def doctor(fix: bool = typer.Option(False, "--fix", help="Repair what can be repaired (AddOn link, background service)."),
+           check_ai: bool = typer.Option(False, "--check-ai", help="Ask the Claude CLI one small (paid) question to see if it is logged in.")) -> None:
     """Check WoW, the AddOn, SavedVariables, the archive, the watcher and the AI adapter."""
     paths = resolve_paths()
-    checks = run_doctor(paths)
+    checks = run_doctor(paths, check_ai=check_ai)
     _print_checks(checks)
     if fix:
         actions = apply_fixes(paths, checks)
@@ -118,7 +119,7 @@ def setup(no_ai: bool = typer.Option(False, "--no-ai", help="Do not use the Clau
         console.print(f"[yellow]background watcher not installed: {e}[/yellow] — you can run `ramble watch` in a terminal instead")
     index = write_html_index(archive, paths.exports_dir)
     console.print(f"journal: {index}")
-    checks = run_doctor(paths)
+    checks = run_doctor(paths, check_ai=True)
     _print_checks(checks)
     console.print()
     console.print("Next: start WoW (or log out to the character screen and back in so it sees the AddOn), then play. "

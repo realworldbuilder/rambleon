@@ -11,7 +11,8 @@ ns.session = nil
 ns.questTitles = {}
 ns.currentGroup = {}           -- name -> { since = GetTime() }
 ns.lastZoneKey = nil
-ns.inInstance = nil
+ns.inInstance = nil             -- nil until the first look; then true or false
+ns.instanceName = nil
 ns.isDead = false
 ns.lastDeathAt = nil
 ns.dbRestored = false
@@ -22,6 +23,7 @@ ns.doneObjectives = {}
 ns.objectivesSeeded = false
 
 function ns.InitDB()
+  ns.dbRestored = false
   if type(RambleonDB) == "table" then
     ns.dbRestored = type(RambleonDB.sessions) == "table" and #RambleonDB.sessions > 0
   else
@@ -147,12 +149,19 @@ local function newSessionId(character)
   return id
 end
 
+-- Identity is the GUID; the name only decides for sessions recorded before the GUID was (the client has
+-- changed how it spells the name between builds).
+local function sameCharacter(a, b)
+  if a.guid and b.guid then return a.guid == b.guid end
+  return a.name ~= nil and a.name == b.name
+end
+
 local function findResumable(character)
   local now = ns.Now()
   for i = #RambleonDB.sessions, 1, -1 do
     local s = RambleonDB.sessions[i]
-    if type(s) == "table" and s.state == "suspended" and s.character
-       and s.character.name == character.name
+    if type(s) == "table" and s.state == "suspended" and type(s.character) == "table"
+       and sameCharacter(s.character, character)
        and type(s.lastSeen) == "number" and (now - s.lastSeen) <= RESUME_WINDOW then
       return s
     end
@@ -164,11 +173,11 @@ function ns.PruneSessions()
   local sessions = RambleonDB.sessions
   local nonActive = 0
   for _, s in ipairs(sessions) do
-    if s.state ~= "active" then nonActive = nonActive + 1 end
+    if type(s) ~= "table" or s.state ~= "active" then nonActive = nonActive + 1 end
   end
   local i = 1
   while nonActive > KEEP_SESSIONS and i <= #sessions do
-    if sessions[i].state ~= "active" then
+    if type(sessions[i]) ~= "table" or sessions[i].state ~= "active" then
       table.remove(sessions, i)
       nonActive = nonActive - 1
     else
@@ -233,6 +242,16 @@ function ns.SeedFromSession()
     local ev = s.events[i]
     if ev.type == "ZONE_ENTER" and ev.zone then
       ns.lastZoneKey = ev.zone .. "|" .. (ev.subzone or "")
+      break
+    end
+  end
+  -- Inside a dungeon when the session was last seen: a /reload in there is not a second arrival.
+  ns.inInstance, ns.instanceName = false, nil
+  for i = #s.events, 1, -1 do
+    local ev = s.events[i]
+    if ev.type == "INSTANCE_ENTER" or ev.type == "INSTANCE_EXIT" then
+      ns.inInstance = ev.type == "INSTANCE_ENTER"
+      ns.instanceName = ns.inInstance and ev.name or nil
       break
     end
   end
@@ -473,10 +492,7 @@ local function buildXpPatterns()
   for _, fmt in ipairs(formats) do
     if type(fmt) == "string" and not seen[fmt] then
       seen[fmt] = true
-      local p = fmt:gsub("%%s", "\1"):gsub("%%d", "\2")
-      p = p:gsub("[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%0")
-      p = p:gsub("\1", "(.-)"):gsub("\2", "(%%d+)")
-      table.insert(xpPatterns, "^" .. p .. "$")
+      table.insert(xpPatterns, ns.FormatToPattern(fmt))
     end
   end
   return xpPatterns
@@ -607,10 +623,7 @@ local function buildLootPatterns()
   for _, fmt in ipairs(formats) do
     if type(fmt) == "string" and not seen[fmt] then
       seen[fmt] = true
-      local p = fmt:gsub("%%s", "\1"):gsub("%%d", "\2")
-      p = p:gsub("[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%0")
-      p = p:gsub("\1", "(.-)"):gsub("\2", "(%%d+)")
-      table.insert(fmt:find("%%d") and multiples or singles, "^" .. p .. "$")
+      table.insert(fmt:find("%%d") and multiples or singles, ns.FormatToPattern(fmt))
     end
   end
   for _, p in ipairs(multiples) do table.insert(lootPatterns, p) end
@@ -676,7 +689,7 @@ function ns.AddNote(text)
   text = ns.Trim(text)
   if text == "" then return nil end
   if not ns.EnsureSession() then return nil end
-  if #text > 500 then text = text:sub(1, 500) end
+  if #text > ns.NOTE_MAX then text = text:sub(1, ns.NOTE_MAX) end
   return ns.AddEvent("NOTE", { text = text })
 end
 

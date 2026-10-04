@@ -77,3 +77,27 @@ def test_install_without_checkout_seeds_from_bundle(tmp_path, monkeypatch):
     (home / "addon" / "Rambleon" / "Chapters.lua").write_text("RambleonChapters = {}\n")
     inst.install_addon(paths)  # same version: nothing re-copied, generated file untouched
     assert (home / "addon" / "Rambleon" / "Chapters.lua").exists()
+
+
+def test_a_failing_chapter_never_stops_the_watcher(tmp_path):
+    from rambleon.watch import Finalizer
+    paths, sv = fake_wow(tmp_path)
+    logs, ran = [], []
+
+    def run(session):
+        ran.append(session["id"])
+        raise RuntimeError("the page could not be written")
+    finalizer = Finalizer(run, logs.append, timeout=0)
+    finalizer.on_capture({"id": "a", "state": "ended", "character": {"slug": "x", "displayName": "X"}})
+    finalizer.on_capture({"id": "b", "state": "suspended", "character": {"slug": "x", "displayName": "X"}})
+    finalizer.tick()
+    finalizer.tick()                                    # nothing is left pending, and nothing raised
+    assert ran == ["a", "b"] and sum("could not write the chapter" in m for m in logs) == 2
+
+    ticks = []
+
+    def tick():
+        ticks.append(1)
+        raise ValueError("a bad file")
+    watch(paths, Archive(paths.archive_dir), logs.append, interval=0.01, stop_after=0.1, tick=tick)
+    assert len(ticks) > 1 and sum("background step failed" in m for m in logs) == 1   # said once, not every poll

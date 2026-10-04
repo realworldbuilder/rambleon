@@ -133,3 +133,16 @@ def test_share_takes_the_route_guide_along(tmp_path, monkeypatch):
     assert "href='2026-" in page and night_page.startswith("night-")
     assert "<a href='guide-rambleon-birdsong.html'>Route guide</a>" in (example / "index.html").read_text()
     assert "Route guide" in [p for p in example.glob("2026-*.html")][0].read_text()
+
+
+def test_share_commits_only_the_site_pages(tmp_path):
+    repo = checkout(tmp_path)
+    archive, paths = archived(tmp_path, repo)
+    (repo / "notes.txt").write_text("half-finished work")
+    subprocess.run(["git", "add", "notes.txt"], cwd=repo, check=True)
+    result = share(archive, paths, ["tonight"], yes=True, runner=recording_runner([]))
+    assert result.committed
+    committed = subprocess.run(["git", "show", "--stat", "--format=", "HEAD"], cwd=repo, capture_output=True, text=True).stdout
+    assert "site/example/" in committed and "notes.txt" not in committed
+    staged = subprocess.run(["git", "diff", "--cached", "--name-only"], cwd=repo, capture_output=True, text=True).stdout.split()
+    assert staged == ["notes.txt"]                      # still staged, still the player's to commit

@@ -25,22 +25,15 @@ end
 local function checkInstance()
   local inInstance, instanceType = ns.SafeCall(IsInInstance)
   inInstance = inInstance and true or false
-  if ns.inInstance == nil then
-    ns.inInstance = inInstance
-    if inInstance then
-      local name = ns.SafeCall(GetInstanceInfo)
-      ns.AddEvent("INSTANCE_ENTER", { name = ns.CleanString(name), instanceType = ns.CleanString(instanceType) })
-    end
-    return
-  end
-  if inInstance ~= ns.inInstance then
-    ns.inInstance = inInstance
-    if inInstance then
-      local name = ns.SafeCall(GetInstanceInfo)
-      ns.AddEvent("INSTANCE_ENTER", { name = ns.CleanString(name), instanceType = ns.CleanString(instanceType) })
-    else
-      ns.AddEvent("INSTANCE_EXIT", {})
-    end
+  local was = ns.inInstance or false       -- the first look of a login counts as "was outside"
+  ns.inInstance = inInstance
+  if inInstance == was then return end
+  if inInstance then
+    ns.instanceName = ns.CleanString((ns.SafeCall(GetInstanceInfo)))
+    ns.AddEvent("INSTANCE_ENTER", { name = ns.instanceName, instanceType = ns.CleanString(instanceType) })
+  else
+    ns.AddEvent("INSTANCE_EXIT", { name = ns.instanceName })
+    ns.instanceName = nil
   end
 end
 
@@ -86,7 +79,6 @@ handlers.PLAYER_ENTERING_WORLD = function(isLogin, isReload)
   end
   ns.SeedXP()
   if not ns.equipSeeded then ns.SeedEquipment() end
-  ns.inInstance = nil
   checkInstance()
   scheduleZoneCheck()
   ns.UpdateRoster()

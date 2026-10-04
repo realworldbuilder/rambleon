@@ -7,6 +7,7 @@ ns.flavorHint = ns.flavorHint or "unknown"
 ns.failedEvents = {}
 ns.warnings = {}
 ns.debugEnabled = false
+ns.NOTE_MAX = 500               -- characters kept of a note
 
 do
   local version
@@ -93,6 +94,14 @@ end
 function ns.FormatClock(epoch)
   local s = date("%I:%M %p", epoch)
   return (s:gsub("^0", ""))
+end
+
+-- A client format string ("%s dies, you gain %d experience.") as an anchored Lua pattern with captures.
+function ns.FormatToPattern(fmt)
+  local p = fmt:gsub("%%s", "\1"):gsub("%%d", "\2")
+  p = p:gsub("[%(%)%.%%%+%-%*%?%[%]%^%$]", "%%%0")
+  p = p:gsub("\1", "(.-)"):gsub("\2", "(%%d+)")
+  return "^" .. p .. "$"
 end
 
 -- pcall wrapper: returns the results on success, nil on failure (and records the error).

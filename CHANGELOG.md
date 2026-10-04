@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- **A chapter that fails to write no longer stops the watcher.** Every step after a night is guarded; an error is
+  logged and the archiving goes on. The X auto-post's scan is guarded the same way.
+- **`ramble share` commits only `site/example`.** Anything else you had staged in the checkout stays staged instead
+  of riding along into the public push. Its scratch folder is cleaned up.
+- **Leaving a dungeon is recorded.** A loading screen made the AddOn forget it was inside, so no night ever had an
+  "Left …" line. The exit now carries the instance's name, and a `/reload` inside is not a second arrival.
+- The chapters reader stays out of automatic screenshots (it never hid), and shows the published date as written.
+- A session resumes by character GUID; the name only decides for sessions recorded before the GUID was.
+- `ramble doctor` no longer asks the Claude CLI a (paid) question on every run; `ramble doctor --check-ai` does.
+- Tests no longer depend on the clock, the timezone or this Mac's `rambleon.local.toml`; the simulated session is
+  the same bytes on every run. CI skips pushes that only add a shared journal page.
 - **Loot was never recorded.** Item links on the 12.x codebase carry a named colour (`|cnIQ2:`), not the old hex
   colour, and the parser only knew the hex form, so no uncommon-or-better loot and no equip was ever kept. Both
   spellings are read now (quality from the API, else from the link). `/ramble debug` shows how many loot lines

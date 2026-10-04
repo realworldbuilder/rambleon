@@ -499,11 +499,15 @@ class AutoPoster:
         if now < self._next_scan:
             return []
         self._next_scan = now + SCAN_EVERY
-        cfg = x_config(self.paths.repo_root)
-        if not cfg["auto"]:
+        try:
+            cfg = x_config(self.paths.repo_root)
+            if not cfg["auto"]:
+                return []
+            due = [n for n in due_nights(self.archive, self.paths.exports_dir, cfg, now)
+                   if self._failures.get(n["id"], (0, 0.0))[1] <= now]
+        except Exception as e:  # noqa: BLE001 — a bad file in the archive must never take the watcher down
+            self.log(f"X: could not look for chapters to post ({type(e).__name__}: {e})")
             return []
-        due = [n for n in due_nights(self.archive, self.paths.exports_dir, cfg, now)
-               if self._failures.get(n["id"], (0, 0.0))[1] <= now]
         if self.in_world is not None:             # still playing: tonight may not be over (an earlier night is)
             tonight = night_date(int(now))
             due = [n for n in due if n.get("nightDate") != tonight or not self.in_world(n.get("endedAt") or 0)]

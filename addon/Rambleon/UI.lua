@@ -11,7 +11,7 @@ local INK = { 0.24, 0.16, 0.08 }         -- dark brown text
 local INK_SOFT = { 0.42, 0.30, 0.16 }
 local GOLD = { 0.62, 0.42, 0.12 }
 
-local panel
+local panel, chaptersFrame
 
 local function setFont(fs, path, size, flags)
   local ok = pcall(fs.SetFont, fs, path, size, flags or "")
@@ -220,7 +220,6 @@ end
 
 -- Chapters: journal text published by the Mac companion into Chapters.lua ----------------------
 
-local chaptersFrame
 local CH_WIDTH, CH_HEIGHT = 560, 600
 
 local function myChapters()
@@ -307,16 +306,17 @@ function UI.ShowChapter(index)
   local chapters = myChapters()
   local text
   local meta = _G.RambleonChaptersMeta
-  local published = (type(meta) == "table" and meta.published) and ("Published " .. meta.published) or "Nothing published yet"
+  local when = type(meta) == "table" and type(meta.published) == "string" and meta.published or nil
   if #chapters == 0 then
-    f.subtitle:SetText(published)
+    f.subtitle:SetText(when and ("Published " .. when) or "Nothing published yet")
     text = "No chapters yet.\n\nPlay, then log out. With `ramble watch` running on your Mac, tonight's chapter is written about ten minutes after you leave and shows up here next login.\n\nIn a hurry: /ramble save now, then `ramble summarize tonight` on the Mac, then /reload."
   else
     if index < 1 then index = 1 end
     if index > #chapters then index = #chapters end
     UI.chapterIndex = index
     local c = chapters[index]
-    f.subtitle:SetText(string.format("%s  ·  %s  ·  %d of %d  ·  %s", c.date or "", c.duration or "", index, #chapters, published:lower()))
+    f.subtitle:SetText(string.format("%s  ·  %s  ·  %d of %d  ·  %s", c.date or "", c.duration or "", index, #chapters,
+                                  when and ("published " .. when) or "nothing published yet"))
     if UI.chapterShowLog or not c.journal or c.journal == "" then
       text = (c.title or "") .. "\n\n" .. (c.recap or "") .. "\n\n" .. (c.log or "")
     else
@@ -344,7 +344,7 @@ StaticPopupDialogs["RAMBLEON_NOTE"] = {
   button2 = CANCEL or "Cancel",
   hasEditBox = true,
   editBoxWidth = 300,
-  maxLetters = 500,
+  maxLetters = ns.NOTE_MAX,
   OnAccept = function(self)
     local text = self.editBox and self.editBox:GetText() or ""
     if ns.AddNote(text) then ns.Print("Noted.") ; UI.Flash("Noted.", 3) end
@@ -387,10 +387,8 @@ function UI.EndChapterAndReload()
   ns.dirty = true
   -- This runs from the popup button click (a hardware event). If Forever protects Reload entirely,
   -- the pcall fails or nothing happens, and we fall back to asking for /reload.
-  local reloaded = false
   local ok = pcall(function()
     if C_UI and C_UI.Reload then C_UI.Reload() else ReloadUI() end
-    reloaded = true
   end)
   if C_Timer and C_Timer.After then
     C_Timer.After(1, function()

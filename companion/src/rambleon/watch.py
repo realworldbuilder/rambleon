@@ -56,11 +56,17 @@ class Finalizer:
         slug = session.get("character", {}).get("slug", "unknown")
         if session.get("state") == "ended":
             self.pending.pop(slug, None)
-            self.run(session)
+            self._run(session)
         else:
             self.pending[slug] = (time.time() + self.timeout, session)
             self.log(f"{session['character'].get('displayName')} saved; the chapter is written as soon as they log out "
                      f"(or {int(self.timeout // 60)} min after the last save if that cannot be told)")
+
+    def _run(self, session: dict[str, Any]) -> None:
+        try:
+            self.run(session)
+        except Exception as e:  # noqa: BLE001 — the archive is safe; `ramble finish` writes the chapter by hand
+            self.log(f"could not write the chapter for {session.get('id')}: {type(e).__name__}: {e}")
 
     def tick(self) -> None:
         now = time.time()
@@ -78,7 +84,7 @@ class Finalizer:
                 del self.pending[slug]
                 if left:
                     self.log(f"{session['character'].get('displayName')} logged out — writing the chapter")
-                self.run(session)
+                self._run(session)
 
 
 def process_file(path: Path, paths: Paths, archive: Archive, log: Log, copy_screenshots: bool = True,
@@ -208,6 +214,7 @@ def watch(paths: Paths, archive: Archive, log: Log, interval: float = 1.0, copy_
     last_glob = 0.0
     files: list[Path] = []
     started = time.time()
+    last_error: tuple[str, float] = ("", 0.0)
     log("watching for Rambleon SavedVariables writes (Ctrl-C to stop)")
     ingest_once(paths, archive, log, copy_screenshots, after_capture=after_capture)
     for f in paths.saved_variables_files():
@@ -235,7 +242,13 @@ def watch(paths: Paths, archive: Archive, log: Log, interval: float = 1.0, copy_
                     st["done"] = sig
                     process_file(f, paths, archive, log, copy_screenshots, after_capture=after_capture)
             if tick:
-                tick()
+                try:
+                    tick()
+                except Exception as e:  # noqa: BLE001 — whatever runs between polls must never stop the archiving
+                    message = f"{type(e).__name__}: {e}"
+                    if message != last_error[0] or now - last_error[1] >= 60:
+                        last_error = (message, now)
+                        log(f"background step failed: {message}")
             if stop_after is not None and time.time() - started >= stop_after:
                 return
             time.sleep(interval)

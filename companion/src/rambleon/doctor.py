@@ -46,7 +46,8 @@ def _character_folders(paths: Paths) -> list[str]:
     return sorted(set(names))
 
 
-def run_doctor(paths: Paths) -> list[Check]:
+def run_doctor(paths: Paths, check_ai: bool = False) -> list[Check]:
+    """check_ai asks the Claude CLI one tiny (paid) question to see whether it is logged in."""
     checks: list[Check] = []
     wow = paths.wow_dir
     if wow:
@@ -90,7 +91,11 @@ def run_doctor(paths: Paths) -> list[Check]:
 
     pid = archive.watcher_pid()
     from . import service as svc
-    if svc.is_loaded():
+    try:
+        loaded = svc.is_loaded()
+    except OSError:   # no launchctl here
+        loaded = False
+    if loaded:
         detail = f"background service (pid {pid})" if pid else "background service (starting)"
         checks.append(Check("Watcher", "RUNNING", detail, True, essential=False))
     elif pid:
@@ -115,11 +120,12 @@ def run_doctor(paths: Paths) -> list[Check]:
             v = subprocess.run([claude, "--version"], capture_output=True, text=True, timeout=10).stdout.strip()
         except (OSError, subprocess.TimeoutExpired):
             v = "version unknown"
-        logged_in = _claude_logged_in(claude)
+        logged_in = _claude_logged_in(claude) if check_ai else None
         if logged_in is False:
             checks.append(Check("Claude CLI", "NOT LOGGED IN", f"{claude} ({v}) — run `claude`, then `/login`; chapters are prompt-only until then", True, essential=False))
         else:
-            checks.append(Check("Claude CLI", "FOUND", f"{claude} ({v})", True, essential=False))
+            note = "" if check_ai else "; login not checked (`ramble doctor --check-ai` asks it one small question)"
+            checks.append(Check("Claude CLI", "FOUND", f"{claude} ({v}){note}", True, essential=False))
     else:
         checks.append(Check("Claude CLI", "NOT FOUND", "optional; `ramble summarize` will still write the prompt", True, essential=False))
     return checks

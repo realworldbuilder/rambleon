@@ -1,9 +1,7 @@
 -- Rambleon: boot sequence and debug state.
 local ADDON, ns = ...
 
-_G.Rambleon = _G.Rambleon or {}
-local API = _G.Rambleon
-API.ns = ns
+_G.Rambleon = _G.Rambleon or {}     -- the keybinding entry points live here (Commands.lua); nothing else is public
 
 ns.loaded = false
 ns.enteredWorld = false

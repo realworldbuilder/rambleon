@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     tags: ["v*"]
+    paths-ignore: ["site/**"]   # a shared journal page is not a code change
   pull_request:
 
 jobs:
@@ -15,6 +16,8 @@ jobs:
         run: brew install lua uv
       - name: Offline tests (Lua syntax, simulated session, pytest)
         run: scripts/test
+      - name: The simulated session is the committed fixture
+        run: git diff --exit-code -- companion/tests/fixtures
       - name: Build the companion wheel
         run: cd companion && uv build --wheel
       - name: Package the AddOn

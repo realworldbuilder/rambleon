@@ -83,6 +83,12 @@ def _select_nights(archive: Archive, refs: list[str], all_nights: bool) -> list[
 def share(archive: Archive, paths: Any, refs: list[str], all_nights: bool = False, yes: bool = False, dry_run: bool = False,
           log: Callable[[str], None] = lambda m: None, confirm: Callable[[str], bool] | None = None,
           runner: Runner = subprocess.run) -> ShareResult:
+    with tempfile.TemporaryDirectory(prefix="rambleon-share-") as scratch:
+        return _share(archive, paths, refs, all_nights, yes, dry_run, log, confirm, runner, Path(scratch))
+
+
+def _share(archive: Archive, paths: Any, refs: list[str], all_nights: bool, yes: bool, dry_run: bool,
+           log: Callable[[str], None], confirm: Callable[[str], bool] | None, runner: Runner, scratch: Path) -> ShareResult:
     checkout = repo_checkout(paths.repo_root, runner)
     result = ShareResult(checkout=checkout)
     nights_ = _select_nights(archive, refs, all_nights)
@@ -123,7 +129,7 @@ def share(archive: Archive, paths: Any, refs: list[str], all_nights: bool = Fals
         images = page.with_suffix("")
         if images.is_dir():
             plan.append((images, example / images.name))
-    tmp_index = Path(tempfile.mkdtemp(prefix="rambleon-share-")) / "index.html"
+    tmp_index = scratch / "index.html"
     index_src = write_html_index(archive, paths.exports_dir, only=present, out=tmp_index)
     plan.append((index_src, example / "index.html"))
     result.files = [str(dest.relative_to(checkout)) for _, dest in plan]
@@ -131,7 +137,7 @@ def share(archive: Archive, paths: Any, refs: list[str], all_nights: bool = Fals
         log(f"{'would copy' if dry_run else 'copy'} {dest.relative_to(checkout)}")
 
     result.commands = [["git", "add", str(EXAMPLE_DIR)],
-                       ["git", "commit", "-m", _message(nights_)],
+                       ["git", "commit", "-m", _message(nights_), "--", str(EXAMPLE_DIR)],
                        ["git", "push", "origin", "HEAD"]]
     urls = [pages_url(remote, export_filename(n).replace(".md", ".html")) for n in nights_]
     result.urls = [u for u in urls if u]
@@ -150,9 +156,9 @@ def share(archive: Archive, paths: Any, refs: list[str], all_nights: bool = Fals
         else:
             shutil.copy2(src, dest)
 
-    # 3. Commit and push, after the player says yes.
-    _git(runner, checkout, "add", str(EXAMPLE_DIR))
-    if _git(runner, checkout, "diff", "--cached", "--quiet", check=False).returncode == 0:
+    # 3. Commit and push, after the player says yes. Only site/example: whatever else is staged stays staged.
+    _git(runner, checkout, "add", "--", str(EXAMPLE_DIR))
+    if _git(runner, checkout, "diff", "--cached", "--quiet", "--", str(EXAMPLE_DIR), check=False).returncode == 0:
         result.message = "nothing new to share; the site already has these pages"
         return result
     branch = _git(runner, checkout, "rev-parse", "--abbrev-ref", "HEAD", check=False).stdout.strip()
@@ -163,7 +169,7 @@ def share(archive: Archive, paths: Any, refs: list[str], all_nights: bool = Fals
         _git(runner, checkout, "reset", "-q", "--", str(EXAMPLE_DIR), check=False)
         result.message = "not shared (files are staged locally under site/example; commit them yourself or run again)"
         return result
-    _git(runner, checkout, "commit", "-q", "-m", _message(nights_))
+    _git(runner, checkout, "commit", "-q", "-m", _message(nights_), "--", str(EXAMPLE_DIR))
     result.committed = True
     _git(runner, checkout, "push", "origin", "HEAD")
     result.pushed = True
