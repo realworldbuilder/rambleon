@@ -1,0 +1,273 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Chapter 17 — Across the Sea to Hillsbrad — Rambleon Birdsong</title>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
+h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
+figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.quests{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0}
+.quests .tabs{display:flex;gap:4px;padding:6px 8px 0;border-bottom:1px solid var(--line);background:rgba(90,53,16,.05)}
+.quests .tabs button{font:inherit;font-size:15px;padding:8px 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--soft);cursor:pointer;margin-bottom:-1px}
+.quests .tabs button:hover{color:var(--link)}.quests .tabs button[aria-selected=true]{color:#5a3510;border-color:var(--gold);font-weight:bold}
+.quests .tabs .n{display:inline-block;min-width:22px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(90,53,16,.1);font-size:12px;font-weight:normal;color:var(--soft);text-align:center}
+.quests .pane{display:none;padding:6px 0 4px}.quests .pane.on{display:block}
+.quests table{width:100%;border-collapse:collapse;font-size:15px}
+.quests th,.quests td{text-align:left;padding:7px 14px;border-top:1px solid rgba(201,180,138,.5);vertical-align:top}
+.quests thead th{font:700 12px/1 Cinzel,Georgia,serif;letter-spacing:1.5px;color:#5a3510;border-top:0;padding-top:10px}
+.quests tr.zone th{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;background:rgba(90,53,16,.06);letter-spacing:.5px}
+.quests td.where,.quests td.lv,.quests td.since{color:var(--soft);white-space:nowrap}.quests td.lv{text-align:right}
+.quests .caveat{font-size:13px;color:var(--faint);margin:0;padding:8px 14px 6px;border-top:1px solid rgba(201,180,138,.5)}
+@media(max-width:520px){.quests .tabs button{padding:8px 8px;font-size:14px}.quests th,.quests td{padding:6px 10px}.quests td.where{white-space:normal}}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+.roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 8px}
+.char{display:block;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;text-decoration:none;color:inherit}
+.char:hover{box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.char .cn{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510}
+.char .cl{display:block;font-size:15px;color:var(--ink)}.char .cm{display:block;font-size:13px;color:var(--faint)}
+.who{scroll-margin-top:12px}.who h2{font:700 26px/1.2 Cinzel,Georgia,serif;letter-spacing:.5px;color:#5a3510;margin:44px 0 4px;padding-bottom:6px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+</style></head><body id='top'>
+<nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='index.html#rambleon-birdsong'>All chapters</a><a href='guide-rambleon-birdsong.html'>Route guide</a><a href='../'>About Rambleon</a></nav>
+<h1>Chapter 17 — Across the Sea to Hillsbrad</h1>
+<div class='meta'>Rambleon Birdsong · October 8, 2026 · 2h 30m in Azeroth</div>
+<div class='jump'><a href='#story'>Story</a><a href='#recap'>Recap</a><a href='#quests'>Quests</a><a href='#journey'>Journey</a></div>
+<div class='pager'><a class='prev' href='2026-10-07-rambleon-birdsong.html'>← Chapter 16 — The Long Dig at Whelgar&#x27;s</a></div>
+<figure class='hero'><img src='2026-10-08-rambleon-birdsong/2026-10-08-rambleon-birdsong-03.jpg' alt='Reached Level 25 in Whelgar&#x27;s Excavation Site'><figcaption>8:45 PM — Reached Level 25 in Whelgar&#x27;s Excavation Site</figcaption></figure>
+<div class='journal' id='story'><p>Rambleon came back through Ironforge and down to Menethil as though his feet remembered the way without being told, and the Wetlands opened before him again — Whelgar&#x27;s Excavation Site waiting just where he and Cassidy had left it the night before, though tonight he found it without her. Básdorcha, a hunter, fell in beside him there, and briefly Adryh, a paladin, and between them and the dig&#x27;s Mottled Razormaws and Scytheclaws and Raptors, a Sarltooth&#x27;s talon turned out to be the last piece Ormer needed. Somewhere in the counting of it Rambleon felt the quiet lift of a new year settling into his bones — twenty-five now, Raptor&#x27;s End in hand, a picture taken to hold the moment, and a Novice Hunter&#x27;s name to go with it.</p>
+<p>He carried that lightness east to Thelgen Rock and the ferns of Mosshide Fen, where Falcon, a hunter, and Big, a paladin, and later Tzuyu, a druid, walked with him through mongrels and gnolls and fenrunners until the trappers&#x27; paws were accounted for. Back in the Green Belt he took up the Fire Taboo, and for a little while Fleche and Stoneheart, hunters both, ranged beside him against trappers and mistweavers and a Highland Raptor before the paths parted again, as they do with company met only for an evening.</p>
+<p>The flint he needed waited in Ironbeard&#x27;s Tomb, and the Wetlands walked him back from its graveyard more than once before the last of it was gathered, at Whelgar&#x27;s earlier and near the tomb again now — though a pair of Thorbia&#x27;s Gauntlets came out of the digging worth the trouble, and Stoneheart found him once more near the end, long enough to see the taboo lifted.</p>
+<p>By Menethil Keep he had a new errand concerning the fall of Dun Modr, and the road doubled back through Dun Morogh to Ironforge, where he let go of half-finished business in Tinker Town — the fishing pole, the mushrooms, the prospector, all set down — for a rescue among lost gnomish data and a grander betrayal still to untangle, the Military Ward turning out gloves, a belt, a tunic, and leggings worth the wearing. The sea carried him somewhere new after that: Hillsbrad Foothills, its strands and Southshore pale enough to stop for a picture, a shamed lieutenant&#x27;s business settled, a brewer&#x27;s trade and a longer walk down the coast promised for another night, and Tom&#x27;s gift carried home across the water to Bart Tidewater before the lamplight of Deepwater Tavern closed around him again, one more picture marking the moment — alone this time, but not unhappily so.</p></div>
+<div class='recap' id='recap'>2h 30m in Azeroth tonight.
+1 level(s).
+5 quests.
+29 new places.
+5 deaths.
+Seven new faces crossed his path for a while: Básdorcha, Adryh, Falcon, Big, Tzuyu, Fleche, and Stoneheart.
+Ramble on.</div>
+<div class='stats'><div class='stat'><b>5</b><span>Quests</span></div><div class='stat'><b>29</b><span>Places</span></div><div class='stat'><b>113</b><span>Enemies slain</span></div><div class='stat'><b>7</b><span>Loot</span></div><div class='stat'><b>5</b><span>Deaths</span></div><div class='stat'><b>7</b><span>People</span></div><div class='stat'><b>16,921</b><span>XP</span></div></div>
+<h2 id='quests'>Quests</h2><div class='quests'><div class='tabs' role='tablist'><button role='tab' aria-selected='true' data-pane='done'>Turned in<span class='n'>5</span></button><button role='tab' aria-selected='false' data-pane='open'>Still open<span class='n'>6</span></button><button role='tab' aria-selected='false' data-pane='carried'>Carrying<span class='n'>36</span></button></div><div class='pane on' id='qpane-done' role='tabpanel'><table><thead><tr><th>Quest</th><th>Turned in at</th><th>Lv</th></tr></thead><tbody><tr class='zone'><th colspan='3'>Wetlands</th></tr><tr><td class='quest'>Ormer&#x27;s Revenge ×2</td><td class='where'>Whelgar&#x27;s Excavation Site</td><td class='lv'>25</td></tr><tr><td class='quest'>Tramping Paws</td><td class='where'>The Green Belt</td><td class='lv'>25</td></tr><tr><td class='quest'>A Lack of Virtue</td><td class='where'>Menethil Harbor</td><td class='lv'>25</td></tr><tr class='zone'><th colspan='3'>Hillsbrad Foothills</th></tr><tr><td class='quest'>The Shamed Lieutenant</td><td class='where'>Southshore</td><td class='lv'>25</td></tr></tbody></table></div><div class='pane' id='qpane-open' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th></tr></thead><tbody><tr><td class='quest'>Fire Taboo</td><td class='where'>The Green Belt</td></tr><tr><td class='quest'>Fall of Dun Modr</td><td class='where'>Menethil Harbor</td></tr><tr><td class='quest'>Data Rescue</td><td class='where'>Tinker Town</td></tr><tr><td class='quest'>The Grand Betrayal</td><td class='where'>Tinker Town</td></tr><tr><td class='quest'>Down the Coast</td><td class='where'>Southshore</td></tr><tr><td class='quest'>Brewer&#x27;s Trade</td><td class='where'>Southshore</td></tr></tbody></table></div><div class='pane' id='qpane-carried' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th><th>Since</th></tr></thead><tbody><tr><td class='quest'>Sathrah&#x27;s Sacrifice</td><td class='where'>Temple of the Moon</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Crown of the Earth</td><td class='where'>Dolanaar</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>The Tower of Althalaxx</td><td class='where'>Maestra&#x27;s Post</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Raene&#x27;s Cleansing</td><td class='where'>Moonwell</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Researching the Corruption</td><td class='where'>Auberdine</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>In Search of Thaelrid</td><td class='where'>Craftsmen&#x27;s Terrace</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Super Reaper 6000</td><td class='where'>Windshear Crag</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Knowledge in the Deeps</td><td class='where'>Blackfathom Deeps</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Forgotten Heirloom</td><td class='where'>The Jansen Stead</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Defias Brotherhood</td><td class='where'>Sentinel Tower</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The People&#x27;s Militia</td><td class='where'>Sentinel Tower</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Stormpike&#x27;s Delivery</td><td class='where'>Dwarven District</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Collecting Memories</td><td class='where'>Dwarven District</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Oh Brother...</td><td class='where'>Dwarven District</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Save Techbot&#x27;s Brain!</td><td class='where'>Tinker Town</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Find Bingles</td><td class='where'>Tinker Town</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>The Day After</td><td class='where'>Tinker Town</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Ineptitude + Chemicals = Fun</td><td class='where'>Tinker Town</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Reclaiming the Charred Vale</td><td class='where'>Stonetalon Peak</td><td class='since'>Chapter 10</td></tr><tr><td class='quest'>Gyrodrillmatic Excavationators</td><td class='where'>Dwarven District</td><td class='since'>Chapter 11</td></tr><tr><td class='quest'>Westfall Stew</td><td class='where'>Westfall</td><td class='since'>Chapter 11</td></tr><tr><td class='quest'>... and that note you found</td><td class='where'>Alexston Farmstead</td><td class='since'>Chapter 11</td></tr><tr><td class='quest'>Ink Supplies</td><td class='where'>Library Wing</td><td class='since'>Chapter 11</td></tr><tr><td class='quest'>Fallen Sky Lake</td><td class='where'>Astranaar</td><td class='since'>Chapter 12</td></tr><tr><td class='quest'>Twilight Falls</td><td class='where'>The Zoram Strand</td><td class='since'>Chapter 14</td></tr><tr><td class='quest'>Bloom of the Heavens</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 14</td></tr><tr><td class='quest'>Razormaw Needling</td><td class='where'>Wetlands</td><td class='since'>Chapter 15</td></tr><tr><td class='quest'>Trying Times</td><td class='where'>Wetlands</td><td class='since'>Chapter 15</td></tr><tr><td class='quest'>Nek&#x27;rosh&#x27;s Gambit</td><td class='where'>Menethil Keep</td><td class='since'>Chapter 15</td></tr><tr><td class='quest'>The Cursed Crew</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 15</td></tr><tr><td class='quest'>Gleaning Our Future</td><td class='where'>Whelgar&#x27;s Excavation Site</td><td class='since'>Chapter 16</td></tr><tr><td class='quest'>Lost in the Thicket Things</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 16</td></tr><tr><td class='quest'>Highland Hides</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 16</td></tr><tr><td class='quest'>Quell the Uprising</td><td class='where'>Thelgen Rock</td><td class='since'>Chapter 16</td></tr><tr><td class='quest'>Essential Artificials</td><td class='where'>Tinker Town</td><td class='since'>Chapter 16</td></tr><tr><td class='quest'>The Restless Dead</td><td class='where'>Ironforge</td><td class='since'>Chapter 16</td></tr></tbody></table><p class='caveat'>As far as Rambleon knows: a quest picked up before it was installed, or abandoned before it recorded that, is not here.</p></div></div><script>(function(){var tabs=document.querySelectorAll('.quests [role=tab]');tabs.forEach(function(t){t.addEventListener('click',function(){tabs.forEach(function(o){o.setAttribute('aria-selected',o===t)});document.querySelectorAll('.quests .pane').forEach(function(p){p.classList.toggle('on',p.id==='qpane-'+t.dataset.pane)})})})})();</script>
+<h2 id='journey'>The Journey</h2><details class='journey' open><summary>195 moments, in order · fold</summary><ul>
+<li>8:17 PM — Began the adventure</li>
+<li>8:17 PM — Earned achievement: Played in the WoW: Forever Beta</li>
+<li>8:17 PM — Entered Ironforge</li>
+<li>8:23 PM — Entered Deepwater Tavern (Lion&#x27;s Pride Inn)</li>
+<li class='shot'><figure><img src='2026-10-08-rambleon-birdsong/2026-10-08-rambleon-birdsong-01.jpg' alt='Entered Lion&#x27;s Pride Inn'><figcaption>8:23 PM — Entered Lion&#x27;s Pride Inn</figcaption></figure></li>
+<li>8:23 PM — Entered Menethil Harbor (Wetlands)</li>
+<li class='shot'><figure><img src='2026-10-08-rambleon-birdsong/2026-10-08-rambleon-birdsong-02.jpg' alt='Entered Wetlands'><figcaption>8:23 PM — Entered Wetlands</figcaption></figure></li>
+<li>8:23 PM — Entered Menethil Bay (Wetlands)</li>
+<li>8:23 PM — Entered Wetlands</li>
+<li>8:24 PM — Entered Baradin Bay (Wetlands)</li>
+<li>8:24 PM — Entered Wetlands</li>
+<li>8:24 PM — Entered Bluegill Marsh (Wetlands)</li>
+<li>8:25 PM — Entered Wetlands</li>
+<li>8:25 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>8:25 PM — Entered Wetlands</li>
+<li>8:26 PM — Entered Angerfang Encampment (Wetlands)</li>
+<li>8:26 PM — Entered Wetlands</li>
+<li>8:27 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>8:27 PM — Entered Wetlands</li>
+<li>8:27 PM — Entered Whelgar&#x27;s Excavation Site (Wetlands)</li>
+<li>8:28 PM — First Mottled Razormaw slain</li>
+<li>8:29 PM — Looted Cavalier Two-hander of the Falcon (Uncommon)</li>
+<li>8:30 PM — Died in Whelgar&#x27;s Excavation Site</li>
+<li>8:30 PM — Entered Wetlands</li>
+<li>8:34 PM — Entered Whelgar&#x27;s Excavation Site (Wetlands)</li>
+<li>8:34 PM — Back among the living</li>
+<li>8:34 PM — Died in Whelgar&#x27;s Excavation Site</li>
+<li>8:34 PM — Entered Wetlands</li>
+<li>8:36 PM — Entered Whelgar&#x27;s Excavation Site (Wetlands)</li>
+<li>8:36 PM — Back among the living</li>
+<li>8:36 PM — Joined forces with Básdorcha (Hunter)</li>
+<li>8:36 PM — 10/10 Mottled Razormaw slain — &quot;Ormer&#x27;s Revenge&quot;</li>
+<li>8:38 PM — First Mottled Scytheclaw slain</li>
+<li>8:40 PM — First Mottled Raptor slain</li>
+<li>8:41 PM — Completed &quot;Ormer&#x27;s Revenge&quot;</li>
+<li>8:41 PM — Accepted &quot;Ormer&#x27;s Revenge&quot;</li>
+<li>8:42 PM — Joined forces with Adryh (Paladin)</li>
+<li>8:42 PM — First Sarltooth slain</li>
+<li>8:43 PM — 1/1 Sarltooth&#x27;s Talon — &quot;Ormer&#x27;s Revenge&quot;</li>
+<li>8:43 PM — Parted ways with Básdorcha</li>
+<li>8:43 PM — Parted ways with Adryh</li>
+<li>8:45 PM — Reached Level 25</li>
+<li>8:45 PM — Looted Raptor&#x27;s End (Uncommon)</li>
+<li>8:45 PM — Completed &quot;Ormer&#x27;s Revenge&quot;</li>
+<li>8:45 PM — Earned achievement: Novice Hunter</li>
+<li>8:47 PM — Entered Wetlands</li>
+<li>8:48 PM — Entered The Green Belt (Wetlands)</li>
+<li>8:48 PM — Entered Wetlands</li>
+<li>8:48 PM — Entered The Green Belt (Wetlands)</li>
+<li>8:48 PM — Entered Wetlands</li>
+<li>8:48 PM — Entered The Green Belt (Wetlands)</li>
+<li>8:49 PM — Entered Wetlands</li>
+<li>8:52 PM — Entered Thelgen Rock (Wetlands)</li>
+<li>8:52 PM — Entered Mosshide Fen (Wetlands)</li>
+<li>8:53 PM — Joined forces with Falcon (Hunter)</li>
+<li>8:53 PM — First Mosshide Mongrel slain</li>
+<li>8:54 PM — First Mosshide Fenrunner slain</li>
+<li>8:57 PM — Joined forces with Big (Paladin)</li>
+<li>8:59 PM — First Mosshide Gnoll slain</li>
+<li>8:59 PM — 10/10 Mosshide Mongrel slain — &quot;Tramping Paws&quot;</li>
+<li>9:00 PM — Joined forces with Tzuyu (Druid)</li>
+<li>9:02 PM — 15/15 Mosshide Gnoll slain — &quot;Tramping Paws&quot;</li>
+<li>9:05 PM — First Young Wetlands Crocolisk slain</li>
+<li>9:06 PM — Entered Wetlands</li>
+<li>9:06 PM — Parted ways with Tzuyu</li>
+<li>9:07 PM — Parted ways with Falcon</li>
+<li>9:07 PM — Parted ways with Big</li>
+<li>9:07 PM — First Black Slime slain</li>
+<li>9:09 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:09 PM — Entered Wetlands</li>
+<li>9:09 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:09 PM — Entered Wetlands</li>
+<li>9:10 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>9:11 PM — Entered Bluegill Marsh (Wetlands)</li>
+<li>9:12 PM — Entered Wetlands</li>
+<li>9:12 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>9:12 PM — Entered Wetlands</li>
+<li>9:12 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>9:13 PM — Entered Wetlands</li>
+<li>9:14 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:14 PM — Entered Wetlands</li>
+<li>9:14 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:16 PM — Completed &quot;Tramping Paws&quot;</li>
+<li>9:16 PM — Accepted &quot;Fire Taboo&quot;</li>
+<li>9:17 PM — Entered Wetlands</li>
+<li>9:18 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:23 PM — Joined forces with Fleche (Hunter)</li>
+<li>9:23 PM — Joined forces with Stoneheart (Hunter)</li>
+<li>9:23 PM — Entered Wetlands</li>
+<li>9:24 PM — First Mosshide Trapper slain</li>
+<li>9:24 PM — Entered Direforge Hill (Wetlands)</li>
+<li>9:24 PM — Entered Wetlands</li>
+<li>9:24 PM — First Mosshide Mistweaver slain</li>
+<li>9:25 PM — First Highland Raptor slain</li>
+<li>9:25 PM — Parted ways with Fleche</li>
+<li>9:26 PM — Parted ways with Stoneheart</li>
+<li>9:27 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:27 PM — Entered Wetlands</li>
+<li>9:27 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:28 PM — Entered Wetlands</li>
+<li>9:28 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:29 PM — Entered Wetlands</li>
+<li>9:30 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:31 PM — Entered Wetlands</li>
+<li>9:34 PM — Looted Thorbia&#x27;s Gauntlets (Rare)</li>
+<li>9:35 PM — Died in Wetlands</li>
+<li>9:35 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:35 PM — Entered Wetlands</li>
+<li>9:35 PM — Back among the living</li>
+<li>9:35 PM — Joined forces with Stoneheart (Hunter)</li>
+<li>9:37 PM — Entered Ironbeard&#x27;s Tomb (Wetlands)</li>
+<li>9:37 PM — Entered Wetlands</li>
+<li>9:37 PM — First Wetlands Crocolisk slain</li>
+<li>9:39 PM — Died in Wetlands</li>
+<li>9:39 PM — Back among the living</li>
+<li>9:41 PM — Entered Ironbeard&#x27;s Tomb (Wetlands)</li>
+<li>9:41 PM — Entered Wetlands</li>
+<li>9:41 PM — Entered Ironbeard&#x27;s Tomb (Wetlands)</li>
+<li>9:42 PM — 9/9 Crude Flint — &quot;Fire Taboo&quot;</li>
+<li>9:43 PM — First Mosshide Brute slain</li>
+<li>9:44 PM — Entered Wetlands</li>
+<li>9:46 PM — Died in Wetlands</li>
+<li>9:47 PM — Parted ways with Stoneheart</li>
+<li>9:47 PM — Back among the living</li>
+<li>9:48 PM — Entered Deepwater Tavern (Lion&#x27;s Pride Inn)</li>
+<li>9:49 PM — Entered Menethil Harbor (Wetlands)</li>
+<li>9:50 PM — Accepted &quot;Fall of Dun Modr&quot;</li>
+<li>9:51 PM — Entered Menethil Keep (Wetlands)</li>
+<li>9:53 PM — Entered Menethil Harbor (Wetlands)</li>
+<li>9:53 PM — Entered Menethil Bay (Wetlands)</li>
+<li>9:54 PM — Entered Wetlands</li>
+<li>9:54 PM — Entered Dun Morogh</li>
+<li class='shot'><figure><img src='2026-10-08-rambleon-birdsong/2026-10-08-rambleon-birdsong-04.jpg' alt='Entered Dun Morogh'><figcaption>9:54 PM — Entered Dun Morogh</figcaption></figure></li>
+<li>9:54 PM — Entered Gates of Ironforge (Dun Morogh)</li>
+<li>9:54 PM — Entered Ironforge</li>
+<li>9:55 PM — Entered The Great Forge (Ironforge)</li>
+<li>9:55 PM — Entered Ironforge</li>
+<li>9:55 PM — Entered Hall of Explorers (Ironforge)</li>
+<li>9:56 PM — Entered Tinker Town (Ironforge)</li>
+<li>9:56 PM — Abandoned &quot;As Water Cascades&quot;</li>
+<li>9:56 PM — Abandoned &quot;The Family and the Fishing Pole&quot;</li>
+<li>9:56 PM — Abandoned &quot;Cave Mushrooms&quot;</li>
+<li>9:56 PM — Abandoned &quot;The Absent Minded Prospector&quot;</li>
+<li>9:56 PM — Abandoned &quot;Thunderbrew&quot;</li>
+<li>9:57 PM — Accepted &quot;Data Rescue&quot;</li>
+<li>9:57 PM — Accepted &quot;The Grand Betrayal&quot;</li>
+<li>9:58 PM — Entered The Military Ward (Ironforge)</li>
+<li>9:58 PM — Entered Ironforge</li>
+<li>10:04 PM — Entered The Military Ward (Ironforge)</li>
+<li>10:05 PM — Entered Ironforge</li>
+<li>10:16 PM — Looted Barbaric Gloves (Uncommon)</li>
+<li>10:16 PM — Looted Scaled Leather Belt of the Falcon (Uncommon)</li>
+<li>10:16 PM — Looted Dervish Tunic of Arcane Wrath (Uncommon)</li>
+<li>10:21 PM — Looted Shadow Weaver Leggings (Uncommon)</li>
+<li>10:21 PM — Entered The Great Forge (Ironforge)</li>
+<li>10:22 PM — Entered Ironforge</li>
+<li>10:22 PM — Entered Gates of Ironforge (Dun Morogh)</li>
+<li>10:22 PM — Entered Dun Morogh</li>
+<li>10:22 PM — Entered Misty Pine Refuge (Dun Morogh)</li>
+<li>10:22 PM — Entered Dun Morogh</li>
+<li>10:22 PM — Entered Amberstill Ranch (Dun Morogh)</li>
+<li>10:22 PM — Entered Dun Morogh</li>
+<li>10:23 PM — Entered Wetlands</li>
+<li>10:24 PM — Entered Menethil Bay (Wetlands)</li>
+<li>10:24 PM — Entered Menethil Harbor (Wetlands)</li>
+<li>10:32 PM — Entered Deepwater Tavern (Lion&#x27;s Pride Inn)</li>
+<li>10:34 PM — Entered Menethil Harbor (Wetlands)</li>
+<li>10:37 PM — Entered Baradin Bay (Wetlands)</li>
+<li>10:37 PM — Entered The Great Sea (Wetlands)</li>
+<li>10:38 PM — Entered Baradin Bay (Wetlands)</li>
+<li>10:38 PM — Entered The Great Sea (Wetlands)</li>
+<li>10:38 PM — Entered The Great Sea (Hillsbrad Foothills)</li>
+<li class='shot'><figure><img src='2026-10-08-rambleon-birdsong/2026-10-08-rambleon-birdsong-05.jpg' alt='Entered Hillsbrad Foothills'><figcaption>10:38 PM — Entered Hillsbrad Foothills</figcaption></figure></li>
+<li>10:38 PM — Entered Eastern Strand (Hillsbrad Foothills)</li>
+<li>10:39 PM — Entered Western Strand (Hillsbrad Foothills)</li>
+<li>10:39 PM — Entered Southshore (Hillsbrad Foothills)</li>
+<li>10:39 PM — Accepted &quot;A Lack of Virtue&quot;</li>
+<li>10:39 PM — Deliver Tom&#x27;s Gift to Bart Tidewater in Menethil Harbor in the Wetlands. — &quot;A Lack of Virtue&quot;</li>
+<li>10:40 PM — Completed &quot;The Shamed Lieutenant&quot;</li>
+<li>10:40 PM — Accepted &quot;Down the Coast&quot;</li>
+<li>10:41 PM — Accepted &quot;Brewer&#x27;s Trade&quot;</li>
+<li>10:42 PM — Entered Western Strand (Hillsbrad Foothills)</li>
+<li>10:43 PM — Entered Southshore (Hillsbrad Foothills)</li>
+<li>10:44 PM — Entered Eastern Strand (Hillsbrad Foothills)</li>
+<li>10:44 PM — Entered The Great Sea (Hillsbrad Foothills)</li>
+<li>10:44 PM — Entered The Great Sea (Wetlands)</li>
+<li>10:45 PM — Entered Baradin Bay (Wetlands)</li>
+<li>10:45 PM — Entered Menethil Harbor (Wetlands)</li>
+<li>10:46 PM — Completed &quot;A Lack of Virtue&quot;</li>
+<li>10:47 PM — Entered Deepwater Tavern (Lion&#x27;s Pride Inn)</li>
+<li>10:47 PM — Entered Menethil Harbor (Wetlands)</li>
+<li>10:47 PM — Entered Deepwater Tavern (Lion&#x27;s Pride Inn)</li>
+<li>10:48 PM — Marked moment in Deepwater Tavern</li>
+<li class='shot'><figure><img src='2026-10-08-rambleon-birdsong/2026-10-08-rambleon-birdsong-06.jpg' alt='Marked moment in Deepwater Tavern'><figcaption>10:48 PM — Marked moment in Deepwater Tavern</figcaption></figure></li>
+</ul></details><a class='totop' href='#top'>↑ Back to top</a>
+<div class='pager bottom'><a class='prev' href='2026-10-07-rambleon-birdsong.html'>← Chapter 16 — The Long Dig at Whelgar&#x27;s</a></div>
+<footer>Recorded by Rambleon · session night-2026-10-08-rambleon-birdsong</footer></body></html>
