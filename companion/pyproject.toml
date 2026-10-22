@@ -1,6 +1,6 @@
 [project]
 name = "rambleon"
-version = "0.4.0"
+version = "0.5.0"
 description = "Rambleon Mac companion: archives World of Warcraft: Forever adventure sessions and turns them into journals."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -35,6 +35,8 @@ packages = ["src/rambleon"]
 "../addon/Rambleon/EventTypes.lua" = "rambleon/addon/Rambleon/EventTypes.lua"
 "../addon/Rambleon/Core.lua" = "rambleon/addon/Rambleon/Core.lua"
 "../addon/Rambleon/Session.lua" = "rambleon/addon/Rambleon/Session.lua"
+"../addon/Rambleon/Capture.lua" = "rambleon/addon/Rambleon/Capture.lua"
+"../addon/Rambleon/Roleplay.lua" = "rambleon/addon/Rambleon/Roleplay.lua"
 "../addon/Rambleon/Journal.lua" = "rambleon/addon/Rambleon/Journal.lua"
 "../addon/Rambleon/Events.lua" = "rambleon/addon/Rambleon/Events.lua"
 "../addon/Rambleon/UI.lua" = "rambleon/addon/Rambleon/UI.lua"

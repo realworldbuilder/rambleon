@@ -29,6 +29,8 @@ local DEFAULTS = {
   autoScreenshots = true,      -- pictures at level ups, marks and new zones
   debug = false,               -- debug chatter in chat
   welcomed = false,            -- the first-run welcome has been shown
+  rpChat = true,               -- remember what is said in character around you (/say, /emote, /yell)
+  rpParty = false,             -- the group's chat too
 }
 
 function ns.GetSetting(key)
@@ -87,13 +89,24 @@ end
 
 function ns.GetLocation()
   local loc = {}
-  loc.zone = ns.CleanString(ns.SafeCall(GetRealZoneText)) or ns.CleanString(ns.SafeCall(GetZoneText))
+  local apiZone = ns.CleanString(ns.SafeCall(GetRealZoneText)) or ns.CleanString(ns.SafeCall(GetZoneText))
   loc.subzone = ns.CleanString(ns.SafeCall(GetSubZoneText))
-  if loc.subzone == loc.zone then loc.subzone = nil end
   if C_Map and C_Map.GetBestMapForUnit then
     loc.mapID = ns.Clean(ns.SafeCall(C_Map.GetBestMapForUnit, "player"))
   end
   local inInstance = ns.SafeCall(IsInInstance)
+  -- Forever names some buildings as the zone ("Lakeshire Inn", "Sentinel Tower") and says "" for a moment after
+  -- login; the zone map knows better. Inside an instance the zone text is the instance and stays.
+  local mapZone = (not inInstance) and ns.ZoneMapName(loc.mapID) or nil
+  if not apiZone then
+    loc.zone = mapZone
+  elseif mapZone and mapZone ~= apiZone then
+    loc.zone = mapZone
+    loc.subzone = loc.subzone or apiZone
+  else
+    loc.zone = apiZone
+  end
+  if loc.subzone == loc.zone then loc.subzone = nil end
   if loc.mapID and not inInstance and C_Map.GetPlayerMapPosition then
     local pos = ns.SafeCall(C_Map.GetPlayerMapPosition, loc.mapID, "player")
     if pos and pos.GetXY then
@@ -242,6 +255,7 @@ function ns.StartSession()
   ns.resumed = false
   ns.doneObjectives = {}
   ns.objectivesSeeded = false
+  ns.ResetCapture()
   if resumed then
     ns.session = resumed
     resumed.state = "active"
@@ -275,7 +289,7 @@ function ns.StartSession()
   ns.session = s
   ns.PruneSessions()
   ns.lastZoneKey = nil
-  ns.AddEvent("SESSION_START", {})
+  ns.AddEvent("SESSION_START", { money = ns.Clean(ns.SafeCall(GetMoney)) })
   ns.Debug("new session " .. s.id)
   return s
 end
@@ -359,7 +373,7 @@ function ns.EndSession(reason)
   flushPlaytime()
   ns.FlushPeople()
   s.character.endLevel = ns.Clean(ns.SafeCall(UnitLevel, "player")) or s.character.endLevel
-  ns.AddEvent("SESSION_END", { reason = reason or "end_chapter" })
+  ns.AddEvent("SESSION_END", { reason = reason or "end_chapter", money = ns.Clean(ns.SafeCall(GetMoney)) })
   s.state = "ended"
   s.endedAt = ns.Now()
   s.endReason = reason or "end_chapter"
@@ -457,6 +471,7 @@ function ns.NoteZoneChange(force)
   ns.lastZoneKey = key
   ns.RecordZone(loc)
   ns.AddEvent("ZONE_ENTER", { zone = loc.zone, subzone = loc.subzone, mapID = loc.mapID, x = loc.x, y = loc.y })
+  ns.NoteDock(loc)
   if firstVisit then ns.TakeScreenshot("ZONE_ENTER", { zone = loc.zone, subzone = loc.subzone }, 1.0) end
 end
 
@@ -563,7 +578,9 @@ function ns.RecordKillFromChat(text)
   if not k then
     k = { count = 0, xp = 0, firstAt = ns.Now(), lastAt = ns.Now() }
     s.kills[name] = k
-    ns.AddEvent("FIRST_KILL", { name = name, xp = xp })
+    local fields = ns.MobFields(name)   -- rare, elite, its level: what the target frame knew of it
+    fields.name, fields.xp = name, xp
+    ns.AddEvent("FIRST_KILL", fields)
   end
   k.count = k.count + 1
   k.xp = k.xp + xp
@@ -571,6 +588,7 @@ function ns.RecordKillFromChat(text)
   s.counters.kills = (s.counters.kills or 0) + 1
   s.lastSeen = ns.Now()
   ns.dirty = true
+  ns.NoteCause("kill")
 end
 
 function ns.SeedXP()
@@ -837,5 +855,6 @@ function ns.StartHeartbeat()
   if ns.heartbeatTicker then return end
   if C_Timer and C_Timer.NewTicker then
     ns.heartbeatTicker = C_Timer.NewTicker(HEARTBEAT, ns.Heartbeat)
+    ns.moveTicker = C_Timer.NewTicker(1, ns.SampleMovement)   -- is the player falling? (a death a second later was a fall)
   end
 end

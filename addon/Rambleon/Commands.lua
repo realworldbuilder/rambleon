@@ -35,6 +35,20 @@ ns.COMMANDS = {
       ns.Print("automatic screenshots are " .. (ns.AutoShotsEnabled() and "on" or "off")
                .. " (level ups, /ramble mark, new zones; /ramble shots on|off)")
     end },
+  { name = "rp", aliases = { "roleplay" }, args = "[on|off] | party on|off",
+    help = "remember what is said in character around you (/say, /emote, /yell); party adds the group's chat",
+    fn = function(rest)
+      local word, value = rest:match("^(%S*)%s*(%S*)")
+      if word == "party" then
+        local on = onOff(value)
+        if on ~= nil then ns.SetSetting("rpParty", on) end
+      else
+        local on = onOff(word)
+        if on ~= nil then ns.SetSetting("rpChat", on) end
+      end
+      ns.Print("roleplay is " .. (ns.RoleplayOn() and "on" or "off") .. ", party chat " .. (ns.RoleplayPartyOn() and "on" or "off")
+               .. " (/ramble rp on|off, /ramble rp party on|off)")
+    end },
   { name = "chapters", aliases = { "read" }, help = "read past chapters (published from your Mac)",
     fn = function() ns.UI.ToggleChapters() end },
   { name = "save", aliases = { "end" }, help = "write the log to disk now (asks before reloading; logging out does it anyway)",

@@ -14,10 +14,11 @@ from .archive import Archive, atomic_write_bytes, is_trivial, load_json
 from .export import (_by_zone, _collapse_carried, _collapse_titles, _quest_label, _times, carried_over, clock, describe, duration,
                      export_filename, long_date, night_stats, place, quest_summary, render_markdown, render_recap)
 from .events import shown
-from .pages import (PROJECT_URL, figure as _figure, guide_page_name, index_anchor, page_name as _page_name,  # noqa: F401
+from .pages import (PROJECT_URL, figure as _figure, guide_page_name, index_anchor, page_name as _page_name, season_page_name,  # noqa: F401
                     paragraphs as _paragraphs, shell, top_nav)
 from .nights import chapter_numbers, earlier_nights, nights
 from .paths import Paths
+from .scenes import marker as scene_marker, render_html as render_scenes, scenes, starts as scene_starts
 from .screenshots import caption as shot_caption, event_index
 
 MAX_CHAPTERS_IN_GAME = 12   # per character: one character's nights never evict another's from /ramble chapters
@@ -164,6 +165,9 @@ def write_html_index(archive: Archive, exports_dir: Path, only: set[str] | None 
         guide = _guide_link(exports_dir, slug, only)
         if guide:
             nav_links.insert(0, ("Route guide", guide))
+        season = _season_link(exports_dir, slug, only)
+        if season:
+            nav_links.insert(0, ("The season", season))
         title = f"{name} — Adventure Journal"
         body = (f"<h1 id='{html.escape(slug)}'>{name}</h1><div class='meta'>Adventure journal · {chapters(total)} · newest first</div>"
                 "<ul class='chapters'>" + "".join(group["cards"]) + "</ul>")
@@ -175,10 +179,12 @@ def write_html_index(archive: Archive, exports_dir: Path, only: set[str] | None 
             c, n = group["character"], len(group["cards"])
             line = html.escape(character_line(c))
             guide = _guide_link(exports_dir, slug, only)
+            season = _season_link(exports_dir, slug, only)
             roster.append(f"<a class='char' href='#{html.escape(slug)}'><span class='cn'>{name}</span>"
                           + (f"<span class='cl'>{line}</span>" if line else "")
                           + f"<span class='cm'>{chapters(n)} · last played {html.escape(long_date(group['latest']))}</span></a>")
-            meta = " · ".join(x for x in (line, chapters(n), f"<a href='{html.escape(guide)}'>Route guide</a>" if guide else "") if x)
+            meta = " · ".join(x for x in (line, chapters(n), f"<a href='{html.escape(season)}'>The season</a>" if season else "",
+                                          f"<a href='{html.escape(guide)}'>Route guide</a>" if guide else "") if x)
             sections.append(f"<section class='who' id='{html.escape(slug)}'><h2>{name}</h2><div class='meta'>{meta}</div>"
                             "<ul class='chapters'>" + "".join(group["cards"]) + "</ul></section>")
         body = (f"<h1>Adventure Journal</h1><div class='meta'>{len(groups)} characters · {chapters(total)} · newest first</div>"
@@ -194,6 +200,16 @@ def _guide_link(exports_dir: Path, slug: str, allowed: set[str] | None) -> str |
     if not slug:
         return None
     name = guide_page_name(slug)
+    if (exports_dir / "html" / name).exists() and (allowed is None or name in allowed):
+        return name
+    return None
+
+
+def _season_link(exports_dir: Path, slug: str, allowed: set[str] | None) -> str | None:
+    """The season page's name when it exists and will sit beside the page being written."""
+    if not slug:
+        return None
+    name = season_page_name(slug)
     if (exports_dir / "html" / name).exists() and (allowed is None or name in allowed):
         return name
     return None
@@ -334,8 +350,8 @@ def _quests_section(session: dict[str, Any], carried: list[tuple[dict[str, Any],
 
 def render_html(session: dict[str, Any], journal: dict[str, Any] | None, number: int, image_dir: Path | None,
                 pager: str = "", pager_bottom: str = "", guide: str | None = None,
-                carried: list[tuple[dict[str, Any], int]] | None = None) -> str:
-    """`guide`: the route guide page to link from the top bar, when one exists beside this page.
+                carried: list[tuple[dict[str, Any], int]] | None = None, season: str | None = None) -> str:
+    """`guide`, `season`: the route guide and season pages to link from the top bar, when they exist beside this page.
     `carried`: carried_over() output, quests still open from earlier chapters."""
     c = session.get("character", {})
     title = chapter_title(session, journal, number)
@@ -343,9 +359,12 @@ def render_html(session: dict[str, Any], journal: dict[str, Any] | None, number:
     notes = [ev for ev in session.get("events", []) if ev.get("type") == "NOTE"]
     has_story = bool(journal and journal.get("journal"))
     quests = _quests_section(session, carried)
+    night_scenes = scenes(session)
+    scenes_html = render_scenes(session)
     jumps = (([("Story", "#story")] if has_story else []) + [("Recap", "#recap")] + ([("Quests", "#quests")] if quests else [])
-             + [("Journey", "#journey")] + ([("Notes", "#notes")] if notes else []))
-    nav = top_nav(("All chapters", index_anchor(c.get("slug", ""))), *([("Route guide", guide)] if guide else []), ("About Rambleon", "../"))
+             + ([("Scenes", "#scenes")] if scenes_html else []) + [("Journey", "#journey")] + ([("Notes", "#notes")] if notes else []))
+    nav = top_nav(("All chapters", index_anchor(c.get("slug", ""))), *([("The season", season)] if season else []),
+                  *([("Route guide", guide)] if guide else []), ("About Rambleon", "../"))
     parts = [f"<h1>{html.escape(title)}</h1>",
              f"<div class='meta'>{html.escape(name)} · {html.escape(long_date(session.get('startedAt')))} · {html.escape(duration(session.get('playedSeconds')))} in Azeroth</div>",
              "<div class='jump'>" + "".join(f"<a href='{h}'>{t}</a>" for t, h in jumps) + "</div>",
@@ -361,8 +380,11 @@ def render_html(session: dict[str, Any], journal: dict[str, Any] | None, number:
     st = night_stats(session)
     stats = [("Quests", st["quests"]), ("Places", st["places"]), ("Enemies slain", st["kills"]), ("Loot", st["loot"]),
              ("Deaths", st["deaths"]), ("People", st["people"]), ("XP", f"{st['xp']:,}")]
+    if st["rpLines"]:
+        stats.append(("Lines of roleplay", st["rpLines"]))
     parts.append("<div class='stats'>" + "".join(f"<div class='stat'><b>{html.escape(str(v))}</b><span>{html.escape(k)}</span></div>" for k, v in stats) + "</div>")
     parts.append(quests)
+    parts.append(scenes_html)
     # Pictures sit on the timeline at their moment; the hero is not repeated.
     by_event: dict[int, list[dict[str, Any]]] = {}
     loose: list[dict[str, Any]] = []
@@ -375,8 +397,11 @@ def render_html(session: dict[str, Any], journal: dict[str, Any] | None, number:
             by_event.setdefault(img["eventIndex"], []).append(img)
     pictured = {i for i in by_event} | ({hero["eventIndex"]} if hero and hero.get("eventIndex") is not None else set())
     moments = [ev for ev in session.get("events", []) if shown(ev)]
-    parts.append(f"<h2 id='journey'>The Journey</h2><details class='journey' open><summary>{len(moments)} moments, in order · fold</summary><ul>")
+    began = scene_starts(night_scenes)
+    parts.append(f"<h2 id='journey'>The Journey</h2><details class='journey' open><summary>{len(moments) + len(began)} moments, in order · fold</summary><ul>")
     for i, ev in enumerate(session.get("events", [])):
+        if id(ev) in began:                        # where a scene began; the lines are under Scenes
+            parts.append(f"<li><a class='scene-link' href='#scenes'>{html.escape(clock(ev.get('t')))} — {html.escape(scene_marker(began[id(ev)]))}</a></li>")
         if not shown(ev):
             continue
         if not (ev.get("type") == "SCREENSHOT" and i in pictured):   # the picture itself stands for the event
@@ -412,7 +437,7 @@ def export_html(session: dict[str, Any], archive: Archive, exports_dir: Path, si
     prev_, next_ = neighbours(archive, session, siblings, own)
     page = render_html(session, journal, number, image_dir, pager=_pager(numbers, prev_, next_, exports_dir),
                        pager_bottom=_pager(numbers, prev_, next_, exports_dir, "bottom"),
-                       guide=_guide_link(exports_dir, slug or "", siblings),
+                       guide=_guide_link(exports_dir, slug or "", siblings), season=_season_link(exports_dir, slug or "", siblings),
                        carried=carried_over(prior, session))
     atomic_write_bytes(out, page.encode("utf-8"))
     return out

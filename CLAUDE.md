@@ -4,9 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Rambleon
 
-Rambleon is a **personal memory layer for World of Warcraft**. You play; it quietly remembers; at the end of the
-night it hands you a permanent record: a timeline, a factual log, a story page, and an AI-written chapter you can
-read in game and paste anywhere. Strava for Azeroth, written like a field journal.
+Rambleon is a **personal memory layer for World of Warcraft, built for roleplayers**. You play; it quietly
+remembers where you went, what you did and, since 2026-10-21, what was said in character around you; at the end of
+the night it hands you a permanent record: a timeline, the night's scenes as a script, a factual log, a story page,
+and an AI-written chapter you can read in game and paste anywhere. Strava for Azeroth, written like a field journal,
+with the dialogue kept.
 
 Owner: William Hussey. First character: **Rambleon Birdsong**, Night Elf Hunter (male), World of Warcraft: Forever beta.
 Goal: something to *offer* other players (free, open), not primarily something to sell.
@@ -25,7 +27,7 @@ Before adding a feature or recording an event: **"Will this help the player reme
 If it would not be interesting to read six months later, it does not belong. Memories, not telemetry.
 The player's own words (`/ramble note`) always outrank anything the API can tell us.
 
-## How it works (current, 2026-10-04, release 0.4.0)
+## How it works (current, 2026-10-08, release 0.5.0)
 
 ```
 WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and /reload)
@@ -57,6 +59,23 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
   night is new to it) → story page → index → publish to the game → share (only with `[share] auto`) → macOS notification.
   A marker in `exports/finished/` says a night is done; a watcher that was down or crashed finishes what it owes when
   it starts (nights of the last two days), and `ramble finish [tonight|date]` does the same by hand.
+- **The season page**: one page per character, `exports/html/season-<slug>.html`, from every night at once: time per
+  level (the slow and the fast one), firsts in order, deaths by place and by what did it, the enemies that fell most,
+  where the hours went, when the player plays, company, every chapter in a row. A sentence per section written from
+  its numbers; an empty section is left out; no AI. `season.py`, the `season` step, `ramble season`. The shape is
+  JourneyTracker's recap; what it leaves out on purpose (rankings, jokes, telemetry) is in `docs/roadmap.md`.
+- **The roleplay** (unreleased, 2026-10-21, `Roleplay.lua`): every `/say`, `/emote` and `/yell` within earshot and
+  the player's own lines are a `CHAT` event (`channel`, `speaker`, `surname`, `text`, `self`, `ooc`), word for
+  word; group chat only after `/ramble rp party on`; whispers, guild, trade and numbered channels never. The Mac
+  gathers the lines into **scenes** (`scenes.py`: one zone, no five-minute silence; told when the player or a
+  companion spoke, or strangers held a three-line two-voice conversation) and shows them as a script on the story
+  page, in the log and in the writer's prompt, with one marker per scene on the Journey. `CHAT` is `timeline=False`:
+  the lines never appear as moments. Rule 4 of `prompts/journal.md` governs dialogue. Unverified in game: the
+  argument shapes of the chat events on Forever (sender format, the guid in slot 12), see `docs/progress.md`.
+- **What killed you** (0.5.0, `Capture.lua`): a DEATH says the creature you were fighting (level, rare/elite), a fall,
+  drowning, fatigue or another player (class only, never a name); older nights say nothing. Also new: hearthstone
+  used, flights, flight paths, discoveries, spells learned, boat rides, the level's cause and gold on hand; and the
+  zone map overrides a building's name given as the zone. All unverified in game as of 10-08 (`docs/progress.md`).
 - **Route guide**: one page per character, `exports/html/guide-<slug>.html`, linked from every story page and the index,
   and copied by `ramble share`. `guide.py` cuts the nights into zone stretches (a visit stands alone when a quest was
   turned in, a level reached, a death or a note happened there, or 20+ minutes with something done; anything else folds
@@ -84,7 +103,10 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
 
 - `addon/Rambleon/` — the AddOn. `Rambleon_Camelot.toc` (Forever, Interface 16001) + `Rambleon.toc` fallback.
   `EventTypes.lua` (every event type: its line in the log, its counter), `Session.lua` (DB, settings, the session,
-  recorders, screenshots), `Events.lua` (game event → handler), `Journal.lua`, `UI.lua`, `Commands.lua` (`ns.COMMANDS`).
+  recorders, screenshots), `Capture.lua` (what the client says around an event: the target cache, death attribution,
+  falling, breath bars, system lines, the taxi hook, docks), `Roleplay.lua` (the chat channels read as roleplay:
+  speaker split, OOC, the cap), `Events.lua` (game event → handler), `Journal.lua`,
+  `UI.lua`, `Commands.lua` (`ns.COMMANDS`).
   `Chapters.lua` is generated by the companion and gitignored. `Bindings.xml` is loaded by name; never list it in a TOC.
 - `addon/tests/` — Lua 5.5 stub + `run.lua`: a scripted session that also emits the parser fixture.
 - `companion/` — Python ≥ 3.11, uv, typer. `src/rambleon/`: `paths` (find WoW/WTF), `luaparse` (safe SV parser),
@@ -92,6 +114,8 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
   `publish` (Chapters.lua, story page, index), `service` (launchd), `notify`, `config`, `doctor`, `install`, `cli`,
   `model` (schema constants), `screenshots` (pairs files with SCREENSHOT events, captions), `share` (GitHub Pages),
   `memory` (what earlier chapters lend the prompt), `guide` (the route guide: stretches, modes, page),
+  `season` (the season page: level times, zone times, deaths, firsts, hours, people; facts only),
+  `scenes` (the roleplay: CHAT lines into scenes, which to tell, the script for the log, the prompt and the page),
   `xpost` (X: keys, signing, composing the post or thread, ledger, the watcher's auto-post),
   `events` (every event type: describe, guide role, stitching; twin of `EventTypes.lua`),
   `pipeline` (the after-night steps, the finish marker, what is unfinished), `pages` (the HTML shell, top bar, CSS
@@ -121,9 +145,12 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
 - Kills come from the "X dies, you gain N experience." chat line (no combat log). Loot from the chat loot line
   (uncommon+ only; the link uses the named colour `|cnIQ2:`). `Screenshot()` and file pairing work (nightly since 09-23),
   LOOT since 10-02.
-- Unverified in game as of 10-04 (all new in 0.4.0; the list is at the top of `docs/progress.md`): `QUEST_REMOVED` →
+- Unverified in game as of 10-08 (0.4.0 and 0.5.0; the list is at the top of `docs/progress.md`): `QUEST_REMOVED` →
   abandoned quests, `HEARTHSTONE_BOUND`, `ENCOUNTER_END` → boss kills, `INSTANCE_EXIT` through a loading screen,
-  the welcome popup, the Pictures row. `EQUIP` has never appeared in the archive.
+  the welcome popup, the Pictures row; and everything 0.5.0 captures. `EQUIP` has never appeared in the archive.
+- From JourneyTracker's probe (not ours): hostile units' name, level and classification are readable in combat; your
+  own health and power are secret; `GetZoneText` returns a building's name inside some buildings; registering the
+  combat log is a blocked action pcall cannot catch. The list is in `docs/addon-api.md`.
 
 ## Coding rules
 
@@ -137,7 +164,9 @@ WoW: Forever → Rambleon AddOn (Lua) → SavedVariables (written on logout and 
 - Never call `ReloadUI` without the user confirming via the `/ramble save` popup.
 - Lists of client globals (`COMBATLOG_XPGAIN_*`, `LOOT_ITEM_*`) can contain nils: never `ipairs` over them directly.
 - A new event type is one entry in `EventTypes.lua`, one `ns.AddEvent` call, one line in `addon/tests/run.lua` and its
-  twin in the companion's `events.py`; tests fail if the two sides disagree. A new slash command is one entry in
+  twin in the companion's `events.py`; tests fail if the two sides disagree, including on the describe line
+  (`run.lua` writes `Rambleon_simulated.describe.json`; a counter also goes in `model.COUNTER_KEYS` and the count
+  asserted in `run.lua`). Unit reads go through `ns.Clean`, booleans through `ns.SafeBool`; other players by class only. A new slash command is one entry in
   `ns.COMMANDS`; a new setting one line in `DEFAULTS` (`Session.lua`), read with `ns.GetSetting`.
 - Tests that need more clock time, marks or sessions go after the fixture is written in `run.lua`: the companion's
   tests count on that evening (two sessions, six minutes).
@@ -181,14 +210,15 @@ README, `docs/invite-prompt.md`, `site/index.html`); push, wait for green CI, th
 
 ## Command cheat sheet
 
-In game: `/ramble` · `status` · `note <text>` · `mark` · `shots [on|off]` · `chapters` · `save` · `debug [on|off]` · `dump` · `help`.
+In game: `/ramble` · `status` · `note <text>` · `mark` · `shots [on|off]` · `rp [on|off]` · `rp party on|off` · `chapters` · `save` · `debug [on|off]` · `dump` · `help`.
 Keybindings under AddOns: Open Adventure Log, Mark Moment.
 
 Mac: `ramble setup [--no-ai]` · `doctor [--fix] [--check-ai]` · `config` · `version` · `uninstall` · `install [--copy]` · `service install|uninstall|status` · `watch [--no-ai] [--no-auto] [--voice]`
 · `ingest` · `reprocess` · `status` · `sessions` · `nights` · `show latest` · `export tonight|YYYY-MM-DD|--all`
 · `finish [tonight|date] [--no-ai] [--voice] [--model] [--share]` · `summarize tonight [--voice] [--no-ai]` · `page tonight` · `publish` · `share [tonight|date|--all] [--yes] [--dry-run]` · `voices`
 · `post [tonight|date] [--style post|thread] [--link] [--no-picture] [--yes] [--dry-run] [--force]` · `x login|logout|status`
-· `catchup [tonight|date] [--copy]` · `guide [slug|latest] [--no-ai] [--voice] [--mode route|season|file.md] [--list] [--open]`.
+· `catchup [tonight|date] [--copy]` · `guide [slug|latest] [--no-ai] [--voice] [--mode route|season|file.md] [--list] [--open]`
+· `season [slug|latest] [--open]`.
 
 ## Where this is going
 

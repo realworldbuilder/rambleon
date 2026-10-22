@@ -5,7 +5,7 @@ local addonDir = here .. "/../Rambleon"
 local WoW = dofile(here .. "/wowstub.lua")
 
 local ns = {}
-local files = { "Forever.lua", "Util.lua", "EventTypes.lua", "Core.lua", "Session.lua", "Journal.lua", "Events.lua", "UI.lua", "Commands.lua" }
+local files = { "Forever.lua", "Util.lua", "EventTypes.lua", "Core.lua", "Session.lua", "Capture.lua", "Roleplay.lua", "Journal.lua", "Events.lua", "UI.lua", "Commands.lua" }
 for _, f in ipairs(files) do
   local chunk, err = loadfile(addonDir .. "/" .. f)
   assert(chunk, err)
@@ -64,15 +64,34 @@ assertEq(WoW.screenshots, 0, "no screenshot for a subzone hop")
 local function lastOfType(t)
   for i = #ns.session.events, 1, -1 do if ns.session.events[i].type == t then return ns.session.events[i] end end
 end
+local function countOfType(t)
+  local n = 0
+  for _, ev in ipairs(ns.session.events) do if ev.type == t then n = n + 1 end end
+  return n
+end
 WoW.state.zone = "Darkshore"; WoW.state.subzone = "Auberdine"; WoW.Fire("ZONE_CHANGED_NEW_AREA"); WoW.Advance(3)
 assertEq(WoW.screenshots, 1, "screenshot on entering Darkshore")
 assertEq(lastOfType("SCREENSHOT").reason, "ZONE_ENTER", "zone screenshot reason")
 assertEq(lastOfType("SCREENSHOT").zone, "Darkshore", "zone screenshot zone")
 assertEq(lastOfType("SCREENSHOT").auto, true, "zone screenshot is automatic")
 assertEq(ns.session.counters.screenshots, 1, "screenshot counter")
+-- The boat back: two docks of one route a moment apart is a crossing
+WoW.state.zone = "Teldrassil"; WoW.state.subzone = "Rut'theran Village"; WoW.Fire("ZONE_CHANGED_NEW_AREA"); WoW.Advance(2)
+assertEq(lastOfType("BOAT_RIDE").from, "Auberdine", "sailed from Auberdine")
+assertEq(lastOfType("BOAT_RIDE").to, "Rut'theran Village", "to Rut'theran Village")
 WoW.state.zone = "Teldrassil"; WoW.state.subzone = "Dolanaar"; WoW.Fire("ZONE_CHANGED_NEW_AREA"); WoW.Advance(3)
 assertEq(WoW.screenshots, 1, "no screenshot when returning to a zone seen tonight")
-assertEq(#ns.session.zones, 3, "three zones")
+assertEq(#ns.session.zones, 4, "four zones")
+
+-- Discovering a place: the client says it twice (an info message and a system line); one memory
+WoW.Fire("UI_INFO_MESSAGE", 1, "Discovered Dolanaar: 80 experience gained")
+WoW.Fire("CHAT_MSG_SYSTEM", "Discovered Dolanaar: 80 experience gained")
+WoW.Fire("CHAT_MSG_SYSTEM", "Discovered Lake Al'Ameth")
+assertEq(ns.session.counters.discoveries, 2, "two discoveries")
+assertEq(lastOfType("DISCOVERED").name, "Lake Al'Ameth", "discovered name")
+WoW.Fire("UI_INFO_MESSAGE", 1, "New flight path discovered!")
+WoW.Fire("CHAT_MSG_SYSTEM", "New flight path discovered!")
+assertEq(lastOfType("FLIGHT_PATH_DISCOVERED").name, "Dolanaar", "flight path found here")
 
 -- Quests
 WoW.Fire("QUEST_ACCEPTED", 123)
@@ -82,24 +101,51 @@ assertEq(ns.session.counters.questsAccepted, 2, "accepted")
 assertEq(ns.session.counters.questsCompleted, 1, "completed")
 assertEq(ns.session.events[#ns.session.events].title, "The Emerald Dreamcatcher", "title")
 
--- The innkeeper makes Dolanaar home
+-- The innkeeper makes Dolanaar home, and the stone takes you there
 WoW.state.bind = "Dolanaar"; WoW.Fire("HEARTHSTONE_BOUND")
 assertEq(lastOfType("HEARTH_BOUND").name, "Dolanaar", "hearth bound")
+WoW.Fire("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-1", 8690)
+assertEq(lastOfType("HEARTH_USED").to, "Dolanaar", "hearthed home")
+WoW.Fire("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-2", 1234)
+assertEq(countOfType("HEARTH_USED"), 1, "another spell is not a hearth")
 
--- Level
+-- Level: the quest a moment ago is what tipped it; the flight master's map was open at the time
+WoW.state.taxiNodes = { [2] = "Auberdine, Darkshore" }
+TakeTaxiNode(2)
 WoW.state.level = 11; WoW.Fire("PLAYER_LEVEL_UP", 11)
 assertEq(ns.session.character.endLevel, 11, "endLevel")
+assertEq(lastOfType("LEVEL_UP").cause, "quest", "the level came from the quest")
+assertEq(lastOfType("LEVEL_UP").money, 12345, "gold at the ding")
 assertEq(WoW.screenshots, 1, "level-up screenshot waits for the glow")
 WoW.Advance(2)
 assertEq(WoW.screenshots, 2, "screenshot on level up")
 assertEq(lastOfType("SCREENSHOT").reason, "LEVEL_UP", "level screenshot reason")
 assertEq(lastOfType("SCREENSHOT").level, 11, "level screenshot level")
 assertEq(ns.shotStatus, "ok", "shot status ok")
+assertEq(lastOfType("FLIGHT").from, "Dolanaar", "flew from Dolanaar")
+assertEq(lastOfType("FLIGHT").to, "Auberdine, Darkshore", "to Auberdine")
+assertEq(ns.pendingFlight, nil, "flight settled")
+WoW.state.onTaxi = false
 
--- Death and revival
+-- A new spell: the client says it on two events and in chat; one memory, with its name
+WoW.state.spells = { [1978] = "Serpent Sting" }
+WoW.Fire("LEARNED_SPELL_IN_TAB", 1978); WoW.Fire("LEARNED_SPELL_IN_SKILL_LINE", 1978)
+WoW.Fire("CHAT_MSG_SYSTEM", "You have learned a new spell: Serpent Sting.")
+assertEq(ns.session.counters.spellsLearned, 1, "one spell learned")
+assertEq(lastOfType("SPELL_LEARNED").name, "Serpent Sting", "spell name")
+
+-- Death and revival: the target you were fighting is what did it
+WoW.state.target = { name = "Grell", level = 10, classification = "normal", creatureType = "Beast", hostile = true }
+WoW.Fire("PLAYER_TARGET_CHANGED")
 WoW.state.dead = true; WoW.Fire("PLAYER_DEAD")
 WoW.Advance(3); WoW.Fire("PLAYER_DEAD")          -- build 70009 repeats the event a few seconds later
 assertEq(ns.session.counters.deaths, 1, "a repeated PLAYER_DEAD is the same death")
+assertEq(lastOfType("DEATH").killer, "Grell", "slain by the target")
+assertEq(lastOfType("DEATH").killerKind, "creature", "a creature")
+assertEq(lastOfType("DEATH").killerLevel, 10, "its level")
+assertEq(lastOfType("DEATH").killerClassification, nil, "an ordinary one carries no tag")
+assertEq(ns.DescribeEvent(lastOfType("DEATH")), "Slain by Grell in Dolanaar", "death line")
+WoW.state.target = nil; WoW.Fire("PLAYER_TARGET_CHANGED")
 WoW.state.dead = false; WoW.Fire("PLAYER_UNGHOST")
 assertEq(ns.session.counters.deaths, 1, "deaths")
 assertEq(ns.session.events[#ns.session.events].type, "REVIVED", "revived")
@@ -153,7 +199,10 @@ ns.HandleSlash("chapters")
 assertEq(ns.session.counters.notes, 1, "notes")
 assertEq(ns.session.counters.marks, 3, "marks")
 
--- Kills via the XP chat line (no combat log)
+-- Kills via the XP chat line (no combat log); the target frame knew the Timberling was rare
+WoW.state.target = { name = "Timberling", level = 9, classification = "rare", creatureType = "Elemental", hostile = true }
+WoW.Fire("PLAYER_TARGET_CHANGED")
+WoW.state.target = nil; WoW.Fire("PLAYER_TARGET_CHANGED")
 WoW.Fire("CHAT_MSG_COMBAT_XP_GAIN", "Timberling dies, you gain 45 experience.")
 WoW.Fire("CHAT_MSG_COMBAT_XP_GAIN", "Timberling dies, you gain 45 experience. (+9 group bonus)")
 WoW.Fire("CHAT_MSG_COMBAT_XP_GAIN", "Grell dies, you gain 50 experience.")
@@ -164,6 +213,54 @@ assertEq(ns.session.kills["Timberling"].xp, 90, "timberling xp")
 local firstKills = 0
 for _, ev in ipairs(ns.session.events) do if ev.type == "FIRST_KILL" then firstKills = firstKills + 1 end end
 assertEq(firstKills, 2, "first kills")
+
+-- Roleplay: what was said around the player, word for word (Roleplay.lua)
+local me, cassidy, wes = "Player-70-000ABCDE", "Player-70-0000C0FF", "Player-70-0000BEEF"
+local function say(event, text, sender, lineID, guid)
+  WoW.Fire(event, text, sender, "Common", "", "", "", 0, 0, "", 0, lineID, guid)
+end
+say("CHAT_MSG_SAY", "Well met, hunter.", "Cassidy-Moonwhisper", 9001, cassidy)
+say("CHAT_MSG_SAY", "Well met, hunter.", "Cassidy-Moonwhisper", 9001, cassidy)       -- the same line id twice: one line
+say("CHAT_MSG_SAY", "And to you. ((brb, dog))", "Rambleon-Birdsong", 9002, me)
+say("CHAT_MSG_EMOTE", "bows low.", "Cassidy-Moonwhisper", 9003, cassidy)             -- /e: the deed alone
+say("CHAT_MSG_TEXT_EMOTE", "Cassidy waves at you.", "Cassidy", 9004, cassidy)         -- /wave: the whole sentence
+say("CHAT_MSG_YELL", "To the lake!", "Wes", 9005, wes)
+say("CHAT_MSG_PARTY", "pull when ready", "Cassidy", 9006, cassidy)                   -- the group's chat is off by default
+say("CHAT_MSG_WHISPER", "psst", "Cassidy", 9007, cassidy)                            -- never read
+assertEq(countOfType("CHAT"), 5, "five lines remembered: not the repeat, not the party line, not the whisper")
+do
+  local lines = {}
+  for _, ev in ipairs(ns.session.events) do if ev.type == "CHAT" then lines[#lines + 1] = ev end end
+  assertEq(lines[1].speaker, "Cassidy", "first name"); assertEq(lines[1].surname, "Moonwhisper", "surname kept apart")
+  assertEq(lines[1].self, nil, "someone else's line"); assertEq(lines[1].ooc, nil, "in character")
+  assertEq(lines[2].self, true, "the player's own line, by guid"); assertEq(lines[2].ooc, true, "double brackets are out of character")
+  assertEq(lines[3].text, "bows low.", "/e keeps the deed"); assertEq(lines[4].text, "waves at you.", "a built-in emote loses the name")
+  assertEq(ns.DescribeEvent(lines[1]), 'Cassidy: "Well met, hunter."', "a say reads like a script")
+  assertEq(ns.DescribeEvent(lines[3]), "Cassidy bows low.", "an emote reads as a deed")
+  assertEq(ns.DescribeEvent(lines[4]), "Cassidy waves at you.", "and so does a built-in one")
+  assertEq(ns.DescribeEvent(lastOfType("CHAT")), 'Wes yells: "To the lake!"', "a yell says so")
+end
+ns.HandleSlash("rp party on")
+say("CHAT_MSG_PARTY", "pull when ready", "Cassidy", 9008, cassidy)
+assertEq(lastOfType("CHAT").channel, "party", "party chat once asked for")
+assertEq(ns.DescribeEvent(lastOfType("CHAT")), 'Cassidy (party): "pull when ready"', "and reads as the group's")
+ns.HandleSlash("rp off")
+say("CHAT_MSG_SAY", "Did you hear that?", "Wes", 9009, wes)
+assertEq(countOfType("CHAT"), 6, "nothing remembered while roleplay is off")
+ns.HandleSlash("rp on")
+say("CHAT_MSG_SAY", "You there. The hunter.", "Wes", 9010, wes)
+assertEq(countOfType("CHAT"), 7, "and back on"); assertEq(ns.session.counters.rpLines, 7, "the counter is the lines")
+assert(ns.Journal.StatusLine():find("7 lines of roleplay", 1, true), "the status line says how much was said")
+assertEq(#ns.Journal.RecentEvents(3), 3, "the panel's recent list still has three entries")
+for _, ev in ipairs(ns.Journal.RecentEvents(50)) do assert(ev.type ~= "CHAT", "the panel keeps to deeds") end
+for _, ev in ipairs(ns.session.events) do
+  if ev.type == "FIRST_KILL" and ev.name == "Timberling" then
+    assertEq(ev.classification, "rare", "the rare tag rides on the first kill"); assertEq(ev.mobLevel, 9, "and its level")
+    assertEq(ns.DescribeEvent(ev), "First Timberling (rare) slain", "tagged first-kill line")
+  elseif ev.type == "FIRST_KILL" then
+    assertEq(ev.classification, nil, "an untargeted kill carries no tag")
+  end
+end
 
 -- XP accounting across a level-up
 WoW.state.xp, WoW.state.xpMax = 950, 1000; WoW.Fire("PLAYER_XP_UPDATE", "player")
@@ -322,7 +419,7 @@ do
       assert(ns.EVENT_TYPES[eventType], f .. " records " .. eventType .. ", which is not in EventTypes.lua")
     end
   end
-  assertEq(ns.Count(ns.NewCounters()), 14, "counter keys")
+  assertEq(ns.Count(ns.NewCounters()), 17, "counter keys")
   for key in pairs(ns.NewCounters()) do assert(ended.counters[key] ~= nil, "session lacks counter " .. key) end
 end
 
@@ -335,13 +432,27 @@ fh:write(text); fh:close()
 local summary = string.format("%d sessions, %d events in session 1, fixture written (%d bytes)",
   #RambleonDB.sessions, #ended.events, #text)
 
--- After the fixture ---------------------------------------------------------------------------------
-
-local function countOfType(t)
-  local n = 0
-  for _, ev in ipairs(ns.session.events) do if ev.type == t then n = n + 1 end end
-  return n
+-- And how each event reads in game, so the companion's test can check its own wording against the AddOn's.
+do
+  local function jsonString(str)
+    str = str:gsub('[%c"\\]', function(c)
+      if c == '"' then return '\\"' elseif c == "\\" then return "\\\\" elseif c == "\n" then return "\\n"
+      elseif c == "\r" then return "\\r" elseif c == "\t" then return "\\t" end
+      return string.format("\\u%04x", c:byte())
+    end)
+    return '"' .. str .. '"'
+  end
+  local sessionsOut = {}
+  for _, s in ipairs(RambleonDB.sessions) do
+    local lines = {}
+    for _, ev in ipairs(s.events) do lines[#lines + 1] = jsonString(ns.DescribeEvent(ev)) end
+    sessionsOut[#sessionsOut + 1] = "[" .. table.concat(lines, ", ") .. "]"
+  end
+  local describeFile = assert(io.open(fixtureDir .. "/Rambleon_simulated.describe.json", "wb"))
+  describeFile:write('{"sessions": [' .. table.concat(sessionsOut, ",\n") .. ']}\n'); describeFile:close()
 end
+
+-- After the fixture ---------------------------------------------------------------------------------
 
 -- Log out and straight back in. `change` may alter the suspended session first.
 local function relog(change)
@@ -504,5 +615,130 @@ ns.HandleSlash("mark")
 assert(not RambleonChaptersFrame:IsShown(), "chapters reader hidden for the picture")
 WoW.Advance(1)
 assert(RambleonChaptersFrame:IsShown(), "chapters reader back after the picture")
+
+-- Where the zone text is a building, the zone map wins; "" after login reads from the map; dungeons keep their name
+do
+  local z, sz, m, inst = WoW.state.zone, WoW.state.subzone, WoW.state.mapID, WoW.state.inInstance
+  WoW.state.zone, WoW.state.subzone, WoW.state.mapID = "Sentinel Tower", "", 1436        -- the archived case
+  local loc = ns.GetLocation()
+  assertEq(loc.zone, "Westfall", "a building named as the zone is its zone"); assertEq(loc.subzone, "Sentinel Tower", "and the building is where in it")
+  WoW.state.mapID = 9001                                                                 -- the building's own micro map
+  loc = ns.GetLocation()
+  assertEq(loc.zone, "Westfall", "a micro map climbs to its zone"); assertEq(loc.subzone, "Sentinel Tower", "building kept as subzone")
+  WoW.state.zone, WoW.state.subzone, WoW.state.mapID = "", "", 1436
+  assertEq(ns.GetLocation().zone, "Westfall", "no zone text yet: the map says where we are")
+  WoW.state.zone, WoW.state.subzone, WoW.state.mapID, WoW.state.inInstance = "The Deadmines", "", 1581, true
+  assertEq(ns.GetLocation().zone, "The Deadmines", "inside an instance the instance is the zone")
+  WoW.state.mapID, WoW.state.inInstance = 1436, false
+  WoW.state.zone, WoW.state.subzone = "Westfall", "Sentinel Hill"
+  assertEq(ns.GetLocation().subzone, "Sentinel Hill", "a real subzone is left alone")
+  WoW.state.zone, WoW.state.subzone, WoW.state.mapID, WoW.state.inInstance = z, sz, m, inst
+end
+
+-- What killed you: a fall, the water, another player, a mob long gone, or nothing the record can say
+local function dieAndRevive()
+  WoW.state.dead = true; WoW.Fire("PLAYER_DEAD")
+  local death = lastOfType("DEATH")
+  WoW.state.dead = false; WoW.Fire("PLAYER_UNGHOST")
+  WoW.Advance(31)                                         -- past the echo window
+  return death
+end
+WoW.Advance(31)
+WoW.state.target = nil; WoW.Fire("PLAYER_TARGET_CHANGED")
+WoW.Advance(61)                                           -- the last hostile is stale
+WoW.state.falling = true; WoW.Advance(2)
+local death = dieAndRevive()
+assertEq(death.killerKind, "fall", "two seconds in the air then dead is a fall")
+WoW.state.falling = false; WoW.Advance(2)
+WoW.Fire("MIRROR_TIMER_START", "BREATH", 1000, 60000, -1, false, "Breath")
+WoW.Advance(2)
+assertEq(dieAndRevive().killerKind, "drowning", "an empty breath bar is a drowning")
+WoW.Fire("MIRROR_TIMER_STOP", "BREATH")
+WoW.Advance(11)
+assertEq(dieAndRevive().killerKind, nil, "a bar stopped a while ago says nothing")
+WoW.Fire("MIRROR_TIMER_START", "EXHAUSTION", 1500, 30000, -1, false, "Fatigue")
+WoW.Advance(1)
+assertEq(dieAndRevive().killerKind, "fatigue", "an empty fatigue bar")
+ns.mirror = {}
+WoW.state.target = { name = "Someone", class = "Rogue", isPlayer = true, hostile = true }
+WoW.Fire("PLAYER_TARGET_CHANGED")
+WoW.state.target = nil; WoW.Fire("PLAYER_TARGET_CHANGED")
+WoW.Advance(10)
+death = dieAndRevive()
+assertEq(death.killerKind, "player", "the player targeted a moment ago"); assertEq(death.killerClass, "Rogue", "by class")
+assertEq(death.killer, nil, "never by name")
+assertEq(ns.DescribeEvent(death), "Killed by another player in " .. tostring(death.subzone or death.zone), "player death line")
+WoW.state.target = { name = "Gorefang", level = 12, classification = "rare", hostile = true }
+WoW.Fire("PLAYER_TARGET_CHANGED")
+WoW.state.target = nil; WoW.Fire("PLAYER_TARGET_CHANGED")
+WoW.Advance(61)
+assertEq(dieAndRevive().killerKind, nil, "a hostile targeted over a minute ago is not the killer")
+WoW.state.target = { name = "<<secret>>", level = 12, classification = "elite", hostile = true }
+WoW.Fire("PLAYER_TARGET_CHANGED")
+death = dieAndRevive()
+assertEq(death.killer, nil, "a secret name is never stored"); assertEq(death.killerKind, nil, "and says nothing")
+WoW.state.target = { name = "Gorefang", level = 12, classification = "rare", hostile = true, dead = true }
+WoW.Fire("PLAYER_TARGET_CHANGED")
+assertEq(dieAndRevive().killer, "Gorefang", "a target already dead still counts when it was the last hostile")
+assertEq(ns.DescribeEvent(lastOfType("DEATH")), "Slain by Gorefang (rare) in " .. tostring(lastOfType("DEATH").subzone or lastOfType("DEATH").zone), "rare death line")
+WoW.state.target = nil; WoW.Fire("PLAYER_TARGET_CHANGED")
+
+-- A ding a moment before the kill line still knows what caused it
+WoW.Advance(5)
+WoW.state.level = 13; WoW.Fire("PLAYER_LEVEL_UP", 13)
+assertEq(lastOfType("LEVEL_UP").cause, nil, "nothing recent at the ding")
+WoW.Fire("CHAT_MSG_COMBAT_XP_GAIN", "Grell dies, you gain 50 experience.")
+assertEq(lastOfType("LEVEL_UP").cause, "kill", "the kill a moment after fills it in")
+WoW.Advance(5)
+WoW.Fire("CHAT_MSG_COMBAT_XP_GAIN", "Grell dies, you gain 50 experience.")
+assertEq(lastOfType("LEVEL_UP").cause, "kill", "and a later kill does not change it")
+WoW.state.level = 14; WoW.Advance(5); WoW.Fire("PLAYER_LEVEL_UP", 14)
+WoW.Advance(3); WoW.Fire("CHAT_MSG_COMBAT_XP_GAIN", "Grell dies, you gain 50 experience.")
+assertEq(lastOfType("LEVEL_UP").cause, nil, "a kill three seconds later is not the cause")
+
+-- A spell the client names only in chat, and one it names by id a moment before the chat line
+WoW.Advance(3)
+WoW.Fire("LEARNED_SPELL_IN_TAB", 2222)                     -- no name known for this id
+assertEq(lastOfType("SPELL_LEARNED").name, nil, "no name yet")
+WoW.Fire("CHAT_MSG_SYSTEM", "You have learned a new ability: Eagle Eye.")
+assertEq(lastOfType("SPELL_LEARNED").name, "Eagle Eye", "the chat line names it")
+assertEq(lastOfType("SPELL_LEARNED").spellID, 2222, "on the same event")
+WoW.Advance(3)
+local spells = countOfType("SPELL_LEARNED")
+WoW.Fire("CHAT_MSG_SYSTEM", "You have learned a new spell: Mend Pet.")
+WoW.Fire("UI_INFO_MESSAGE", 1, "You have learned a new spell: Mend Pet.")
+assertEq(countOfType("SPELL_LEARNED"), spells + 1, "a chat-only spell is one memory")
+assertEq(lastOfType("SPELL_LEARNED").name, "Mend Pet", "named from chat")
+
+-- A flight chosen but never taken, and a boat that was not one
+local flights = countOfType("FLIGHT")
+WoW.state.onTaxi = false
+local taken = WoW.state.taxiTaken
+TakeTaxiNode(2); WoW.state.onTaxi = false
+WoW.Advance(12)
+assertEq(countOfType("FLIGHT"), flights, "no lift-off, no flight"); assertEq(ns.pendingFlight, nil, "and nothing pending")
+local boats = countOfType("BOAT_RIDE")
+WoW.state.zone, WoW.state.subzone = "Darkshore", "Auberdine"; WoW.Fire("ZONE_CHANGED_NEW_AREA"); WoW.Advance(2)
+WoW.state.zone, WoW.state.subzone = "Teldrassil", "Dolanaar"; WoW.Fire("ZONE_CHANGED_NEW_AREA"); WoW.Advance(2)
+WoW.state.zone, WoW.state.subzone = "Darkshore", "Auberdine"; WoW.Fire("ZONE_CHANGED_NEW_AREA"); WoW.Advance(2)
+assertEq(countOfType("BOAT_RIDE"), boats, "dock to the same dock is not a crossing")
+WoW.Fire("UNIT_SPELLCAST_SUCCEEDED", "player", "Cast-9", 8690)   -- hearthed between the docks
+WoW.state.zone, WoW.state.subzone = "Teldrassil", "Rut'theran Village"; WoW.Fire("ZONE_CHANGED_NEW_AREA"); WoW.Advance(2)
+assertEq(countOfType("BOAT_RIDE"), boats, "a hearth between two docks is not a boat")
+WoW.state.zone, WoW.state.subzone = "Darkshore", "Auberdine"; WoW.Fire("ZONE_CHANGED_NEW_AREA"); WoW.Advance(481)
+assertEq(countOfType("BOAT_RIDE"), boats + 1, "straight back across, nothing in between: a crossing")
+WoW.state.zone, WoW.state.subzone = "Teldrassil", "Rut'theran Village"; WoW.Fire("ZONE_CHANGED_NEW_AREA"); WoW.Advance(2)
+assertEq(countOfType("BOAT_RIDE"), boats + 1, "eight minutes between docks is not a boat")
+WoW.state.zone, WoW.state.subzone = "Darkshore", "Auberdine"; WoW.Fire("ZONE_CHANGED_NEW_AREA"); WoW.Advance(2)
+assertEq(countOfType("BOAT_RIDE"), boats + 2, "and back across is")
+
+-- A crowded inn: past the cap a line is counted as dropped, never kept
+do
+  local before = ns.session.counters.rpLines or 0
+  ns.session.counters.rpLines = 1500
+  WoW.Fire("CHAT_MSG_SAY", "WTS [Linen Cloth]", "Stranger", "Common", "", "", "", 0, 0, "", 0, 9999, "Player-70-00000001")
+  assertEq(ns.session.counters.rpLines, 1500, "nothing past the cap"); assertEq(ns.session.rpDropped, 1, "but counted as dropped")
+  ns.session.counters.rpLines = before
+end
 
 print("OK — " .. summary)

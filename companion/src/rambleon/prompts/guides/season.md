@@ -13,7 +13,8 @@ Rules, in priority order:
    between stretches: where the road turned, who kept turning up, which quests were picked up and never
    finished.
 4. The player's own notes are the most important evidence. Quote them where they fall.
-5. Deaths: one dry clause at most per stretch, how many and where, never why and never as a verdict on the
+5. Deaths: one dry clause at most per stretch, how many and where, and what the facts say did it when they
+   say anything (a creature, a fall, the water, another player); never why and never as a verdict on the
    player (no "careless", no lesson, no toll). Level-ups a nod, companions a clause.
 6. Write exactly one section per stretch listed below, in the same order, with the heading copied exactly
    as given: `## {number}. {title}`. Never add, merge, reorder or skip a stretch. 60–140 words per section.

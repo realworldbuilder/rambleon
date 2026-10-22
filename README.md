@@ -47,13 +47,13 @@ You need [Homebrew](https://brew.sh) and WoW installed. Then:
 
 ```bash
 brew install uv
-uv tool install "git+https://github.com/realworldbuilder/rambleon@v0.4.0#subdirectory=companion"
+uv tool install "git+https://github.com/realworldbuilder/rambleon@v0.5.0#subdirectory=companion"
 ramble setup
 ```
 
 `ramble setup` finds your WoW folder, links the AddOn into it, starts a background watcher that survives reboots,
 and opens your (empty) journal. Start WoW, or log out to the character screen and back in so it sees the AddOn.
-That is the whole setup. The line above installs release 0.4.0; leave out `@v0.4.0` for the newest code on `main`,
+That is the whole setup. The line above installs release 0.5.0; leave out `@v0.5.0` for the newest code on `main`,
 and run the same line again (with `--force`) to upgrade, then `ramble service install` to restart the watcher.
 
 For AI-written chapters, install [Claude Code](https://claude.com/claude-code) and log in once (`claude`, then
@@ -73,7 +73,9 @@ To remove it: `ramble uninstall` (your archive stays unless you ask for it to go
 - Log out when you are done. That is the save. A few seconds later the chapter is written on your Mac.
 
 On the Mac: `ramble nights` lists chapters, `ramble page tonight` opens the story page, `ramble summarize tonight
---voice field-journal` rewrites a chapter in another voice, `ramble guide --open` shows the route guide (how you actually leveled, stretch by stretch; `--mode season` retells it
+--voice field-journal` rewrites a chapter in another voice, `ramble season --open` shows the season so far (how long each level took,
+what killed you and where, where the hours went, who you travelled with, every chapter in a row; numbers only),
+`ramble guide --open` shows the route guide (how you actually leveled, stretch by stretch; `--mode season` retells it
 for you instead of for a stranger), `ramble share tonight` puts a chapter (pictures included) on
 your GitHub Pages site after asking (it needs your own fork of this repository, checked out, with Pages on),
 `ramble finish tonight` writes a night's chapter and pages again from scratch (or for a night the watcher missed),
@@ -144,8 +146,13 @@ Recorded: where you went, quests accepted, completed and abandoned and their obj
 that gave experience (from the chat line), uncommon-or-better loot, deaths, who you grouped with and for how long,
 dungeons and the bosses you defeated in them, the inn you made home, achievements, screenshots (yours, and the ones it takes at level ups, marks and new zones), your notes and marks, playtime.
 
-Never: damage numbers or the combat log, chat content, other players beyond your group roster as the game shows it,
-anything Blizzard marks protected or secret. Nothing leaves your Mac. If you use the AI step, the only thing sent is
+For roleplayers, the words too: what was said in character within earshot (`/say`, `/emote`, `/yell`) and your own
+lines, word for word, gathered into the night's scenes on the story page and quoted by the chapter. The group's chat
+only when you turn it on (`/ramble rp party on`); `/ramble rp off` stops all of it. A line in `(( double brackets ))`
+is kept as out of character.
+
+Never: damage numbers or the combat log, whispers, guild, trade or any numbered channel, other players beyond what
+you could see and hear standing there, anything Blizzard marks protected or secret. Nothing leaves your Mac. If you use the AI step, the only thing sent is
 the prompt for that chapter, through your own Claude login. `ramble share` and `ramble post` are the only commands that publish a chapter,
 and they ask first unless you turned on `auto` for them yourself.
 

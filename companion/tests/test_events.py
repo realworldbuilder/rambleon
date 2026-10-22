@@ -1,4 +1,5 @@
 """One definition per event type: the AddOn's EventTypes.lua and the companion's events.py hold the same types."""
+import json
 import re
 from pathlib import Path
 
@@ -39,6 +40,23 @@ def test_everything_the_simulated_session_records_is_known_and_readable():
     assert seen == set(EVENTS)                     # the AddOn's script records one of everything
     for name in EVENTS:
         assert describe({"type": name}) and describe({"type": name}) != name
+
+
+# Where the page's line says more than the panel's: the page has room for the class, the count, the place.
+DESCRIBE_DIFFERS = {"SESSION_START", "GROUP_JOIN", "NOTE", "MARK", "OBJECTIVE_COMPLETE", "LOOT", "EQUIP"}
+
+
+def test_describe_lines_agree_with_the_addon():
+    """run.lua writes how each event of the evening reads in game; every other type must read the same here."""
+    raw = to_python(parse((FIXTURES / "Rambleon_simulated.lua").read_bytes()))["RambleonDB"]["sessions"]
+    lua = json.loads((FIXTURES / "Rambleon_simulated.describe.json").read_text())["sessions"]
+    checked = set()
+    for session, lines in zip(raw, lua, strict=True):
+        for ev, line in zip(session["events"], lines, strict=True):
+            if ev["type"] not in DESCRIBE_DIFFERS:
+                assert describe(ev) == line, (ev["type"], ev)
+                checked.add(ev["type"])
+    assert checked >= set(EVENTS) - DESCRIBE_DIFFERS
 
 
 def test_an_unknown_type_is_a_moment_not_a_crash(tmp_path):

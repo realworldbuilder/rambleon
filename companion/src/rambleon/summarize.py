@@ -16,6 +16,7 @@ from .config import character_overrides, journal_model, journal_voice, people_no
 from .events import shown
 from .export import clock, describe, duration, export_filename, long_date, render_recap
 from .memory import build_memory, companion_suffix, render_memory
+from .scenes import marker as scene_marker, render_prompt as render_scenes, scenes, starts as scene_starts
 from .screenshots import caption
 
 DEFAULT_VOICE = "golden"
@@ -66,7 +67,10 @@ def build_prompt(session: dict[str, Any], chapter: int, voice: str | None = None
     if story:
         lines += [""] + story
     lines += ["", "## Chronological events (the only facts you may use)", ""]
+    began = scene_starts(scenes(session))
     for ev in session.get("events", []):
+        if id(ev) in began:                        # where a scene began; its lines are under Scenes below
+            lines.append(f"- {clock(ev.get('t'))} — {scene_marker(began[id(ev)])}; see Scenes")
         if not shown(ev):
             continue
         extra = ""
@@ -112,6 +116,7 @@ def build_prompt(session: dict[str, Any], chapter: int, voice: str | None = None
             lines.append(f"- {clock(ev.get('t'))} in {ev.get('subzone') or ev.get('zone') or 'unknown place'}: \"{ev.get('text')}\"")
     else:
         lines.append("- none")
+    lines += render_scenes(session)
     lines += ["", "## Screenshots (you cannot see them; only the moment they were taken is known)", ""]
     shots = session.get("screenshots", [])
     if shots:

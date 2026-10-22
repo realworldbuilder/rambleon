@@ -11,7 +11,7 @@ function J.RecentEvents(n)
   if not s then return out end
   for i = #s.events, 1, -1 do
     local ev = s.events[i]
-    if ev.type ~= "RESUMED" then table.insert(out, 1, ev) end
+    if ev.type ~= "RESUMED" and ev.type ~= "CHAT" then table.insert(out, 1, ev) end   -- the panel keeps to deeds; the lines are kept for the page
     if #out >= n then break end
   end
   return out
@@ -38,6 +38,7 @@ function J.Stats()
     notes = c.notes or 0,
     marks = c.marks or 0,
     levelsGained = c.levelsGained or 0,
+    rpLines = c.rpLines or 0,
   }
 end
 
@@ -59,7 +60,9 @@ end
 function J.StatusLine()
   local st = J.Stats()
   if not st then return "no session yet" end
-  return string.format("%s in %s — Lv %s · %d quests · %d places · %d kills · %d deaths · %d people · %d notes",
+  local line = string.format("%s in %s — Lv %s · %d quests · %d places · %d kills · %d deaths · %d people · %d notes",
     ns.FormatDuration(st.played), tostring(st.area), tostring(st.level), st.questsCompleted, st.places,
     st.kills, st.deaths, st.people, st.notes + st.marks)
+  if st.rpLines > 0 then line = line .. string.format(" · %d lines of roleplay", st.rpLines) end
+  return line
 end

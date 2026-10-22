@@ -147,6 +147,14 @@ def _fold(runs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return out
 
 
+def death_cause(ev: dict[str, Any]) -> str | None:
+    """What a DEATH says did it, as a short phrase, or None when the record does not say."""
+    kind = ev.get("killerKind")
+    if kind == "creature" and ev.get("killer"):
+        return f"{ev['killer']} ({ev['killerClassification']})" if ev.get("killerClassification") else str(ev["killer"])
+    return {"player": "another player", "fall": "a fall", "drowning": "drowning", "fatigue": "fatigue"}.get(kind)
+
+
 def _qkey(ev: dict[str, Any]) -> Any:
     return ev.get("questID") if ev.get("questID") is not None else ("title", ev.get("title"))
 
@@ -159,10 +167,12 @@ def _chapter(number: int, run: dict[str, Any], seen_done: set[Any]) -> dict[str,
     completed: dict[Any, dict[str, Any]] = {}
     level_ups: dict[int, str | None] = {}
     first_kills: list[str] = []
+    first_kill_tags: dict[str, str] = {}
     loot: list[dict[str, Any]] = []
     loot_seen: set[tuple[str, Any]] = set()
     deaths = 0
     death_places: list[str] = []
+    death_causes: list[str] = []
     notes: list[tuple[int, dict[str, Any]]] = []
     people: list[str] = []
     instances: list[str] = []
@@ -189,6 +199,8 @@ def _chapter(number: int, run: dict[str, Any], seen_done: set[Any]) -> dict[str,
             level_ups.setdefault(int(ev["level"]), place(ev))
         elif t == "FIRST_KILL" and ev.get("name") and ev["name"] not in first_kills:
             first_kills.append(ev["name"])
+            if ev.get("classification"):
+                first_kill_tags[ev["name"]] = ev["classification"]
         elif t in ("LOOT", "EQUIP"):
             key = (t, ev.get("itemID") if ev.get("itemID") is not None else ev.get("name"))
             if key not in loot_seen:
@@ -199,6 +211,9 @@ def _chapter(number: int, run: dict[str, Any], seen_done: set[Any]) -> dict[str,
             where = place(ev)
             if where and where not in death_places:
                 death_places.append(where)
+            cause = death_cause(ev)
+            if cause and cause not in death_causes:
+                death_causes.append(cause)
         elif t == "NOTE" and ev.get("text"):
             notes.append((ev["_night"] + 1, ev))
         elif t == "GROUP_JOIN" and ev.get("name") and ev["name"] not in people:
@@ -214,8 +229,9 @@ def _chapter(number: int, run: dict[str, Any], seen_done: set[Any]) -> dict[str,
         "nights": [k + 1 for k in night_ks],                   # journal chapter numbers
         "startedAt": evs[0].get("t"), "endedAt": evs[-1].get("t"), "playedSeconds": _span(evs),
         "accepted": list(accepted.values()), "completed": list(completed.values()),
-        "firstKills": first_kills[:MAX_FIRST_KILLS], "loot": loot[:MAX_LOOT],
-        "deaths": deaths, "deathPlaces": death_places, "notes": notes, "people": people, "instances": instances, "bosses": bosses,
+        "firstKills": first_kills[:MAX_FIRST_KILLS], "firstKillTags": first_kill_tags, "loot": loot[:MAX_LOOT],
+        "deaths": deaths, "deathPlaces": death_places, "deathCauses": death_causes,
+        "notes": notes, "people": people, "instances": instances, "bosses": bosses,
         "events": [(ev["_night"], ev["_idx"]) for ev in evs],
         "screenshots": [],
     }
@@ -335,11 +351,13 @@ def facts(ch: dict[str, Any]) -> list[tuple[str, str]]:
     if ch["levelUps"]:
         out.append(("Reached", ", ".join(f"level {u['level']}" + (f" ({u['place']})" if u.get("place") else "") for u in ch["levelUps"])))
     if ch["firstKills"]:
-        out.append(("First met in combat", ", ".join(ch["firstKills"])))
+        tags = ch.get("firstKillTags") or {}
+        out.append(("First met in combat", ", ".join(f"{n} ({tags[n]})" if n in tags else n for n in ch["firstKills"])))
     if ch["loot"]:
         out.append(("Loot worth keeping", _loot_line(ch["loot"])))
     if ch["deaths"]:
-        out.append(("Deaths", str(ch["deaths"]) + (f" ({', '.join(ch['deathPlaces'])})" if ch["deathPlaces"] else "")))
+        detail = " · ".join(x for x in (", ".join(ch["deathPlaces"]), ", ".join(ch.get("deathCauses") or [])) if x)
+        out.append(("Deaths", str(ch["deaths"]) + (f" ({detail})" if detail else "")))
     if ch["people"]:
         out.append(("Company", ", ".join(ch["people"])))
     if ch["instances"]:
@@ -513,7 +531,7 @@ def render_guide_html(guide: dict[str, Any], sidecar: dict[str, Any] | None, exp
     parts.append("<a class='totop' href='#top'>↑ Back to top</a></main></div>")
     return shell(html.escape(guide["title"]), nav, "\n".join(parts),
                  f"Recorded by Rambleon · {guide['nightCount']} night{'s' if guide['nightCount'] != 1 else ''}",
-                 body_attrs=" id='top' class='guide'", guide=True)
+                 body_attrs=" id='top' class='guide'", extra="guide")
 
 
 def _first_picture(ch: dict[str, Any], guide: dict[str, Any], exports_dir: Path, siblings: set[str] | None) -> dict[str, Any] | None:

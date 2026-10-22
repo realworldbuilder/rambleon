@@ -17,7 +17,8 @@ from .archive import Archive
 from .export import export_filename
 from .nights import nights as list_nights, resolve_night
 from .guide import write_guide
-from .pages import PROJECT_URL, guide_page_name
+from .pages import PROJECT_URL, guide_page_name, season_page_name
+from .season import write_season
 from .publish import export_html, write_html_index
 from .screenshots import refresh_session_screenshots
 
@@ -107,11 +108,16 @@ def _share(archive: Archive, paths: Any, refs: list[str], all_nights: bool, yes:
     guides = [slug for slug in sorted({n["character"].get("slug", "") for n in nights_})
               if slug and (html_dir / guide_page_name(slug)).exists()]
     present |= {guide_page_name(slug) for slug in guides}
+    # The season page too, for every character with a night on the site.
+    seasons = sorted({n["character"].get("slug", "") for n in nights_} - {""})
+    present |= {season_page_name(slug) for slug in seasons}
 
     # 1. Fresh pages, with late screenshots paired. Neighbouring chapters already on the site are re-rendered too,
     #    so their previous/next links pick up tonight's chapter.
     refresh = list(nights_) + [n for n in list_nights(archive)
                                if export_filename(n).replace(".md", ".html") in present - wanted]
+    for slug in seasons:   # written first, so the story pages written next can link to it; listed last
+        write_season(archive, paths.exports_dir, slug, siblings=present)
     for night in refresh:
         ids = night.get("sessionIds") or []
         if refresh_session_screenshots(archive, paths, ids):
@@ -121,6 +127,7 @@ def _share(archive: Archive, paths: Any, refs: list[str], all_nights: bool, yes:
     for slug in guides:   # facts re-rendered against the shared set of pages; never an AI call from here
         write_guide(archive, paths.exports_dir, slug, use_ai=False, log=lambda m: None, siblings=present)
         result.pages.append(guide_page_name(slug))
+    result.pages += [season_page_name(slug) for slug in seasons]
 
     # 2. Copy into site/example.
     plan: list[tuple[Path, Path]] = []

@@ -14,7 +14,8 @@ SUSPEND_TIMEOUT = 600  # seconds; a suspended session older than this is treated
 EVENT_TYPES = set(EVENTS)   # what each type means lives in events.py
 STATES = {"active", "suspended", "ended"}
 COUNTER_KEYS = ["levelsGained", "questsAccepted", "questsCompleted", "deaths", "zonesVisited", "notes", "marks",
-                "screenshots", "achievements", "kills", "xpGained", "objectivesCompleted", "loot", "questsAbandoned"]
+                "screenshots", "achievements", "kills", "xpGained", "objectivesCompleted", "loot", "questsAbandoned",
+                "discoveries", "spellsLearned", "rpLines"]
 
 
 def slugify(text: str) -> str:

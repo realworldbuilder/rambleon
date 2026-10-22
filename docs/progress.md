@@ -2,7 +2,42 @@
 
 ## To verify in game (the one list; newest release first)
 
-0.4.0, none of it seen in the real client yet. `/ramble debug` lists any event the client refused to register.
+Unreleased (the roleplay, 2026-10-21), none of it seen in the real client yet. `Roleplay.lua` is a new file in the
+TOC: restart WoW, not `/reload`. Then `/ramble debug` and read the refused events; the six `CHAT_MSG_*` are new.
+
+- **Say something** (`/say Evening.`) → `/ramble dump` shows `Rambleon: "Evening."` as `[CHAT]`; `/ramble status`
+  ends with "1 lines of roleplay". If the dump shows `Rambleon-Birdsong:` the sender came with the surname and
+  `SplitSpeaker` missed it; if your own line lacks `self` in the dump of the SavedVariables, the guid is not slot 12.
+- **Have someone say something near you** → their line, first name only, no `self`.
+- **`/e bows low`** → `Rambleon bows low.`; **`/bow`** → does it read `Rambleon bows.` (name stripped) or `You bow.`?
+  Both are accepted; note which.
+- **`/say ((brb))`** → the dump line is the same; the SavedVariables entry has `ooc = true`.
+- **Party chat** → nothing until `/ramble rp party on`; then `Name (party): "…"`.
+- **A whisper** → nothing, ever. **`/ramble rp off`** → nothing more; `on` → lines again.
+- **The night after**: the story page has a Scenes jump and section with your lines marked by a gold bar; the
+  Journey has one italic "A scene in … with …" line per scene; the log's Progress says "Lines of roleplay: N in M
+  scenes"; the chapter quotes or paraphrases only lines that are in the Scenes section.
+
+0.5.0, none of it seen in the real client yet. First thing after `/reload`: `/ramble debug` and read the refused
+events; `LEARNED_SPELL_IN_*`, `MIRROR_TIMER_*`, `NAME_PLATE_UNIT_ADDED`, `UI_INFO_MESSAGE` are the likely ones.
+
+- **Die to a mob you are fighting** → `/ramble dump` shows "Slain by <name> in <place>", "(elite)" after an elite.
+  Die to a fall (the Darnassus portal ledge works) → "Fell to death in …". Drown → "Drowned in …". A death with
+  nothing targeted for over a minute → plain "Died in …".
+- **Stand in an inn** (Lion's Pride Inn in Goldshire) → `/ramble status` says Elwynn Forest, the dump's `ZONE_ENTER`
+  has the inn as subzone. Log in and `/ramble dump`: no `ZONE_ENTER` with an empty zone.
+- **Use the hearthstone** → "Hearthed home to <inn>". **Take a flight** → "Flew from <here> to <node name>", recorded
+  a second or two after the taxi lifts off, nothing when you close the map without flying. **Find a flight path** →
+  "Found the flight path at <subzone>".
+- **Walk into an unexplored area** → "Discovered <area>" once, not twice. `/ramble status`'s counters show it.
+- **Train a spell** → "Learned <name>" once (the client may announce it on two events and in chat).
+- **Target a rare** (silver dragon) and kill it → "First <name> (rare) slain".
+- **Ding** right after a turn-in → the LEVEL_UP in the dump has `cause = quest`; `/ramble dump` shows money on it.
+- **Take the boat** Rut'theran → Auberdine → "Sailed from Rut'theran Village to Auberdine" on arrival.
+- The night after: the story page's top bar has "The season"; `exports/html/season-<slug>.html` shows the deaths'
+  "What did it" bars with the new killers and "the record doesn't say" for the old nights.
+
+0.4.0 (still unseen):
 
 - **Chapters reader out of the pictures**: `/ramble chapters`, then `/ramble mark` → the reader vanishes for the
   picture and comes back; it is not in the screenshot.
@@ -19,6 +54,28 @@
 - Still open from 10-02: one death in game → exactly one "Died in …" line. (Loot is confirmed: LOOT events in every
   night since 10-02. `EQUIP` has never been seen in the archive: equip a green and check `/ramble dump`.)
 - X: no post has gone out yet (the first live try was refused: the developer app was not attached to a project).
+
+## 2026-10-08 — 0.5.0: what JourneyTracker knows, told the Rambleon way
+
+Read [JourneyTracker](https://github.com/skittlenicks/JourneyTracker) (skittlenicks, MIT, 0.6.10): a Forever stats
+tracker with a "Wrapped" recap site, 468 rankings and a probe AddOn that mapped what the client exposes. Took the
+capture techniques that make a fact a memory and the shape of the recap; left the rankings, the jokes, the hosted
+site and the telemetry. `CHANGELOG.md` has the list; `docs/addon-api.md` keeps their client findings.
+
+- **AddOn**: `Capture.lua` (target cache, death attribution in JourneyTracker's order: fall → breath/fatigue bar →
+  target → last hostile within a minute; the system-line parser; the taxi hook; docks). Six new event types, three
+  enriched ones, the zone-map fix for buildings named as zones (the archive had "Sentinel Tower" sixteen times, every
+  one with Westfall's map id: the fix compares the map's name with the zone text rather than walking parents).
+- **Companion**: `season.py` and the `season` step; gold, discoveries and spells in the log; killers and tags in the
+  guide's facts; the prompts allow "what" for a death and still forbid "why". A describe-parity test: the scripted
+  evening writes every line as the AddOn says it, and eight types that already differed are now either aligned
+  (`SESSION_END`, `ACHIEVEMENT`) or on a short allowlist where the page deliberately says more.
+- **Checked on a copy of the real archive** (never the live one): `ramble finish latest --no-ai` runs every step;
+  the season page over twelve nights reads "Level 8 to 22, 12 nights, 52h 15m played", "Level 21 took the longest:
+  8h 49m", "Died 48 times, 18 of them in Darkshore", "Lingered longest in Darkshore: 16h 09m of 52h 15m", "Most
+  often around 9 PM; Mondays most of all", "Travelled with 47 people; Cassidy the longest, 32h 49m over 9 nights".
+- **Not seen in game yet**: all of it. The list is at the top. `Capture.lua` is a new file in the TOC, so WoW needs
+  a restart, not a `/reload`; the watcher needs `ramble service install`.
 
 ## 2026-10-04 — 0.4.0: finished and extendable
 

@@ -121,7 +121,10 @@ handlers.PLAYER_LEVEL_UP = function(level)
   local s = ns.EnsureSession()
   if not s then return end
   level = ns.Clean(level) or ns.Clean(ns.SafeCall(UnitLevel, "player"))
-  ns.AddEvent("LEVEL_UP", { level = level })
+  -- What tipped it: the quest, kill or discovery a moment before; or the one a moment after (NoteCause fills it in).
+  local cause = ns.RecentCause()
+  local ev = ns.AddEvent("LEVEL_UP", { level = level, cause = cause, money = ns.Clean(ns.SafeCall(GetMoney)) })
+  ns.pendingLevelUp = (ev and not cause) and { ev = ev, at = GetTime() } or nil
   if level then s.character.endLevel = level end
   ns.UpdateXP()
   ns.TakeScreenshot("LEVEL_UP", { level = level }, 1.0)   -- a second later the level-up glow is on screen
@@ -147,6 +150,7 @@ handlers.QUEST_TURNED_IN = function(questID, xp, money)
   ns.turnedIn[questID] = true
   ns.AddEvent("QUEST_COMPLETED", { questID = questID, title = questTitle(questID),
                                    xp = ns.Clean(xp), money = ns.Clean(money) })
+  ns.NoteCause("quest")
 end
 
 -- A quest leaves the log when it is handed in and when it is abandoned, and the client does not promise
@@ -185,7 +189,7 @@ handlers.PLAYER_DEAD = function()
   if ns.SafeCall(UnitIsFeignDeath, "player") then return end
   ns.isDead = true
   ns.lastDeathAt = now
-  ns.AddEvent("DEATH", {})
+  ns.AddEvent("DEATH", ns.DeathFields())
 end
 
 local function maybeRevived()
@@ -201,6 +205,32 @@ handlers.PLAYER_ALIVE = maybeRevived
 
 handlers.GROUP_ROSTER_UPDATE = function()
   ns.UpdateRoster()
+end
+
+-- What you are fighting (Capture.lua keeps it for the kill line and the death)
+handlers.PLAYER_TARGET_CHANGED = function() ns.NoteUnit("target") end
+handlers.NAME_PLATE_UNIT_ADDED = function(unit) ns.NoteUnit(unit) end
+
+-- Breath and fatigue bars: a death while one is empty was a drowning
+handlers.MIRROR_TIMER_START = function(...) ns.OnMirrorTimerStart(...) end
+handlers.MIRROR_TIMER_STOP = function(timer) ns.OnMirrorTimerStop(timer) end
+
+-- Own casts: the hearthstone (registered for the player only, see unitEvents below)
+handlers.UNIT_SPELLCAST_SUCCEEDED = function(unit, castGUID, spellID) ns.OnSpellcastSucceeded(unit, castGUID, spellID) end
+
+-- "Discovered X", "New flight path discovered!", "You have learned a new spell: X." arrive on both of these
+handlers.UI_INFO_MESSAGE = function(_, text) ns.ReadInfoMessage(text) end
+handlers.CHAT_MSG_SYSTEM = function(text) ns.ReadInfoMessage(text) end
+
+-- A trainer, a book or a level taught something
+handlers.LEARNED_SPELL_IN_TAB = function(spellID) ns.RecordSpellLearned(spellID) end
+handlers.LEARNED_SPELL_IN_SKILL_LINE = function(spellID) ns.RecordSpellLearned(spellID) end
+
+-- What was said around the player (Roleplay.lua): the line, who said it, the client's line id and the sender's guid
+for event, channel in pairs(ns.CHAT_EVENTS) do
+  handlers[event] = function(text, sender, _, _, _, _, _, _, _, _, lineID, guid)
+    ns.RecordChat(channel, text, sender, guid, lineID)
+  end
 end
 
 handlers.UPDATE_INSTANCE_INFO = function()
@@ -247,6 +277,11 @@ frame:SetScript("OnEvent", function(self, event, ...)
   end
 end)
 
+local unitEvents = { UNIT_SPELLCAST_SUCCEEDED = "player" }   -- filtered to one unit where the client allows it
 for event in pairs(handlers) do
-  ns.SafeRegister(frame, event)
+  if unitEvents[event] then
+    ns.SafeRegisterUnit(frame, event, unitEvents[event])
+  else
+    ns.SafeRegister(frame, event)
+  end
 end

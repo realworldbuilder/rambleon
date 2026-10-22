@@ -40,10 +40,53 @@ def _screenshot(ev: Event) -> str:
     return "Took a screenshot"
 
 
+def _tagged(name: Any, classification: Any) -> str:
+    """"Gorefang (rare)": the tag the target carried, when it was one worth a word."""
+    return f"{name} ({classification})" if classification else str(name)
+
+
+def _death(ev: Event) -> str:
+    """What the record says did it, when it says anything (AddOns before 0.5.0 said nothing)."""
+    where = place(ev) or "the wilds"
+    kind = ev.get("killerKind")
+    if kind == "creature" and ev.get("killer"):
+        return f"Slain by {_tagged(ev['killer'], ev.get('killerClassification'))} in {where}"
+    if kind == "player":
+        return f"Killed by another player in {where}"
+    if kind == "fall":
+        return f"Fell to death in {where}"
+    if kind == "drowning":
+        return f"Drowned in {where}"
+    if kind == "fatigue":
+        return f"Died of fatigue in {where}"
+    return f"Died in {where}"
+
+
+def _flight(ev: Event) -> str:
+    if ev.get("from") and ev.get("to"):
+        return f"Flew from {ev['from']} to {ev['to']}"
+    if ev.get("to"):
+        return f"Flew to {ev['to']}"
+    return "Took a flight"
+
+
 def _loot(ev: Event) -> str:
     q = f" ({ev['qualityName']})" if ev.get("qualityName") else ""
     n = f" ×{ev['count']}" if (ev.get("count") or 1) > 1 else ""
     return f"Looted {ev.get('name')}{n}{q}"
+
+
+def _chat(ev: Event) -> str:
+    """A line of roleplay, as a script would print it. An emote the client wrote in the second person stands as it came."""
+    who, text = str(ev.get("speaker")), str(ev.get("text"))
+    channel = ev.get("channel")
+    if channel == "emote":
+        return text if text.startswith("You ") else f"{who} {text}"
+    if channel == "yell":
+        return f"{who} yells: \"{text}\""
+    if channel == "party":
+        return f"{who} (party): \"{text}\""
+    return f"{who}: \"{text}\""
 
 
 @dataclass(frozen=True)
@@ -61,7 +104,7 @@ class EventType:
 EVENTS: dict[str, EventType] = {
     "SESSION_START": EventType(_in_place("Began the adventure"), guide="skip", stitch="first", shot_fallback=False),
     "RESUMED": EventType(lambda ev: "Picked the story back up", guide="skip", stitch="drop", timeline=False, shot_fallback=False),
-    "SESSION_END": EventType(lambda ev: "Ended the adventure", guide="skip", stitch="last", shot_fallback=False),
+    "SESSION_END": EventType(lambda ev: "Ended the chapter", guide="skip", stitch="last", shot_fallback=False),
     "ZONE_ENTER": EventType(_zone_enter, guide="passive"),
     "LEVEL_UP": EventType(lambda ev: f"Reached Level {ev.get('level')}", guide="anchor", counter="levelsGained"),
     "QUEST_ACCEPTED": EventType(lambda ev: f"Accepted {_quest(ev)}", counter="questsAccepted"),
@@ -69,7 +112,7 @@ EVENTS: dict[str, EventType] = {
     "QUEST_ABANDONED": EventType(lambda ev: f"Abandoned {_quest(ev)}", guide="passive", counter="questsAbandoned"),
     "OBJECTIVE_COMPLETE": EventType(lambda ev: f"{ev.get('text') or 'Objective complete'}" + (f" — \"{ev['title']}\"" if ev.get("title") else ""),
                                     counter="objectivesCompleted"),
-    "DEATH": EventType(lambda ev: f"Died in {place(ev) or 'the wilds'}", guide="anchor", counter="deaths"),
+    "DEATH": EventType(_death, guide="anchor", counter="deaths"),
     "REVIVED": EventType(lambda ev: "Back among the living", guide="passive"),
     "GROUP_JOIN": EventType(lambda ev: f"Joined forces with {ev.get('name')}" + (f" ({ev['class']})" if ev.get("class") else "")),
     "GROUP_LEAVE": EventType(lambda ev: f"Parted ways with {ev.get('name')}", guide="passive"),
@@ -77,13 +120,22 @@ EVENTS: dict[str, EventType] = {
     "INSTANCE_EXIT": EventType(lambda ev: f"Left {ev.get('name') or 'the instance'}", guide="passive"),
     "BOSS_KILL": EventType(lambda ev: f"Defeated {ev.get('name') or 'a boss'}", guide="anchor"),
     "HEARTH_BOUND": EventType(lambda ev: f"Made {ev.get('name') or place(ev) or 'this place'} home"),
+    "HEARTH_USED": EventType(lambda ev: "Hearthed home" + (f" to {ev['to']}" if ev.get("to") else ""), guide="passive"),
+    "FLIGHT": EventType(_flight, guide="passive"),
+    "FLIGHT_PATH_DISCOVERED": EventType(lambda ev: f"Found the flight path at {ev.get('name') or place(ev) or 'this place'}"),
+    "DISCOVERED": EventType(lambda ev: f"Discovered {ev.get('name')}", guide="passive", counter="discoveries"),
+    "SPELL_LEARNED": EventType(lambda ev: f"Learned {ev.get('name') or 'a new spell'}", counter="spellsLearned"),
+    "BOAT_RIDE": EventType(lambda ev: f"Sailed from {ev.get('from')} to {ev.get('to')}", guide="passive"),
     "ACHIEVEMENT": EventType(lambda ev: f"Earned achievement: {ev.get('name') or ev.get('id')}", counter="achievements"),
     "SCREENSHOT": EventType(_screenshot, guide="passive", shot_fallback=False, counter="screenshots"),
     "NOTE": EventType(lambda ev: f"Note: \"{ev.get('text')}\"", guide="anchor", counter="notes"),
     "MARK": EventType(_in_place("Marked moment"), counter="marks"),
-    "FIRST_KILL": EventType(lambda ev: f"First {ev.get('name')} slain"),
+    "FIRST_KILL": EventType(lambda ev: f"First {_tagged(ev.get('name'), ev.get('classification'))} slain"),
     "LOOT": EventType(_loot, counter="loot"),
     "EQUIP": EventType(lambda ev: f"Equipped {ev.get('name')}" + (f" ({ev['qualityName']})" if ev.get("qualityName") else "")),
+    # What was said in character (Roleplay.lua). Not a moment on the timeline: scenes.py gathers the lines into
+    # scenes, and the log, the prompt and the page show those, with one marker where each began.
+    "CHAT": EventType(_chat, timeline=False, shot_fallback=False, counter="rpLines"),
 }
 
 

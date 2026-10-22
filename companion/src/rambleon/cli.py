@@ -28,6 +28,7 @@ from .notify import notify
 from .publish import write_html_index
 from .config import X_STYLES, effective, journal_voice, load_config, x_config
 from .guide import available_modes, default_mode, write_guide
+from .season import write_season
 from .share import ShareError, share as run_share
 from . import pipeline, prompts, xpost
 from .watch import Finalizer
@@ -657,6 +658,20 @@ def guide(ref: str = typer.Argument("latest", help="character slug | latest"),
     write_html_index(archive, paths.exports_dir)
     if open_it and sys.platform == "darwin":
         subprocess.run(["open", str(result["html"])], check=False)
+
+
+@command(app)
+def season(ref: str = typer.Argument("latest", help="character slug | latest"),
+           open_it: bool = typer.Option(False, "--open", help="Open the season page in the browser.")) -> None:
+    """The season so far: one page per character from every night. How long each level took, what did the killing,
+    where the hours went, when you play, who you travelled with, and the chapters in a row. Numbers only, no AI."""
+    archive, paths = _archive()
+    slug = _slug(archive, ref)
+    out = write_season(archive, paths.exports_dir, slug)
+    console.print(f"html: {out}")
+    write_html_index(archive, paths.exports_dir)
+    if open_it and sys.platform == "darwin":
+        subprocess.run(["open", str(out)], check=False)
 
 
 @command(app)

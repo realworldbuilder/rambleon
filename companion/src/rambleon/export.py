@@ -7,6 +7,7 @@ from typing import Any
 
 from .archive import atomic_write_bytes
 from .events import describe, place, shown  # noqa: F401 — describe and place are imported from here all over
+from .scenes import marker as scene_marker, render_markdown as render_scenes, scenes, starts as scene_starts
 from .screenshots import caption
 
 
@@ -47,10 +48,15 @@ def render_markdown(session: dict[str, Any]) -> str:
     lines.append("")
     lines.append("## Journey")
     lines.append("")
+    night_scenes = scenes(session)
+    began = scene_starts(night_scenes)
     for ev in session.get("events", []):
+        if id(ev) in began:                        # the lines themselves are under Scenes
+            lines.append(f"* {clock(ev.get('t'))} — {scene_marker(began[id(ev)])}")
         if not shown(ev):
             continue
         lines.append(f"* {clock(ev.get('t'))} — {describe(ev)}")
+    lines += render_scenes(session)
     lines.append("")
     lines.append("## Progress")
     lines.append("")
@@ -69,8 +75,17 @@ def render_markdown(session: dict[str, Any]) -> str:
         f"Deaths: {cnt.get('deaths', 0)}  ",
         f"Places visited: {len(session.get('zones', []))}  ",
         f"People adventured with: {len(session.get('people', []))}  ",
-        f"Playtime: {duration(session.get('playedSeconds'))}",
     ]
+    if cnt.get("discoveries"):
+        lines.append(f"Places discovered: {cnt['discoveries']}  ")
+    if cnt.get("spellsLearned"):
+        lines.append(f"Spells learned: {cnt['spellsLearned']}  ")
+    if cnt.get("rpLines"):
+        lines.append(f"Lines of roleplay: {cnt['rpLines']} in {len(night_scenes)} scene{'s' if len(night_scenes) != 1 else ''}  ")
+    gold = night_gold(session)
+    if gold is not None:
+        lines.append(f"Gold: {money(gold)}  ")
+    lines.append(f"Playtime: {duration(session.get('playedSeconds'))}")
     people = sorted(session.get("people", []), key=lambda p: -(p.get("seconds") or 0))
     if people:
         lines += ["", "## People Met", ""]
@@ -108,6 +123,30 @@ def render_markdown(session: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def money(copper: int) -> str:
+    """Copper as the game shows it: 1g 23s 45c; a loss leads with a minus."""
+    sign = "-" if copper < 0 else ""
+    copper = abs(int(copper))
+    g, rest = divmod(copper, 10000)
+    s, c = divmod(rest, 100)
+    parts = [f"{g}g"] if g else []
+    if s or g:
+        parts.append(f"{s}s")
+    parts.append(f"{c}c")
+    return sign + " ".join(parts)
+
+
+def night_gold(session: dict[str, Any]) -> int | None:
+    """Copper gained over the night: what the purse held at the end less what it held at the start.
+    None when the AddOn did not record it (before 0.5.0) or the night is still open."""
+    events = session.get("events", [])
+    start = next((ev for ev in events if ev.get("type") == "SESSION_START"), None)
+    end = next((ev for ev in reversed(events) if ev.get("type") == "SESSION_END"), None)
+    if not start or not end or not isinstance(start.get("money"), (int, float)) or not isinstance(end.get("money"), (int, float)):
+        return None
+    return int(end["money"] - start["money"])
+
+
 def night_stats(session: dict[str, Any]) -> dict[str, Any]:
     """The numbers of a night (or a session), under the names every page, table and notification uses."""
     cnt = session.get("counters", {})
@@ -118,6 +157,8 @@ def night_stats(session: dict[str, Any]) -> dict[str, Any]:
         "quests": cnt.get("questsCompleted", 0), "accepted": cnt.get("questsAccepted", 0),
         "places": len(session.get("zones", [])), "kills": cnt.get("kills", 0), "loot": cnt.get("loot", 0),
         "deaths": cnt.get("deaths", 0), "people": len(session.get("people", [])), "xp": cnt.get("xpGained", 0),
+        "discoveries": cnt.get("discoveries", 0), "spells": cnt.get("spellsLearned", 0), "gold": night_gold(session),
+        "rpLines": cnt.get("rpLines", 0), "scenes": len(scenes(session)),
     }
 
 

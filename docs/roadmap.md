@@ -39,10 +39,10 @@ help from us.
 - [ ] **Multi-character, multi-flavor.** Already per-character on disk; make the CLI show and select characters, and
       handle `_retail_`/`_classic_` folders if present (TOC work + a test pass).
 - [x] **First-run in game.** A welcome in the one login line and a one-time note the first time the log opens (0.4.0).
-- [ ] **Capture gaps players will hit next.** Done in 0.4.0: abandoned quests, hearthstone bound, dungeon boss
-      kills, leaving an instance. Still open, each one entry in `EventTypes.lua` and `events.py` (`docs/extending.md`):
-      hearthstone *used* (spellcast data may be secret on 12.x), flight paths (`UI_INFO_MESSAGE` / `UnitOnTaxi`, argument
-      shapes unverified), rare and elite kills (a field on `FIRST_KILL` from `UnitClassification`), new spells and talents.
+- [x] **Capture gaps players will hit next.** Done in 0.4.0: abandoned quests, hearthstone bound, dungeon boss
+      kills, leaving an instance. Done in 0.5.0, techniques borrowed from JourneyTracker: what killed you, hearthstone
+      used, flights and flight paths, discoveries, spells learned, rare/elite tags on first kills, boat rides, the
+      level's cause and gold. Still open: talents (`TRAIT_CONFIG_UPDATED` exists on Forever), the Forever campfire.
 - [x] **Verify** loot events and screenshot pairing in game. Both confirmed by the archive: loot since 10-02,
       paired pictures since 09-23.
 - [ ] **README for humans**: the in-game panel (a 0.3.0 screenshot, before the Pictures row), a story page and the
@@ -74,7 +74,11 @@ help from us.
 Each of these is a new output: one step in `pipeline.py` and a body inside `pages.shell` (`docs/extending.md`).
 
 
-- [ ] Character timeline page (level curve, nights, places, companions, deaths) from the index alone.
+- [x] **The season page** (`ramble season`, 0.5.0): the level curve with the slow and fast levels, firsts in order,
+      deaths by place and by killer, the enemies that fell most, where the hours went, when you play, company, and
+      every chapter in a row, with a sentence per section written from its numbers. `season.py`. Done 2026-10-08.
+      What it deliberately is not (JourneyTracker has them): rankings against other players, percentiles, a hosted
+      upload site, joke one-liners, chat-word tallies, PvP and economy telemetry, a heat map.
 - [ ] People page: first met, last seen, hours together, nights shared.
 - [x] **Route guide** (`ramble guide`): the nights cut into zone stretches with the level range reached there, one page
       per character, facts always and prose per stretch from a *mode* prompt (`route` for another player, `season` for
@@ -93,20 +97,42 @@ voice picker. Signed and notarised .dmg. This is where a "buy me a coffee" could
 
 - Passive. Never automates, never touches protected or secret values, never needs the network in game.
 - Plain files on the player's disk. Export everything and delete everything are each one command.
-- Other players appear only as the game shows them in your group. No chat content is stored.
+- Other players appear as the game shows them to you: your group's roster, and (since 2026-10-21) what anyone said
+  in `/say`, `/emote` or `/yell` within earshot. Whispers, guild and the channels are never stored; the group's chat
+  only when the player turns it on. Until 2026-10-21 this line read "No chat content is stored"; a roleplay night is
+  its words, so the stance changed. Publishing a page with other people's lines on it is still the player's own act.
 - Raw history is never edited to make a story better. AI is downstream, always.
+
+## Phase R — The roleplay (begun 2026-10-21)
+
+The turn William asked for: Rambleon as the roleplayer's memory. The first cut records what is said in character
+and tells it as scenes; what follows builds on that.
+
+- [x] `/say`, `/emote`, `/yell` and your own lines as `CHAT` events; group chat opt-in; scenes on the page, in the
+      log and in the prompt; a dialogue rule for the writer. Unverified in game.
+- [ ] Verify the chat events on Forever: sender format (`Name`, `Name-Surname`?), the guid in slot 12, whether a
+      built-in emote arrives as "You wave." for your own and "Cassidy waves at you." for others.
+- [ ] A **People** page that remembers the people by what they said: first met, last seen, their lines with you.
+- [ ] A scene the player marks by hand (`/ramble scene <title>`), so a planned RP event has a name before the Mac
+      guesses one. Until then `/ramble note` and `/ramble mark` do the job.
+- [ ] A `transcript` mode for the guide (`prompts/guides/`): the night's scenes as a clean script, nothing else.
+- [ ] Decide what the AI chapter does with a scene the player was only a witness to.
+- [ ] Whispers: never, or opt-in with the other party's lines left out? Left out until someone asks.
 
 ## Next three things (in order)
 
-1. Play a night on 0.4.0 and tick off "To verify in game" in `docs/progress.md` (abandoned quest, hearth, a boss,
-   leaving a dungeon, the welcome, the Pictures row).
+1. Pull on the gaming Mac, restart WoW (two new files in the TOC), play a roleplay night, and tick off the
+   roleplay items and the 0.5.0 items at the top of `docs/progress.md`.
 2. Get one post out on X for real, or take X out of the README until it has worked once.
-3. Phase B's rating loop, so the writing rules are tuned on evidence; then the People page (Phase C).
+3. The People page, now with the words (Phase R), then Phase B's rating loop.
 
 ## Deliberately left for later
 
-- Splitting `Session.lua` (790 lines). The cut lines are clear (`Capture.lua` for kills, objectives and loot;
-  `Screenshots.lua`), but it is a pure move whose only risk shows in game.
+- Splitting `Session.lua` further (850 lines). 0.5.0 put the new capture in `Capture.lua`; moving kills, objectives,
+  loot and screenshots out too is a pure move whose only risk shows in game.
+- The heat map: JourneyTracker samples the map square every five seconds and draws it on the zone art, which it
+  reads from the client. Capture would be cheap (`where[mapID][square] += 5`); the drawing needs the art. Not taken
+  until the adventure map (Phase C) has a way to show it.
 - A Blizzard Settings panel category. `/ramble shots` and the Pictures row cover the one setting; the Settings API
   is unverified on Forever.
 - Localization (the AddOn's own text is English; chat parsing already uses the client's localized formats).

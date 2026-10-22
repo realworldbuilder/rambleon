@@ -1,7 +1,69 @@
 # Changelog
 
-## Unreleased
+## Unreleased — the roleplay
 
+Rambleon turns toward roleplay. Until now the record was deeds: where you went, what fell, who you grouped with.
+A roleplay night is words, and the record had none of them. Now it does.
+
+**In game (none of it seen in the real client yet, see `docs/progress.md`)**
+
+- **What was said in character is remembered**, word for word: `/say`, `/emote` (both `/e` and the built-in
+  emotes) and `/yell` from anyone within earshot, and your own lines. New file `Roleplay.lua`, one event type
+  `CHAT {channel, speaker, surname, text, self, ooc}`, counter `rpLines`. Whispers, guild, trade and the numbered
+  channels are never read. The group's chat (`/p`, `/raid`) is off until you ask: `/ramble rp party on`.
+- `/ramble rp [on|off]` turns it off and on (on by default); `/ramble status` says how many lines the night has.
+  The panel's recent list keeps to deeds; the lines are for the page.
+- A line in double brackets, `(( like this ))`, is marked out of character. A busy inn is capped at 1,500 lines a
+  session; a line past that is counted as dropped, never kept.
+
+**On the Mac**
+
+- **Scenes.** The lines of a night are gathered into scenes (`scenes.py`): a run of lines in one zone with no five
+  minutes of silence between them. A scene is told when you spoke in it, a companion of the night did, or strangers
+  held a conversation (three lines, two voices); a lone "lfg" stays in the archive and off the page.
+- The story page has a **Scenes** section, each scene as a script with your own lines marked, long ones folded; the
+  Journey carries one italic marker where each scene began. The factual log has the same under `## Scenes`, and
+  "Lines of roleplay" in Progress. The writer's prompt hands over every scene (cut in the middle past 120 lines,
+  400 over the night) and the chapter rules gain a dialogue rule: quote or paraphrase a recorded line, never invent
+  one; double brackets are the player out of character, never dialogue.
+- This reverses a stance the docs stated since the first week ("no chat content is stored"). The reason is the one
+  question: on a roleplay night the words are the adventure. What is stored is what you could hear standing there.
+
+## 0.5.0 — 2026-10-08
+
+The night knows more, and the season has a page. Capture techniques borrowed from
+[JourneyTracker](https://github.com/skittlenicks/JourneyTracker) (skittlenicks, MIT), a Forever stats tracker, and
+retold the Rambleon way: as memories, never as rankings.
+
+**In game (0.5.0; none of it seen in the real client yet, see `docs/progress.md`)**
+
+- **What killed you.** A death now says what did it when the client can tell: the creature you were fighting
+  (with its level, and "rare" or "elite" when it was one), a fall, drowning, fatigue, or another player (class
+  only, never a name). "Slain by Hogger in Elwynn Forest", "Fell to death in Thousand Needles". Older nights still
+  say "Died in".
+- **New moments**: `HEARTH_USED` (the stone took you home, to where), `FLIGHT` (from, to), `FLIGHT_PATH_DISCOVERED`,
+  `DISCOVERED` (a place first explored; counted), `SPELL_LEARNED` (counted), `BOAT_RIDE` (two docks of one route a
+  few minutes apart, no hearth or flight between; Alliance docks seen, Horde towers unverified).
+- `FIRST_KILL` carries the enemy's level and its rare/elite tag when the target frame knew it. `LEVEL_UP` carries
+  what tipped it (a quest, a kill, a discovery) and the gold on hand; `SESSION_START` and `SESSION_END` carry the gold
+  too, so a night knows what it earned.
+- **A building is not a zone.** Forever names some buildings as the zone ("Lakeshire Inn", "Sentinel Tower") and
+  says nothing for a moment after login; the zone map now decides, and the building becomes the subzone. The
+  archive had "Sentinel Tower" as a zone sixteen times.
+- New file `Capture.lua` holds the target cache, death attribution, the movement sampler, the system-line parser,
+  the taxi hook and the docks. `ns.SafeBool` and `ns.SafeRegisterUnit` in `Util.lua`.
+
+**On the Mac**
+
+- **The season page**, `exports/html/season-<slug>.html`, one per character from every night: how long each level
+  took, firsts in the order they came, where you died and what did it, the enemies that fell most, where the hours
+  went, when you play, who you travelled with, and every chapter in a row. Each section opens with a sentence
+  written from its numbers; a section with nothing to say is left out. No AI. `ramble season [slug] [--open]`; a
+  `season` step in the pipeline; linked from the index and every story page; copied by `ramble share`.
+- The log, the route guide and the prompt show the new facts: killers on deaths, tags on first kills, discoveries
+  and spells learned, gold for the night. The writer's rules now allow "what" for a death and still forbid "why".
+- Lua and Python disagreed on how eight event types read, and nothing checked. The scripted evening now writes
+  every line as the AddOn would say it, and a test compares (`Rambleon_simulated.describe.json`).
 - The panel's "Moment remembered." line no longer overlaps the footer text beneath it.
 - README: the in-game panel is pictured.
 

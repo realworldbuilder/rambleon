@@ -132,3 +132,17 @@ function ns.Count(tbl)
   end
   return n
 end
+
+-- A client boolean that may be secret in some contexts: a secret reads as "no", never as a value to test.
+function ns.SafeBool(fn, ...)
+  return ns.Clean(ns.SafeCall(fn, ...)) == true
+end
+
+-- Unit events are cheaper filtered to one unit (RegisterUnitEvent); older clients get the plain registration.
+function ns.SafeRegisterUnit(frame, event, unit)
+  if type(frame.RegisterUnitEvent) == "function" then
+    local ok = pcall(frame.RegisterUnitEvent, frame, event, unit)
+    if ok then return true end
+  end
+  return ns.SafeRegister(frame, event)
+end

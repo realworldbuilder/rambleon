@@ -68,6 +68,12 @@ matches chapters by it (slug only as a fallback for old files). Group members ar
 | `QUEST_REMOVED` | `QUEST_ABANDONED` | `(questID)`. Fires for a turn-in too, in an order the client does not promise, so the AddOn waits a second and records only a quest that was not turned in and whose title it already knew (hidden bookkeeping quests have none). **Unverified on Forever as of 2026-10-04** |
 | `HEARTHSTONE_BOUND` | `HEARTH_BOUND {name}` | name from `GetBindLocation()`. **Unverified on Forever as of 2026-10-04** |
 | `ENCOUNTER_END` | `BOSS_KILL {name, encounterID}` | `(encounterID, name, difficultyID, groupSize, success)`; only `success == 1`. Not the combat log. **Unverified on Forever as of 2026-10-04** |
+| `PLAYER_TARGET_CHANGED`, `NAME_PLATE_UNIT_ADDED` | the target cache (`Capture.lua`) | `UnitName/UnitLevel/UnitClassification/UnitCreatureType` of hostile units, which JourneyTracker's probe found readable in combat on build 70124; every read through `ns.Clean`, a secret reads as nothing. Players: class only. **Unverified here as of 2026-10-08** |
+| `MIRROR_TIMER_START` / `MIRROR_TIMER_STOP` | a death while the breath or fatigue bar is empty is a drowning / fatigue | `(timer, value, maxValue, scale, paused, label)`; after a `/reload` the client does not resend a running bar. **Unverified** |
+| `UNIT_SPELLCAST_SUCCEEDED` (player) | `HEARTH_USED {to}` | `(unit, castGUID, spellID)`; spell 8690. Registered with `RegisterUnitEvent` where the client has it. The roadmap once feared spellcast data was secret; the id is cleaned before use. **Unverified** |
+| `UI_INFO_MESSAGE` / `CHAT_MSG_SYSTEM` | `DISCOVERED`, `FLIGHT_PATH_DISCOVERED`, the spell name fallback | the same line arrives on both; one memory per second per text. Patterns from `ERR_ZONE_EXPLORED(_XP)`, `ERR_NEWTAXIPATH`, `ERR_LEARN_SPELL_S` / `ERR_LEARN_ABILITY_S` with English fallbacks. **Unverified** |
+| `LEARNED_SPELL_IN_TAB` / `LEARNED_SPELL_IN_SKILL_LINE` | `SPELL_LEARNED` | `(spellID)`; name via `C_Spell.GetSpellName`. Forever may have one, both or neither (`/ramble debug` lists the refused one). **Unverified** |
+| `hooksecurefunc("TakeTaxiNode")` | `FLIGHT {from, to}` | not an event: the hook remembers the node (`TaxiNodeName(index)`), the event is recorded once `UnitOnTaxi("player")` is true (polled each second for ten). **Unverified** |
 | `PLAYER_DEAD` / `PLAYER_UNGHOST` / `PLAYER_ALIVE` | `DEATH` / `REVIVED` | **build 70009 fires `PLAYER_DEAD` twice per death**, 1–4 s apart (every death from 09-24 to 10-01 was recorded twice; 09-22 and the second character were not). The AddOn ignores a repeat within 30 s and skips `UnitIsFeignDeath`; `normalize.drop_death_echoes` does the same for old recordings (`ramble reprocess`). Revival only logged if `UnitIsDeadOrGhost` is false |
 | `CHAT_MSG_LOOT` | `LOOT` (uncommon+) | the item link in the line uses the 12.x **named colour** `|cnIQ2:|Hitem:…`, not `|cff1eff00`; the parser read only the hex form until 0.3.1, which is why no night before 10-02 has loot. `/ramble debug` now shows `loot: N chat lines, M read, K kept` and the last line it could not read |
 | `GROUP_ROSTER_UPDATE` | `GROUP_JOIN` / `GROUP_LEAVE`, people table | roster diff, names guarded against secret values, time together accumulated on heartbeat |
@@ -76,7 +82,34 @@ matches chapters by it (slug only as a fallback for old files). Group members ar
 | `SCREENSHOT_SUCCEEDED` | `SCREENSHOT {reason, auto, level, zone, subzone}` | no payload; the companion pairs the file by time. `reason` is `LEVEL_UP`, `MARK`, `ZONE_ENTER` when the AddOn took the picture (`auto = true`), else `MANUAL` |
 | `SCREENSHOT_FAILED` | — | clears the pending reason; `/ramble debug` shows `last: failed` |
 
-Deliberately not recorded: chat content, anything from the combat log, protected or secret values.
+| `CHAT_MSG_SAY`, `CHAT_MSG_YELL`, `CHAT_MSG_EMOTE`, `CHAT_MSG_TEXT_EMOTE`, `CHAT_MSG_PARTY(_LEADER)`, `CHAT_MSG_RAID(_LEADER)` | `CHAT {channel, speaker, surname, text, self, ooc}` | the roleplay (`Roleplay.lua`, unreleased 2026-10-21). Read as the mainline 12.x signature `(text, sender, language, channelString, target, flags, zoneChannelID, channelIndex, channelBaseName, languageID, lineID, guid)`: slot 11 dedupes, slot 12 against `UnitGUID("player")` marks your own lines. **Unverified on Forever**: whether the sender is `Name`, `Name-Surname` or `Name Surname` (the AddOn splits on the dash), whether the guid is in slot 12, and whether a built-in emote comes as "You wave." for your own line |
+
+Deliberately not recorded: anything from the combat log, protected or secret values, whispers, guild, trade and the
+numbered channels, other players' names outside your group and what you could hear in `/say`, `/emote` and `/yell`
+(a player who kills you is recorded by class). Until 2026-10-21 chat content was on this list; roleplay put it off.
+
+### Learned from JourneyTracker (skittlenicks, MIT; its probe ran on builds up to 70124)
+
+Kept here because each one cost someone a night to find. None verified by Rambleon itself unless said so.
+
+- `GetZoneText()` / `GetRealZoneText()` return a building's name as the zone inside some buildings ("Lakeshire Inn",
+  "Lion's Pride Inn"; Rambleon's archive has "Sentinel Tower"), and `""` for a moment after login. The map is right:
+  `C_Map.GetBestMapForUnit` plus `C_Map.GetMapInfo` walked up to `mapType == 3`. Rambleon 0.5.0 does this
+  (`ns.ZoneMapName`). The Deeprun Tram has no map.
+- `COMBAT_LOG_EVENT_UNFILTERED` is not merely absent: registering it is a blocked action (`ADDON_ACTION_BLOCKED`) that
+  `pcall` cannot catch. `CombatLogGetCurrentEventInfo` does not exist.
+- Your own health and power are secret even out of combat; the aura API is blocked in combat. Hostile units' name,
+  level, classification, creature type and threat situation are readable in combat.
+- `UnitOnTaxi` counts as `IsMounted`. `PLAYER_MONEY` arrives before `CHAT_MSG_MONEY`; kill, quest and exploration
+  events arrive before `PLAYER_XP_UPDATE`. `GetInventoryItemLink` is empty at login (retry after 3–5 s); `IsInGuild`
+  is false briefly at login.
+- Missing: `AcceptXPLoss` (the spirit healer shows as the `CONFIRM_XP_LOSS` dialog), `GetNumSkillLines` (skill-ups
+  only via `CHAT_MSG_SKILL`), the Classic talent API (`C_ClassTalents` / `C_Traits` instead), `UnitPVPRank`.
+  `C_PvP.GetZonePVPInfo` returns nothing for most zones.
+- Dungeon names may carry a "The " prefix or a ": Zone" suffix ("Excavation Site: Wetlands").
+- Item links carry the quality as `|cnIQ<n>:` (Rambleon has read it since 0.3.1).
+- Forever-only events that exist: `AUCTION_HOUSE_SHOW_NOTIFICATION`, `LOOT_HISTORY_UPDATE_DROP`,
+  `TRAIT_CONFIG_UPDATED`, `PLAYER_INTERACTION_MANAGER_FRAME_SHOW/HIDE`, `LEARNED_SPELL_IN_SKILL_LINE`.
 
 ### Automatic screenshots (0.3.0; working on Forever, pictures paired nightly since 2026-09-23)
 

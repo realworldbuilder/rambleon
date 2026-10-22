@@ -40,6 +40,10 @@ Worked example: remembering that the player took a flight (`FLIGHT_TAKEN`).
 
 3. `addon/tests/wowstub.lua` if the handler calls a client function the stub lacks, and `addon/tests/run.lua`: fire
    the event in the scripted evening (before the fixture is written, without adding clock time) and assert the result.
+   A new counter also changes the counter count asserted there (`"counter keys"`) and goes in `model.COUNTER_KEYS`.
+   The script also writes `Rambleon_simulated.describe.json`, how each event reads in game; `test_events.py` checks
+   the companion reads it the same way, so the Lua `describe` and the Python one must agree word for word (or the
+   type goes in that test's short allowlist of lines the page deliberately says more in).
 
 **Companion**
 
@@ -89,7 +93,10 @@ STEPS = [..., Step("page", step_page), Step("recap_card", step_recap_card), Step
 - `needs_ai=True` marks a step that may call the Claude CLI. It must still do its non-AI part (write the prompt)
   when `ctx.use_ai` is false.
 
-A new HTML page is a body inside `pages.shell(...)`; the styles are `assets/page.css`.
+A new HTML page is a body inside `pages.shell(...)`; the styles are `assets/page.css`, plus `assets/<name>.css`
+when the page has a layout of its own (`shell(..., extra="season")`; the route guide and the season page do this).
+A page per character (the guide, the season) is also copied by `share.py` and linked from the index and the story
+pages when its file exists; `season.py` is the smallest example of the whole pattern.
 
 A new setting goes in `config.py`: a field on the section's dataclass and a rule in `SECTIONS`. Unknown keys and
 bad values are reported by `ramble config` and `ramble doctor` without any further code.

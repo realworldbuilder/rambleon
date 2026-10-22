@@ -71,4 +71,4 @@ def test_your_own_theme_is_added_to_every_page(home, tmp_path):
     index = write_html_index(archive, tmp_path / "exports").read_text()
     for text in (themed, index):
         assert text.index("--paper:#f5ecd8") < text.index("/* prompts/theme.css */") < text.index("--paper:#101418") < text.index("</style>")
-    assert "body.guide" in pages.css(guide=True) and "body.guide" not in pages.css()
+    assert "body.guide" in pages.css("guide") and "body.guide" not in pages.css()

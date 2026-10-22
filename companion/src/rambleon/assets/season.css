@@ -1,0 +1,21 @@
+body.season-page{max-width:820px}
+section.season{margin:0 0 40px}section.season h2{margin-top:0}section.season h3{font-size:15px;color:var(--soft);text-transform:uppercase;letter-spacing:1px;margin:18px 0 6px}
+p.headline{font-size:21px;line-height:1.4;color:var(--ink);margin:0 0 14px}
+.bars{display:grid;grid-template-columns:minmax(120px,max-content) 1fr max-content;gap:6px 12px;align-items:center;font-size:15px}
+.bars .bar{display:contents}.bars .l{color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bars .b{height:12px;background:rgba(90,53,16,.08);border-radius:3px;overflow:hidden}.bars .b i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),#d4b16a);border-radius:3px}
+.bars .v{color:var(--soft);font-variant-numeric:tabular-nums}
+svg.road{width:100%;height:auto;max-height:180px;display:block;margin:4px 0 10px}
+svg.road rect{fill:#c9a662}svg.road rect.slow{fill:#9c4a2b}svg.road rect.fast{fill:#5a8a4a}svg.road rect.cur{fill:#b08d4c;opacity:.45}svg.road rect.part{fill:#b08d4c;opacity:.3}
+svg.road text{font:12px Georgia,serif;fill:var(--soft)}
+ul.dings{list-style:none;padding:0;margin:0;columns:2;column-gap:28px;font-size:15px}ul.dings li{margin:0 0 6px;break-inside:avoid}ul.dings b{color:#5a3510}
+ul.chips{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+ul.chips li{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;padding:8px 12px;display:flex;flex-direction:column;gap:2px;font-size:15px}
+ul.chips .lv{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}ul.chips b{color:#5a3510}ul.chips .t{color:var(--ink)}
+.faint{color:var(--faint);font-size:14px}
+.hours{display:grid;grid-template-columns:repeat(24,1fr);gap:3px;height:34px}.hours i{display:block;background:var(--gold);border-radius:2px}.hours i.none{background:rgba(90,53,16,.08)}
+.hours-axis{display:flex;justify-content:space-between;font-size:12px;color:var(--faint);margin-top:4px}
+table.people{width:100%;border-collapse:collapse;font-size:15px}table.people th,table.people td{text-align:left;padding:6px 10px;border-top:1px solid rgba(201,180,138,.5)}
+table.people thead th{font:700 12px/1 Cinzel,Georgia,serif;letter-spacing:1.5px;color:#5a3510;border-top:0}
+.chapters span.card{cursor:default}
+@media(max-width:600px){.bars{grid-template-columns:minmax(90px,max-content) 1fr max-content;font-size:14px}ul.dings{columns:1}p.headline{font-size:18px}}

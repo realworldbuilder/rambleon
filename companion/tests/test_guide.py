@@ -28,7 +28,7 @@ def test_three_nights_in_one_zone_are_one_stretch(tmp_path):
     assert g["nightCount"] == 3 and g["nightIds"] == [n1["id"], n2["id"], n3["id"]]
     assert len(g["chapters"]) == 1
     ch = g["chapters"][0]
-    assert ch["zone"] == "Teldrassil" and ch["subzones"] == ["Shadowglen", "Dolanaar"]
+    assert ch["zone"] == "Teldrassil" and ch["subzones"] == ["Shadowglen", "Dolanaar", "Rut'theran Village"]
     assert ch["passing"] == ["Darkshore"]                       # the two-second Auberdine hop folded in
     assert ch["nights"] == [1, 2, 3]
     assert (ch["startLevel"], ch["endLevel"]) == (10, 12)
@@ -95,7 +95,8 @@ def test_markdown_layout(tmp_path):
     assert "**Turned in:** The Emerald Dreamcatcher (Dolanaar, level 10)" in text
     assert "**Reached:** level 11 (Dolanaar), level 12 (Dolanaar)" in text
     assert "**Loot worth keeping:** Sturdy Bow (Uncommon), Arcane Staff ×2 (Rare), equipped Arcane Staff (Rare)" in text
-    assert "**Deaths:** 3 (Dolanaar)" in text
+    assert "**Deaths:** 3 (Dolanaar · Grell)" in text                       # where, and what the record says did it
+    assert "**First met in combat:** Timberling (rare), Grell" in text
     assert '- "this cave is extremely cursed" (Chapter 1)' in text
     assert str(tmp_path) not in text
 

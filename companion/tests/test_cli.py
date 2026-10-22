@@ -54,11 +54,12 @@ def test_the_everyday_commands(home):
     assert "format = 1," in (home / "addon" / "Rambleon" / "Chapters.lua").read_text()
     assert "html:" in run("guide", "latest", "--no-ai")
     assert "route" in run("guide", "--list")
+    assert "season-rambleon-birdsong.html" in run("season", "latest")
 
 
 def test_finish_runs_every_step_and_shares_nothing(home):
     out = run("finish", "latest", "--no-ai")
-    for step in ("screenshots", "markdown", "journal", "guide", "page", "index", "game"):
+    for step in ("screenshots", "markdown", "journal", "guide", "page", "season", "index", "game"):
         assert f"{step}: ok" in out
     assert "share: skipped" in out and "notify: skipped" in out
     assert list((home / "exports" / "finished").glob("night-*.json"))

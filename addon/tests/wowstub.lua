@@ -38,18 +38,50 @@ function GetZoneText() return WoW.state.zone end
 function GetSubZoneText() return WoW.state.subzone or "" end
 function IsInInstance() return WoW.state.inInstance, WoW.state.instanceType end
 function GetInstanceInfo() return WoW.state.instanceName or WoW.state.zone, WoW.state.instanceType end
-function UnitName(unit) if unit == "player" then return "Rambleon" end return WoW.state.group[unit] and WoW.state.group[unit].name end
+function UnitName(unit)
+  if unit == "player" then return "Rambleon" end
+  if unit == "target" then return WoW.state.target and WoW.state.target.name end
+  return WoW.state.group[unit] and WoW.state.group[unit].name
+end
 function UnitFullName(unit) if unit == "player" then return "Rambleon Birdsong", "Classic Beta PvE" end end
 function GetRealmName() return "Classic Beta PvE" end
 function GetNormalizedRealmName() return nil end
 function UnitRace() return "Night Elf", "NightElf" end
-function UnitClass(unit) if unit == "player" then return "Druid", "DRUID" end local g = WoW.state.group[unit]; if g then return g.class, g.class:upper() end end
+function UnitClass(unit)
+  if unit == "player" then return "Druid", "DRUID" end
+  local g = unit == "target" and WoW.state.target or WoW.state.group[unit]
+  if g and g.class then return g.class, g.class:upper() end
+end
 function UnitFactionGroup() return "Alliance", "Alliance" end
 function UnitSex() return 3 end
 function UnitGUID() return "Player-70-000ABCDE" end
-function UnitLevel() return WoW.state.level end
+function UnitLevel(unit) if unit == "target" then return WoW.state.target and WoW.state.target.level end return WoW.state.level end
 function UnitIsDeadOrGhost() return WoW.state.dead end
-function UnitExists(unit) return WoW.state.group[unit] ~= nil end
+function UnitExists(unit) if unit == "target" then return WoW.state.target ~= nil end return WoW.state.group[unit] ~= nil end
+-- The target, when there is one: { name, level, classification, creatureType, hostile, dead, isPlayer, class }
+WoW.state.target = nil
+function UnitIsPlayer(unit) return unit == "target" and WoW.state.target and WoW.state.target.isPlayer == true or false end
+function UnitCanAttack(a, b) return b == "target" and WoW.state.target and WoW.state.target.hostile == true or false end
+function UnitIsDead(unit) return unit == "target" and WoW.state.target and WoW.state.target.dead == true or false end
+function UnitClassification(unit) return unit == "target" and WoW.state.target and WoW.state.target.classification or "normal" end
+function UnitCreatureType(unit) return unit == "target" and WoW.state.target and WoW.state.target.creatureType or nil end
+function UnitIsFeignDeath() return false end
+function IsFalling() return WoW.state.falling == true end
+function UnitOnTaxi() return WoW.state.onTaxi == true end
+function TakeTaxiNode(index) WoW.state.onTaxi = true; WoW.state.taxiTaken = index end
+function TaxiNodeName(index) return WoW.state.taxiNodes and WoW.state.taxiNodes[index] end
+function hooksecurefunc(name, fn)
+  local orig = _G[name]
+  _G[name] = function(...) local r = { orig(...) }; fn(...); return unpack(r) end
+end
+WoW.state.money = 12345
+function GetMoney() return WoW.state.money end
+ERR_ZONE_EXPLORED = "Discovered %s"
+ERR_ZONE_EXPLORED_XP = "Discovered %s: %d experience gained"
+ERR_NEWTAXIPATH = "New flight path discovered!"
+ERR_LEARN_SPELL_S = "You have learned a new spell: %s."
+ERR_LEARN_ABILITY_S = "You have learned a new ability: %s."
+C_Spell = { GetSpellName = function(id) return WoW.state.spells and WoW.state.spells[id] end }
 function UnitIsUnit(a, b) return a == b end
 function IsInGroup() return next(WoW.state.group) ~= nil end
 function IsInRaid() return false end
@@ -70,7 +102,7 @@ WoW.state.questLog = {}   -- list of { questID=, title=, objectives = { {text=, 
 function PlaySound() end
 function StaticPopup_Show(name) WoW.lastPopup = name; return {} end
 function ReloadUI() WoW.reloadCalled = true end
-function issecretvalue() return false end
+function issecretvalue(v) return v == "<<secret>>" end   -- a sentinel for tests of the "never store a secret" rule
 WoW.screenshots = 0
 WoW.failNextScreenshot = false
 -- The client writes the file, then fires SCREENSHOT_SUCCEEDED (or _FAILED) a moment later.
@@ -84,8 +116,16 @@ function Screenshot()
 end
 
 C_AddOns = { GetAddOnMetadata = function(_, key) if key == "Version" then return "0.1.0-test" end end }
+-- Zone maps (mapType 3) and what hangs under them: a building's micro map (5), a dungeon (4), a continent (2).
+WoW.state.maps = {
+  [1415] = { name = "Eastern Kingdoms", mapType = 2 },
+  [1436] = { name = "Westfall", mapType = 3, parentMapID = 1415 },
+  [9001] = { name = "Sentinel Tower", mapType = 5, parentMapID = 1436 },
+  [1581] = { name = "The Deadmines", mapType = 4, parentMapID = 1436 },
+}
 C_Map = {
   GetBestMapForUnit = function() return WoW.state.mapID end,
+  GetMapInfo = function(id) return WoW.state.maps[id] end,
   GetPlayerMapPosition = function() return { GetXY = function() return 0.4567, 0.7891 end } end,
 }
 C_QuestLog = {
@@ -118,6 +158,7 @@ local function newObject(kind)
     if event == "BOGUS_EVENT" then error("Attempt to register unknown event " .. event) end
     self.__events[event] = true
   end
+  o.RegisterUnitEvent = function(self, event, unit) self.__events[event] = true end
   o.UnregisterEvent = function(self, event) self.__events[event] = nil end
   o.SetScript = function(self, name, fn) self.__scripts[name] = fn end
   o.GetScript = function(self, name) return self.__scripts[name] end

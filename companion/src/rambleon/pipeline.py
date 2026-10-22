@@ -21,6 +21,7 @@ from .nights import night_date, nights as list_nights, resolve_night
 from .notify import notify
 from .publish import export_html, load_journal, publish_chapters, write_html_index
 from .screenshots import refresh_session_screenshots
+from .season import write_season
 from .share import share as run_share
 from .summarize import summarize as run_summarize
 
@@ -107,6 +108,14 @@ def step_page(ctx: NightContext) -> str:
     return f"story page {out}"
 
 
+def step_season(ctx: NightContext) -> str:
+    """The season page: every night of this character read as one. Facts only, so it is always current."""
+    slug = ctx.night["character"].get("slug", "unknown")
+    out = write_season(ctx.archive, ctx.paths.exports_dir, slug)
+    ctx.outputs["season"] = out
+    return f"season page {out}"
+
+
 def step_index(ctx: NightContext) -> str | None:
     ctx.outputs["index"] = write_html_index(ctx.archive, ctx.paths.exports_dir)
     return None
@@ -144,6 +153,7 @@ STEPS: list[Step] = [
     Step("markdown", step_markdown),
     Step("journal", step_journal, needs_ai=True),
     Step("guide", step_guide, needs_ai=True),
+    Step("season", step_season),
     Step("page", step_page),
     Step("index", step_index),
     Step("game", step_game),

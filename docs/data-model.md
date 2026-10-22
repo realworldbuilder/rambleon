@@ -11,7 +11,7 @@ Only strings, numbers, booleans and tables are ever stored (`ns.Clean` enforces 
 RambleonDB = {
   schemaVersion = 1,
   addonVersion = "0.4.0",
-  settings = { autoScreenshots = true, debug = false, welcomed = false },   -- defaults in Session.lua; see below
+  settings = { autoScreenshots = true, debug = false, welcomed = false, rpChat = true, rpParty = false },   -- defaults in Session.lua; see below
   sessions = {                     -- array, oldest first; at most 10 non-active sessions are kept in WoW
     {
       id = "2026-09-21T201547Z_rambleon-birdsong",
@@ -48,24 +48,33 @@ types in step; `docs/extending.md` shows how to add one.
 |---|---|
 | `SESSION_START`, `RESUMED`, `SESSION_END {reason}` | |
 | `ZONE_ENTER` | `zone`, `subzone`, `mapID`, `x`, `y` (map percent, one decimal; absent in instances) |
-| `LEVEL_UP` | `level` |
+| `LEVEL_UP` | `level`; `cause` (`quest` \| `kill` \| `explore`, when one came within two seconds) and `money` (copper on hand) since 0.5.0 |
 | `QUEST_ACCEPTED`, `QUEST_COMPLETED`, `QUEST_ABANDONED` | `questID`, `title` (+ `xp`, `money` on completion). Abandoned (0.4.0): the quest left the log without being turned in |
-| `DEATH`, `REVIVED` | |
+| `DEATH`, `REVIVED` | `DEATH` since 0.5.0, when the client could tell: `killerKind` (`creature` \| `player` \| `fall` \| `drowning` \| `fatigue`), and for a creature `killer`, `killerLevel`, `killerClassification` (`rare` \| `elite` \| `rareelite` \| `worldboss`); for a player `killerClass` only, never a name |
 | `GROUP_JOIN {name, class}`, `GROUP_LEAVE {name}` | |
 | `INSTANCE_ENTER {name, instanceType}`, `INSTANCE_EXIT {name}` | the exit was never recorded before 0.4.0 |
 | `BOSS_KILL {name, encounterID}` | a dungeon or raid encounter ended in a kill (`ENCOUNTER_END`; 0.4.0) |
 | `HEARTH_BOUND {name}` | an innkeeper made this place home (0.4.0) |
+| `HEARTH_USED {to}` | the stone took you home (spell 8690 succeeded; 0.5.0) |
+| `FLIGHT {from, to}` | a flight taken: the node chosen on the flight master's map, recorded once the taxi lifts off (0.5.0) |
+| `FLIGHT_PATH_DISCOVERED {name}` | "New flight path discovered!", at the place it was said (0.5.0) |
+| `DISCOVERED {name, xp}` | "Discovered X" (the exploration message); counter `discoveries` (0.5.0) |
+| `SPELL_LEARNED {spellID, name}` | a spell or ability learned; counter `spellsLearned` (0.5.0) |
+| `BOAT_RIDE {from, to}` | two docks of one route within eight minutes, no hearth or flight between (0.5.0) |
 | `ACHIEVEMENT {id, name}` | |
 | `SCREENSHOT` | `reason` (`LEVEL_UP` \| `MARK` \| `ZONE_ENTER` \| `MANUAL`), `auto`, and for automatic shots the `level`/`zone`/`subzone` of the moment; the companion finds the file by time |
 | `NOTE {text}`, `MARK` | |
-| `FIRST_KILL {name, xp}` | first time an enemy of that name gave XP this session (from the "X dies, you gain N experience." chat line; no combat log) |
+| `FIRST_KILL {name, xp}` | first time an enemy of that name gave XP this session (from the "X dies, you gain N experience." chat line; no combat log). Since 0.5.0 also `mobLevel` and `classification` (rare/elite/rareelite/worldboss) when the target frame had shown it |
 | `OBJECTIVE_COMPLETE {questID, title, text}` | a quest objective finished, e.g. "8/8 Timberling slain" |
 | `LOOT {itemID, name, quality, qualityName, count}` | an uncommon-or-better item you received (loot, quest reward, crafted); from the chat loot line |
 | `EQUIP {itemID, name, quality, qualityName, slot}` | an uncommon-or-better item equipped, once per item per session |
+| `CHAT {channel, speaker, surname, text, self, ooc}` | a line said in character within earshot (unreleased, 2026-10-21). `channel`: `say` \| `emote` \| `yell` \| `party` (party only with `rpParty`; raid counts as party). `speaker` is the first name, `surname` the part after the dash when the sender came as `Name-Surname`. `text` is the line, at most 255 characters; for an emote the deed alone ("bows low."). `self = true` on the player's own lines (by guid); `ooc = true` when the line sits in `(( ))`. Counter `rpLines`; past 1,500 lines a session `rpDropped` on the session counts what was not kept. Not a timeline moment on the Mac: `scenes.py` gathers lines into scenes |
 
-Every event also carries `level`, and `zone`/`subzone` unless it is a zone event itself.
+Every event also carries `level`, and `zone`/`subzone` unless it is a zone event itself. `SESSION_START` and
+`SESSION_END` carry `money` (copper) since 0.5.0; a night's gold is the difference.
 
-`RambleonDB.settings`: `autoScreenshots` (`/ramble shots on|off`, or the Pictures row on the panel), `debug`
+`RambleonDB.settings`: `autoScreenshots` (`/ramble shots on|off`, or the Pictures row on the panel), `rpChat`
+(`/ramble rp on|off`: remember what is said in character), `rpParty` (`/ramble rp party on|off`: the group's chat too), `debug`
 (`/ramble debug on|off`), `welcomed` (the first-run note has been shown). Missing keys get their defaults at load;
 keys the AddOn does not know are left alone. The companion never reads settings.
 
