@@ -68,6 +68,22 @@ def display_name(character: dict[str, Any]) -> str:
     return name
 
 
+# A character is a name on a realm. Live Forever (4 Nov 2026) reuses the beta's names on new realms, so a live
+# character's slug carries its realm. The beta realm keeps bare-name slugs: its nights were archived, numbered and
+# published under them before the realm counted. A session with no realm recorded is treated the same way.
+BARE_SLUG_REALMS = {"classicbetapve"}
+
+
+def character_slug(character: dict[str, Any]) -> str:
+    base = slugify(character.get("displayName") or display_name(character))
+    realm = character.get("realm")
+    if not isinstance(realm, str) or not realm.strip():
+        return base
+    if "".join(ch for ch in realm.lower() if ch.isalnum()) in BARE_SLUG_REALMS:
+        return base
+    return f"{base}-{slugify(realm)}"
+
+
 def drop_death_echoes(events: list[dict[str, Any]]) -> tuple[list[dict[str, Any]], int]:
     """One death, one event. A DEATH within DEATH_ECHO seconds of the previous one, with no REVIVED between, is the
     client repeating itself (every death on build 70009 was recorded twice, one to four seconds apart).
@@ -108,7 +124,7 @@ def normalize_session(raw: Any, addon_version: Any = None, db_schema: Any = None
     s["character"] = {k: v for k, v in character.items() if isinstance(v, (str, int, float, bool))}
     s["character"]["surname"] = surname(character)
     s["character"]["displayName"] = display_name(character)
-    s["character"]["slug"] = slugify(s["character"]["displayName"])
+    s["character"]["slug"] = character_slug(s["character"])
     client = raw.get("client") if isinstance(raw.get("client"), dict) else {}
     s["client"] = {k: v for k, v in client.items() if isinstance(v, (str, int, float, bool))}
     if addon_version and "addonVersion" not in s["client"]:

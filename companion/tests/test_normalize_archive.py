@@ -5,7 +5,7 @@ from pathlib import Path
 from rambleon.archive import Archive
 from rambleon.export import render_markdown
 from rambleon.luaparse import parse, to_python
-from rambleon.normalize import display_name, drop_death_echoes, normalize_session, sessions_from_db, surname
+from rambleon.normalize import character_slug, display_name, drop_death_echoes, normalize_session, sessions_from_db, surname
 from rambleon.summarize import build_prompt, split_output
 
 FIXTURES = Path(__file__).parent / "fixtures"
@@ -152,3 +152,19 @@ def test_display_name_survives_the_client_name_change():
     assert display_name({}) == "Unknown"
     s = load_sessions()[0]
     assert s["character"]["displayName"] == "Rambleon Birdsong" and s["character"]["slug"] == "rambleon-birdsong"
+
+
+def test_live_character_with_a_beta_name_is_a_new_character():
+    beta = {"name": "Rambleon", "realmFromFullName": "Birdsong", "realm": "Classic Beta PvE", "normalizedRealm": "ClassicBetaPvE"}
+    live = {"name": "Rambleon", "realmFromFullName": "Birdsong", "realm": "Doomhowl", "normalizedRealm": "Doomhowl"}
+    no_realm = {"name": "Rambleon", "realmFromFullName": "Birdsong"}
+    for c in (beta, live, no_realm):
+        c["displayName"] = display_name(c)
+    assert character_slug(beta) == "rambleon-birdsong"          # the beta's archive and published pages stay put
+    assert character_slug(no_realm) == "rambleon-birdsong"
+    assert character_slug(live) == "rambleon-birdsong-doomhowl"
+    assert character_slug({**live, "realm": "Area 52"}) == "rambleon-birdsong-area-52"
+    raw = to_python(parse((FIXTURES / "Rambleon_simulated.lua").read_bytes()))["RambleonDB"]["sessions"][0]
+    raw["character"]["realm"] = "Doomhowl"
+    s = normalize_session(raw)
+    assert s["character"]["displayName"] == "Rambleon Birdsong" and s["character"]["slug"] == "rambleon-birdsong-doomhowl"

@@ -2,6 +2,14 @@
 
 ## Unreleased — the roleplay
 
+**Live Forever (2026-11-07)**
+
+- The companion looks for the game in `_forever_` first. Live Forever has its own product folder since launch, and
+  the beta's `_classic_beta_` folder, still on disk, had been winning, so nights on live went unwatched.
+- A character is a name on a realm. Live Forever reuses the beta's names, so a live character's slug carries its
+  realm (`rambleon-birdsong-<realm>`) and starts its own chapters, season and guide. The beta realm keeps its
+  bare-name slugs, so every beta night, chapter number and published page stays where it was.
+
 Rambleon turns toward roleplay. Until now the record was deeds: where you went, what fell, who you grouped with.
 A roleplay night is words, and the record had none of them. Now it does.
 

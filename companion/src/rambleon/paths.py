@@ -7,8 +7,9 @@ from pathlib import Path
 
 ADDON_NAME = "Rambleon"
 DEFAULT_WOW_ROOT = Path("/Applications/World of Warcraft")
-# Forever ships under the classic beta product folder on this machine; keep the others as fallbacks.
-FLAVOR_PREFERENCE = ["_classic_beta_", "_beta_", "_classic_", "_classic_era_", "_retail_", "_ptr_"]
+# Live Forever has its own product folder (wowf, since launch on 4 Nov 2026); the beta folder it shipped under
+# before can linger after the beta ends, so it comes second. Keep the others as fallbacks.
+FLAVOR_PREFERENCE = ["_forever_", "_classic_beta_", "_beta_", "_classic_", "_classic_era_", "_retail_", "_ptr_"]
 
 
 def find_repo_root() -> Path:
