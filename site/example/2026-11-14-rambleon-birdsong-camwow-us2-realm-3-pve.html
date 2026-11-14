@@ -1,0 +1,214 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Chapter 8 — Raptor Ridge — Rambleon Birdsong</title>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
+h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
+figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.quests{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0}
+.quests .tabs{display:flex;gap:4px;padding:6px 8px 0;border-bottom:1px solid var(--line);background:rgba(90,53,16,.05)}
+.quests .tabs button{font:inherit;font-size:15px;padding:8px 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--soft);cursor:pointer;margin-bottom:-1px}
+.quests .tabs button:hover{color:var(--link)}.quests .tabs button[aria-selected=true]{color:#5a3510;border-color:var(--gold);font-weight:bold}
+.quests .tabs .n{display:inline-block;min-width:22px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(90,53,16,.1);font-size:12px;font-weight:normal;color:var(--soft);text-align:center}
+.quests .pane{display:none;padding:6px 0 4px}.quests .pane.on{display:block}
+.quests table{width:100%;border-collapse:collapse;font-size:15px}
+.quests th,.quests td{text-align:left;padding:7px 14px;border-top:1px solid rgba(201,180,138,.5);vertical-align:top}
+.quests thead th{font:700 12px/1 Cinzel,Georgia,serif;letter-spacing:1.5px;color:#5a3510;border-top:0;padding-top:10px}
+.quests tr.zone th{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;background:rgba(90,53,16,.06);letter-spacing:.5px}
+.quests td.where,.quests td.lv,.quests td.since{color:var(--soft);white-space:nowrap}.quests td.lv{text-align:right}
+.quests .caveat{font-size:13px;color:var(--faint);margin:0;padding:8px 14px 6px;border-top:1px solid rgba(201,180,138,.5)}
+@media(max-width:520px){.quests .tabs button{padding:8px 8px;font-size:14px}.quests th,.quests td{padding:6px 10px}.quests td.where{white-space:normal}}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+.roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 8px}
+.char{display:block;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;text-decoration:none;color:inherit}
+.char:hover{box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.char .cn{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510}
+.char .cl{display:block;font-size:15px;color:var(--ink)}.char .cm{display:block;font-size:13px;color:var(--faint)}
+.who{scroll-margin-top:12px}.who h2{font:700 26px/1.2 Cinzel,Georgia,serif;letter-spacing:.5px;color:#5a3510;margin:44px 0 4px;padding-bottom:6px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+.scene{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px 16px 8px;margin:12px 0}
+.scene-head{font:700 13px/1.6 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;margin:0 0 8px}
+.scene-head .when{display:inline-block;min-width:72px;margin-right:10px;font:15px/1.6 Georgia,'Times New Roman',serif;color:var(--soft);letter-spacing:0}
+details.scene summary.scene-head{cursor:pointer;margin:0;user-select:none}details.scene[open] summary.scene-head{margin-bottom:8px}
+.scene p{margin:4px 0;font-size:16px;line-height:1.5}.scene p b{color:#5a3510}
+.scene p.emote{font-style:italic;color:var(--soft)}.scene p.me{border-left:3px solid var(--gold);padding-left:10px;margin-left:-13px}
+.scene p.ooc{color:var(--faint)}.scene p.ooc b{color:var(--faint)}.scene .ch{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--faint);margin-right:4px}
+a.scene-link{color:var(--soft);text-decoration:none;font-style:italic}a.scene-link:hover{color:var(--link);text-decoration:underline}
+</style></head><body id='top'>
+<nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='index.html#rambleon-birdsong-camwow-us2-realm-3-pve'>All chapters</a><a href='season-rambleon-birdsong-camwow-us2-realm-3-pve.html'>The season</a><a href='guide-rambleon-birdsong-camwow-us2-realm-3-pve.html'>Route guide</a><a href='../'>About Rambleon</a></nav>
+<h1>Chapter 8 — Raptor Ridge</h1>
+<div class='meta'>Rambleon Birdsong · November 14, 2026 · 2h 09m in Azeroth</div>
+<div class='jump'><a href='#recap'>Recap</a><a href='#quests'>Quests</a><a href='#scenes'>Scenes</a><a href='#journey'>Journey</a></div>
+<div class='pager'><a class='prev' href='2026-11-13-rambleon-birdsong-camwow-us2-realm-3-pve.html'>← Chapter 7 — Black Channel Marsh</a></div>
+<figure class='hero'><img src='2026-11-14-rambleon-birdsong-camwow-us2-realm-3-pve/2026-11-14-rambleon-birdsong-camwow-us2-realm-3-pve-01.jpg' alt='Reached Level 27 in Wetlands'><figcaption>11:41 AM — Reached Level 27 in Wetlands</figcaption></figure>
+<div class='recap' id='recap'>2h 09m in Azeroth tonight.
+1 level.
+8 quests.
+12 places.
+121 enemies slain.
+0 deaths.
+10 travelling companions.
+Ramble on.</div>
+<div class='stats'><div class='stat'><b>8</b><span>Quests</span></div><div class='stat'><b>12</b><span>Places</span></div><div class='stat'><b>121</b><span>Enemies slain</span></div><div class='stat'><b>6</b><span>Loot</span></div><div class='stat'><b>0</b><span>Deaths</span></div><div class='stat'><b>10</b><span>People</span></div><div class='stat'><b>35,425</b><span>XP</span></div><div class='stat'><b>8</b><span>Lines of roleplay</span></div></div>
+<h2 id='quests'>Quests</h2><div class='quests'><div class='tabs' role='tablist'><button role='tab' aria-selected='true' data-pane='done'>Turned in<span class='n'>8</span></button><button role='tab' aria-selected='false' data-pane='open'>Still open<span class='n'>4</span></button><button role='tab' aria-selected='false' data-pane='carried'>Carrying<span class='n'>28</span></button></div><div class='pane on' id='qpane-done' role='tabpanel'><table><thead><tr><th>Quest</th><th>Turned in at</th><th>Lv</th></tr></thead><tbody><tr class='zone'><th colspan='3'>Wetlands</th></tr><tr><td class='quest'>Ormer&#x27;s Revenge</td><td class='where'>Whelgar&#x27;s Excavation Site</td><td class='lv'>26</td></tr><tr><td class='quest'>War Banners</td><td class='where'>Menethil Keep</td><td class='lv'>26</td></tr><tr><td class='quest'>From the Ashes</td><td class='where'>Menethil Keep</td><td class='lv'>26</td></tr><tr><td class='quest'>Nek&#x27;rosh&#x27;s Gambit</td><td class='where'>Angerfang Encampment</td><td class='lv'>26</td></tr><tr><td class='quest'>Razormaw Needling</td><td class='where'></td><td class='lv'>26</td></tr><tr><td class='quest'>Trying Times</td><td class='where'></td><td class='lv'>27</td></tr><tr><td class='quest'>Defeat Nek&#x27;rosh</td><td class='where'>Menethil Keep</td><td class='lv'>27</td></tr><tr><td class='quest'>Old Habits</td><td class='where'>Menethil Keep</td><td class='lv'>27</td></tr></tbody></table></div><div class='pane' id='qpane-open' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th></tr></thead><tbody><tr><td class='quest'>Ormer&#x27;s Revenge</td><td class='where'>Whelgar&#x27;s Excavation Site</td></tr><tr><td class='quest'>Forced Disarmament</td><td class='where'>Wetlands</td></tr><tr><td class='quest'>Death to the Dragonmaw</td><td class='where'>Wetlands</td></tr><tr><td class='quest'>This Land Was Their Land</td><td class='where'>Menethil Keep</td></tr></tbody></table></div><div class='pane' id='qpane-carried' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th><th>Since</th></tr></thead><tbody><tr><td class='quest'>On Guard in Stonetalon</td><td class='where'>Astranaar</td><td class='since'>Chapter 1</td></tr><tr><td class='quest'>The Tower of Althalaxx</td><td class='where'>Maestra&#x27;s Post</td><td class='since'>Chapter 1</td></tr><tr><td class='quest'>... and that note you found</td><td class='where'>Alexston Farmstead</td><td class='since'>Chapter 2</td></tr><tr><td class='quest'>WANTED: Gath&#x27;Ilzogg</td><td class='where'>Lakeshire</td><td class='since'>Chapter 2</td></tr><tr><td class='quest'>WANTED: Incinerator Gar&#x27;im</td><td class='where'>Lakeshire</td><td class='since'>Chapter 2</td></tr><tr><td class='quest'>Messenger to Darkshire</td><td class='where'>Lakeshire</td><td class='since'>Chapter 2</td></tr><tr><td class='quest'>Gyrodrillmatic Excavationators</td><td class='where'>Dwarven District</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Claiming Arathi Basin</td><td class='where'>Stormwind Keep</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Save Techbot&#x27;s Brain!</td><td class='where'>Tinker Town</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Find Bingles</td><td class='where'>Tinker Town</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>The Day After</td><td class='where'>Tinker Town</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Knowledge in the Deeps</td><td class='where'>The Forlorn Cavern</td><td class='since'>Chapter 4</td></tr><tr><td class='quest'>What Comes Around...</td><td class='where'>Lakeshire</td><td class='since'>Chapter 4</td></tr><tr><td class='quest'>Culling the Threat</td><td class='where'>Astranaar</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>Blackfathom Villainy</td><td class='where'>The Pool of Ask&#x27;ar</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>An Aggressive Defense</td><td class='where'>Astranaar</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>Raene&#x27;s Cleansing</td><td class='where'>Astranaar</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>Alchemical Hazards</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>Lost in the Thicket Things</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 6</td></tr><tr><td class='quest'>Highland Hides</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 6</td></tr><tr><td class='quest'>The Color of Blood</td><td class='where'>Old Town</td><td class='since'>Chapter 6</td></tr><tr><td class='quest'>The Shamed Lieutenant</td><td class='where'>Cathedral of Light</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Fall of Dun Modr</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Blisters on the Land</td><td class='where'>The Green Belt</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Crocs of the Sky</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>The Cursed Crew</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Bloom of the Heavens</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Understanding Our Present</td><td class='where'>Whelgar&#x27;s Excavation Site</td><td class='since'>Chapter 7</td></tr></tbody></table><p class='caveat'>As far as Rambleon knows: a quest picked up before it was installed, or abandoned before it recorded that, is not here.</p></div></div><script>(function(){var tabs=document.querySelectorAll('.quests [role=tab]');tabs.forEach(function(t){t.addEventListener('click',function(){tabs.forEach(function(o){o.setAttribute('aria-selected',o===t)});document.querySelectorAll('.quests .pane').forEach(function(p){p.classList.toggle('on',p.id==='qpane-'+t.dataset.pane)})})})})();</script>
+<h2 id='scenes'>Scenes</h2><div class='scene'><div class='scene-head'><span class='when'>10:57 AM</span>A scene in Wetlands with Piggywiggly Copperbink</div><p class='say me'><b>Rambleon Birdsong</b> “hthx”</p><p class='say'><b>Piggywiggly Copperbink</b> “invite?”</p></div><div class='scene'><div class='scene-head'><span class='when'>11:34 AM</span>A scene in Raptor Ridge, alone</div><p class='yell me'><b>Rambleon Birdsong</b> <i>yells</i> “help pls!”</p><p class='say me'><b>Rambleon Birdsong</b> “thx”</p></div>
+<h2 id='journey'>The Journey</h2><details class='journey' open><summary>130 moments, in order · fold</summary><ul>
+<li>9:37 AM — Began the adventure</li>
+<li>9:37 AM — Entered Deepwater Tavern (Wetlands)</li>
+<li>9:38 AM — Entered Menethil Harbor (Wetlands)</li>
+<li>9:39 AM — Entered Menethil Bay (Wetlands)</li>
+<li>9:41 AM — Entered Wetlands</li>
+<li>9:42 AM — Entered Bluegill Marsh (Wetlands)</li>
+<li>9:43 AM — Entered Wetlands</li>
+<li>9:43 AM — Entered Sundown Marsh (Wetlands)</li>
+<li>9:53 AM — Entered Wetlands</li>
+<li>9:53 AM — Entered Whelgar&#x27;s Excavation Site (Wetlands)</li>
+<li>9:53 AM — First Mottled Scytheclaw slain</li>
+<li>9:54 AM — First Mottled Raptor slain</li>
+<li>9:58 AM — Entered Wetlands</li>
+<li>9:59 AM — Entered Whelgar&#x27;s Excavation Site (Wetlands)</li>
+<li>10:01 AM — First Mottled Razormaw slain</li>
+<li>10:05 AM — 10/10 Mottled Scytheclaw slain — &quot;Ormer&#x27;s Revenge&quot;</li>
+<li>10:09 AM — 10/10 Mottled Razormaw slain — &quot;Ormer&#x27;s Revenge&quot;</li>
+<li>10:10 AM — Completed &quot;Ormer&#x27;s Revenge&quot;</li>
+<li>10:10 AM — Accepted &quot;Ormer&#x27;s Revenge&quot;</li>
+<li>10:12 AM — Entered Wetlands</li>
+<li>10:14 AM — First Dragonmaw Raider slain</li>
+<li>10:15 AM — Entered Angerfang Encampment (Wetlands)</li>
+<li>10:15 AM — Discovered Angerfang Encampment</li>
+<li>10:15 AM — Discovered Angerfang Encampment</li>
+<li>10:21 AM — 1/1 Attack Plan: Ironforge destroyed — &quot;From the Ashes&quot;</li>
+<li>10:23 AM — First Dragonmaw Swamprunner slain</li>
+<li>10:25 AM — Looted Scouting Tunic of the Boar (Uncommon)</li>
+<li>10:27 AM — Joined forces with Sprokit (Shaman)</li>
+<li>10:29 AM — 1/1 Attack Plan: Southshore destroyed — &quot;From the Ashes&quot;</li>
+<li>10:31 AM — 1/1 Attack Plan: Menethil Harbor destroyed — &quot;From the Ashes&quot;</li>
+<li>10:31 AM — Joined forces with Vassago (Mage)</li>
+<li>10:31 AM — First Dragonmaw Bonewarder slain</li>
+<li>10:31 AM — First Skeleton slain</li>
+<li>10:31 AM — First Dragonmaw Shadowwarder slain</li>
+<li>10:32 AM — 1/1 Attack Plan: Thelsamar destroyed — &quot;From the Ashes&quot;</li>
+<li>10:34 AM — Looted Polished Zweihander of Agility (Uncommon)</li>
+<li>10:34 AM — 8/8 Dragonmaw War Banner — &quot;War Banners&quot;</li>
+<li>10:35 AM — Parted ways with Vassago</li>
+<li>10:35 AM — Parted ways with Sprokit</li>
+<li>10:35 AM — Hearthed home to Deepwater Tavern</li>
+<li>10:36 AM — Entered Deepwater Tavern (Wetlands)</li>
+<li>10:36 AM — Entered Menethil Harbor (Wetlands)</li>
+<li>10:36 AM — Entered Menethil Keep (Wetlands)</li>
+<li>10:37 AM — Completed &quot;War Banners&quot;</li>
+<li>10:37 AM — Completed &quot;From the Ashes&quot;</li>
+<li>10:37 AM — Accepted &quot;Nek&#x27;rosh&#x27;s Gambit&quot;</li>
+<li>10:37 AM — Destroy the Dragonmaw catapults. — &quot;Nek&#x27;rosh&#x27;s Gambit&quot;</li>
+<li>10:37 AM — Entered Menethil Harbor (Wetlands)</li>
+<li>10:38 AM — Entered Deepwater Tavern (Wetlands)</li>
+<li>10:44 AM — Entered Menethil Harbor (Wetlands)</li>
+<li>10:44 AM — Entered Menethil Bay (Wetlands)</li>
+<li>10:54 AM — Entered Wetlands</li>
+<li>10:55 AM — Entered Bluegill Marsh (Wetlands)</li>
+<li>10:56 AM — Entered Sundown Marsh (Wetlands)</li>
+<li>10:57 AM — Entered Wetlands</li>
+<li><a class='scene-link' href='#scenes'>10:57 AM — A scene in Wetlands with Piggywiggly Copperbink (2 lines)</a></li>
+<li>10:58 AM — Entered The Green Belt (Wetlands)</li>
+<li>10:58 AM — Entered Wetlands</li>
+<li>10:59 AM — Joined forces with Ulquira (Hunter)</li>
+<li>10:59 AM — Entered Angerfang Encampment (Wetlands)</li>
+<li>11:00 AM — Completed &quot;Nek&#x27;rosh&#x27;s Gambit&quot;</li>
+<li>11:00 AM — Accepted &quot;Defeat Nek&#x27;rosh&quot;</li>
+<li>11:01 AM — Joined forces with Dez (Warlock)</li>
+<li>11:01 AM — Joined forces with Piggywiggly (Druid)</li>
+<li>11:02 AM — First Dragonmaw Centurion slain</li>
+<li>11:02 AM — Joined forces with Fristy (Hunter)</li>
+<li>11:02 AM — Accepted &quot;Old Habits&quot;</li>
+<li>11:02 AM — Bring the Tattered Spellbook to Captain Stoutfist in Menethil Harbor. — &quot;Old Habits&quot;</li>
+<li>11:03 AM — Parted ways with Fristy</li>
+<li>11:03 AM — First Chieftain Nek&#x27;rosh (elite) slain</li>
+<li>11:03 AM — 1/1 Nek&#x27;rosh&#x27;s Head — &quot;Defeat Nek&#x27;rosh&quot;</li>
+<li>11:04 AM — Parted ways with Dez</li>
+<li>11:04 AM — Parted ways with Ulquira</li>
+<li>11:04 AM — Entered Wetlands</li>
+<li>11:05 AM — Entered The Green Belt (Wetlands)</li>
+<li>11:05 AM — Parted ways with Piggywiggly</li>
+<li>11:06 AM — First Red Whelp slain</li>
+<li>11:07 AM — First Crimson Whelp slain</li>
+<li>11:07 AM — Looted Fortified Gauntlets of the Owl (Uncommon)</li>
+<li>11:08 AM — Entered Dragonmaw Retreat (Wetlands)</li>
+<li>11:08 AM — Entered The Green Belt (Wetlands)</li>
+<li>11:08 AM — Entered Dragonmaw Retreat (Wetlands)</li>
+<li>11:09 AM — Entered The Green Belt (Wetlands)</li>
+<li>11:09 AM — Entered Dragonmaw Retreat (Wetlands)</li>
+<li>11:09 AM — Entered The Green Belt (Wetlands)</li>
+<li>11:10 AM — Entered Raptor Ridge (Wetlands)</li>
+<li>11:10 AM — Discovered Raptor Ridge</li>
+<li>11:10 AM — Discovered Raptor Ridge</li>
+<li>11:10 AM — First Highland Razormaw slain</li>
+<li>11:13 AM — 12/12 Perfect Razormaw Egg — &quot;Trying Times&quot;</li>
+<li>11:15 AM — First Elder Razormaw slain</li>
+<li>11:17 AM — Joined forces with Dragon (Priest)</li>
+<li>11:17 AM — Joined forces with Unum (Paladin)</li>
+<li>11:17 AM — Joined forces with Yo (Warlock)</li>
+<li>11:21 AM — Looted Durable Cape of the Boar (Uncommon)</li>
+<li>11:24 AM — Joined forces with Sagar (Hunter)</li>
+<li>11:24 AM — Parted ways with Sagar</li>
+<li>11:24 AM — Parted ways with Dragon</li>
+<li>11:24 AM — Parted ways with Unum</li>
+<li>11:24 AM — Parted ways with Yo</li>
+<li><a class='scene-link' href='#scenes'>11:34 AM — A scene in Raptor Ridge, alone (2 lines)</a></li>
+<li>11:34 AM — 10/10 Razormaw Incisor — &quot;Razormaw Needling&quot;</li>
+<li>11:35 AM — Entered The Green Belt (Wetlands)</li>
+<li>11:35 AM — First Flamesnorting Whelp slain</li>
+<li>11:37 AM — First Lost Whelp slain</li>
+<li>11:37 AM — Entered Dragonmaw Retreat (Wetlands)</li>
+<li>11:37 AM — Entered The Green Belt (Wetlands)</li>
+<li>11:38 AM — Entered Wetlands</li>
+<li>11:38 AM — Accepted &quot;Forced Disarmament&quot;</li>
+<li>11:38 AM — Entered The Green Belt (Wetlands)</li>
+<li>11:39 AM — Abandoned &quot;Pridewings of Stonetalon&quot;</li>
+<li>11:40 AM — Entered Wetlands</li>
+<li>11:40 AM — Reached Level 27</li>
+<li>11:40 AM — Completed &quot;Razormaw Needling&quot;</li>
+<li>11:41 AM — Completed &quot;Trying Times&quot;</li>
+<li>11:41 AM — Accepted &quot;Death to the Dragonmaw&quot;</li>
+<li>11:42 AM — Hearthed home to Deepwater Tavern</li>
+<li>11:42 AM — Entered Deepwater Tavern (Wetlands)</li>
+<li>11:42 AM — Entered Menethil Harbor (Wetlands)</li>
+<li>11:42 AM — Entered Menethil Keep (Wetlands)</li>
+<li>11:43 AM — Completed &quot;Defeat Nek&#x27;rosh&quot;</li>
+<li>11:43 AM — Looted Ancient War Sword (Uncommon)</li>
+<li>11:43 AM — Looted Dragonmaw Buckler (Uncommon)</li>
+<li>11:43 AM — Completed &quot;Old Habits&quot;</li>
+<li>11:43 AM — Accepted &quot;This Land Was Their Land&quot;</li>
+<li>11:44 AM — Entered Menethil Harbor (Wetlands)</li>
+<li>11:45 AM — Abandoned &quot;Bathran&#x27;s Hair&quot;</li>
+<li>11:45 AM — Abandoned &quot;Oh Brother...&quot;</li>
+<li>11:47 AM — Entered Deepwater Tavern (Wetlands)</li>
+</ul></details><a class='totop' href='#top'>↑ Back to top</a>
+<div class='pager bottom'><a class='prev' href='2026-11-13-rambleon-birdsong-camwow-us2-realm-3-pve.html'>← Chapter 7 — Black Channel Marsh</a></div>
+<footer>Recorded by Rambleon · session night-2026-11-14-rambleon-birdsong-camwow-us2-realm-3-pve</footer></body></html>
