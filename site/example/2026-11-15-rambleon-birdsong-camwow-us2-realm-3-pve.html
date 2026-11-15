@@ -1,0 +1,256 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Chapter 9 — Hall of Arms — Rambleon Birdsong</title>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
+h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
+figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.quests{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0}
+.quests .tabs{display:flex;gap:4px;padding:6px 8px 0;border-bottom:1px solid var(--line);background:rgba(90,53,16,.05)}
+.quests .tabs button{font:inherit;font-size:15px;padding:8px 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--soft);cursor:pointer;margin-bottom:-1px}
+.quests .tabs button:hover{color:var(--link)}.quests .tabs button[aria-selected=true]{color:#5a3510;border-color:var(--gold);font-weight:bold}
+.quests .tabs .n{display:inline-block;min-width:22px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(90,53,16,.1);font-size:12px;font-weight:normal;color:var(--soft);text-align:center}
+.quests .pane{display:none;padding:6px 0 4px}.quests .pane.on{display:block}
+.quests table{width:100%;border-collapse:collapse;font-size:15px}
+.quests th,.quests td{text-align:left;padding:7px 14px;border-top:1px solid rgba(201,180,138,.5);vertical-align:top}
+.quests thead th{font:700 12px/1 Cinzel,Georgia,serif;letter-spacing:1.5px;color:#5a3510;border-top:0;padding-top:10px}
+.quests tr.zone th{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;background:rgba(90,53,16,.06);letter-spacing:.5px}
+.quests td.where,.quests td.lv,.quests td.since{color:var(--soft);white-space:nowrap}.quests td.lv{text-align:right}
+.quests .caveat{font-size:13px;color:var(--faint);margin:0;padding:8px 14px 6px;border-top:1px solid rgba(201,180,138,.5)}
+@media(max-width:520px){.quests .tabs button{padding:8px 8px;font-size:14px}.quests th,.quests td{padding:6px 10px}.quests td.where{white-space:normal}}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+.roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 8px}
+.char{display:block;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;text-decoration:none;color:inherit}
+.char:hover{box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.char .cn{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510}
+.char .cl{display:block;font-size:15px;color:var(--ink)}.char .cm{display:block;font-size:13px;color:var(--faint)}
+.who{scroll-margin-top:12px}.who h2{font:700 26px/1.2 Cinzel,Georgia,serif;letter-spacing:.5px;color:#5a3510;margin:44px 0 4px;padding-bottom:6px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+.scene{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px 16px 8px;margin:12px 0}
+.scene-head{font:700 13px/1.6 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;margin:0 0 8px}
+.scene-head .when{display:inline-block;min-width:72px;margin-right:10px;font:15px/1.6 Georgia,'Times New Roman',serif;color:var(--soft);letter-spacing:0}
+details.scene summary.scene-head{cursor:pointer;margin:0;user-select:none}details.scene[open] summary.scene-head{margin-bottom:8px}
+.scene p{margin:4px 0;font-size:16px;line-height:1.5}.scene p b{color:#5a3510}
+.scene p.emote{font-style:italic;color:var(--soft)}.scene p.me{border-left:3px solid var(--gold);padding-left:10px;margin-left:-13px}
+.scene p.ooc{color:var(--faint)}.scene p.ooc b{color:var(--faint)}.scene .ch{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--faint);margin-right:4px}
+a.scene-link{color:var(--soft);text-decoration:none;font-style:italic}a.scene-link:hover{color:var(--link);text-decoration:underline}
+</style></head><body id='top'>
+<nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='index.html#rambleon-birdsong-camwow-us2-realm-3-pve'>All chapters</a><a href='season-rambleon-birdsong-camwow-us2-realm-3-pve.html'>The season</a><a href='guide-rambleon-birdsong-camwow-us2-realm-3-pve.html'>Route guide</a><a href='../'>About Rambleon</a></nav>
+<h1>Chapter 9 — Hall of Arms</h1>
+<div class='meta'>Rambleon Birdsong · November 15, 2026 · 2h 04m in Azeroth</div>
+<div class='jump'><a href='#recap'>Recap</a><a href='#quests'>Quests</a><a href='#scenes'>Scenes</a><a href='#journey'>Journey</a></div>
+<div class='pager'><a class='prev' href='2026-11-14-rambleon-birdsong-camwow-us2-realm-3-pve.html'>← Chapter 8 — Scarlet Raven Tavern</a></div>
+<figure class='hero'><img src='2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve/2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve-01.jpg' alt='Entered Redridge Mountains'><figcaption>10:02 AM — Entered Redridge Mountains</figcaption></figure>
+<div class='recap' id='recap'>2h 04m in Azeroth tonight.
+0 levels.
+6 quests.
+39 places.
+66 enemies slain.
+0 deaths.
+6 travelling companions.
+Ramble on.</div>
+<div class='stats'><div class='stat'><b>6</b><span>Quests</span></div><div class='stat'><b>39</b><span>Places</span></div><div class='stat'><b>66</b><span>Enemies slain</span></div><div class='stat'><b>3</b><span>Loot</span></div><div class='stat'><b>0</b><span>Deaths</span></div><div class='stat'><b>6</b><span>People</span></div><div class='stat'><b>20,111</b><span>XP</span></div><div class='stat'><b>11</b><span>Lines of roleplay</span></div></div>
+<h2 id='quests'>Quests</h2><div class='quests'><div class='tabs' role='tablist'><button role='tab' aria-selected='true' data-pane='done'>Turned in<span class='n'>6</span></button><button role='tab' aria-selected='false' data-pane='open'>Still open<span class='n'>3</span></button><button role='tab' aria-selected='false' data-pane='carried'>Carrying<span class='n'>31</span></button></div><div class='pane on' id='qpane-done' role='tabpanel'><table><thead><tr><th>Quest</th><th>Turned in at</th><th>Lv</th></tr></thead><tbody><tr class='zone'><th colspan='3'>Duskwood</th></tr><tr><td class='quest'>Worgen in the Woods ×4</td><td class='where'>Darkshire</td><td class='lv'>29</td></tr><tr><td class='quest'>The Night Watch</td><td class='where'>Darkshire</td><td class='lv'>29</td></tr><tr class='zone'><th colspan='3'>Redridge Mountains</th></tr><tr><td class='quest'>Messenger to Darkshire</td><td class='where'>Lakeshire</td><td class='lv'>29</td></tr></tbody></table></div><div class='pane' id='qpane-open' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th></tr></thead><tbody><tr><td class='quest'>An Old History Book</td><td class='where'>Duskwood</td></tr><tr><td class='quest'>The Night Watch</td><td class='where'>Darkshire</td></tr><tr><td class='quest'>Look to the Stars</td><td class='where'>Darkshire</td></tr></tbody></table></div><div class='pane' id='qpane-carried' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th><th>Since</th></tr></thead><tbody><tr><td class='quest'>The Tower of Althalaxx</td><td class='where'>Maestra&#x27;s Post</td><td class='since'>Chapter 1</td></tr><tr><td class='quest'>... and that note you found</td><td class='where'>Alexston Farmstead</td><td class='since'>Chapter 2</td></tr><tr><td class='quest'>WANTED: Gath&#x27;Ilzogg</td><td class='where'>Lakeshire</td><td class='since'>Chapter 2</td></tr><tr><td class='quest'>WANTED: Incinerator Gar&#x27;im</td><td class='where'>Lakeshire</td><td class='since'>Chapter 2</td></tr><tr><td class='quest'>Gyrodrillmatic Excavationators</td><td class='where'>Dwarven District</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Claiming Arathi Basin</td><td class='where'>Stormwind Keep</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Save Techbot&#x27;s Brain!</td><td class='where'>Tinker Town</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Find Bingles</td><td class='where'>Tinker Town</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Culling the Threat</td><td class='where'>Astranaar</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>Blackfathom Villainy</td><td class='where'>The Pool of Ask&#x27;ar</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>Alchemical Hazards</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>The Shamed Lieutenant</td><td class='where'>Cathedral of Light</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Fall of Dun Modr</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Blisters on the Land</td><td class='where'>The Green Belt</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Crocs of the Sky</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>The Cursed Crew</td><td class='where'>Menethil Harbor</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Understanding Our Present</td><td class='where'>Whelgar&#x27;s Excavation Site</td><td class='since'>Chapter 7</td></tr><tr><td class='quest'>Ormer&#x27;s Revenge</td><td class='where'>Whelgar&#x27;s Excavation Site</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Forced Disarmament</td><td class='where'>Wetlands</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Death to the Dragonmaw</td><td class='where'>Wetlands</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Raene&#x27;s Cleansing</td><td class='where'>Moonwell</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Forsaken Diseases</td><td class='where'>Forest Song</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Vengeful Trail</td><td class='where'>Forest Song</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Mythology of the Titans</td><td class='where'>The Library</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Data Rescue</td><td class='where'>Tinker Town</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Grand Betrayal</td><td class='where'>Tinker Town</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Essential Artificials</td><td class='where'>Tinker Town</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Gnogaine</td><td class='where'>Kharanos</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Hermit</td><td class='where'>Darkshire</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Totem of Infliction</td><td class='where'>Darkshire</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Legend of Stalvan</td><td class='where'>Darkshire Town Hall</td><td class='since'>Chapter 8</td></tr></tbody></table><p class='caveat'>As far as Rambleon knows: a quest picked up before it was installed, or abandoned before it recorded that, is not here.</p></div></div><script>(function(){var tabs=document.querySelectorAll('.quests [role=tab]');tabs.forEach(function(t){t.addEventListener('click',function(){tabs.forEach(function(o){o.setAttribute('aria-selected',o===t)});document.querySelectorAll('.quests .pane').forEach(function(p){p.classList.toggle('on',p.id==='qpane-'+t.dataset.pane)})})})})();</script>
+<h2 id='scenes'>Scenes</h2><div class='scene'><div class='scene-head'><span class='when'>9:13 AM</span>A scene in Roland&#x27;s Doom, alone</div><p class='say me'><b>Rambleon Birdsong</b> “help”</p></div><div class='scene'><div class='scene-head'><span class='when'>9:45 AM</span>A scene in Duskwood with Roxius Lightwell</div><p class='say me'><b>Rambleon Birdsong</b> “where da fiend at”</p><p class='say'><b>Roxius Lightwell</b> “raven hill”</p></div><div class='scene'><div class='scene-head'><span class='when'>9:59 AM</span>Overheard in Scarlet Raven Tavern: Celcias Stormbringer, Larry Lockjaw and Andycapp Hotfries</div><p class='yell'><b>Celcias Stormbringer</b> <i>yells</i> “Stitches incoming”</p><p class='emote'>Larry Lockjaw lies down before Shiftn Forever.</p><p class='yell'><b>Andycapp Hotfries</b> <i>yells</i> “HELLS BELLS”</p></div>
+<h2 id='journey'>The Journey</h2><details class='journey' open><summary>172 moments, in order · fold</summary><ul>
+<li>8:47 AM — Began the adventure</li>
+<li>8:47 AM — Entered Scarlet Raven Tavern (Duskwood)</li>
+<li>8:47 AM — Entered Darkshire (Duskwood)</li>
+<li>8:48 AM — Entered Duskwood</li>
+<li>8:48 AM — Entered Brightwood Grove (Duskwood)</li>
+<li>8:48 AM — Discovered Brightwood Grove</li>
+<li>8:48 AM — Discovered Brightwood Grove</li>
+<li>8:49 AM — First Nightbane Shadow Weaver slain</li>
+<li>8:50 AM — First Nightbane Dark Runner slain</li>
+<li>8:51 AM — First Nightbane Worgen slain</li>
+<li>8:53 AM — 6/6 Nightbane Shadow Weaver slain — &quot;Worgen in the Woods&quot;</li>
+<li>8:54 AM — Entered Duskwood</li>
+<li>8:54 AM — Entered Darkshire (Duskwood)</li>
+<li>8:54 AM — Completed &quot;Worgen in the Woods&quot;</li>
+<li>8:54 AM — Accepted &quot;Worgen in the Woods&quot;</li>
+<li>8:55 AM — Entered Brightwood Grove (Duskwood)</li>
+<li>9:01 AM — Joined forces with Valerian (Paladin)</li>
+<li>9:03 AM — 12/12 Nightbane Dark Runner slain — &quot;Worgen in the Woods&quot;</li>
+<li>9:04 AM — Entered Darkshire (Duskwood)</li>
+<li>9:04 AM — Completed &quot;Worgen in the Woods&quot;</li>
+<li>9:04 AM — Accepted &quot;Worgen in the Woods&quot;</li>
+<li>9:05 AM — Parted ways with Valerian</li>
+<li>9:05 AM — Entered Scarlet Raven Tavern (Duskwood)</li>
+<li>9:07 AM — Entered Darkshire (Duskwood)</li>
+<li>9:07 AM — Entered Duskwood</li>
+<li>9:08 AM — Joined forces with Meramera (Mage)</li>
+<li>9:08 AM — Joined forces with Teleportal (Mage)</li>
+<li>9:08 AM — First Nightbane Vile Fang slain</li>
+<li>9:09 AM — First Nightbane Tainted One slain</li>
+<li>9:10 AM — Entered Roland&#x27;s Doom (Duskwood)</li>
+<li>9:10 AM — Discovered Roland&#x27;s Doom</li>
+<li>9:10 AM — First Gutspill slain</li>
+<li>9:10 AM — Entered Duskwood</li>
+<li>9:11 AM — Accepted &quot;An Old History Book&quot;</li>
+<li>9:11 AM — Return the book: The History of Stormwind, to the Stormwind Library. — &quot;An Old History Book&quot;</li>
+<li>9:11 AM — Joined forces with Faustine (Rogue)</li>
+<li>9:11 AM — 8/8 Nightbane Vile Fang slain — &quot;Worgen in the Woods&quot;</li>
+<li>9:11 AM — Entered Roland&#x27;s Doom (Duskwood)</li>
+<li>9:12 AM — Entered Duskwood</li>
+<li>9:12 AM — Entered Roland&#x27;s Doom (Duskwood)</li>
+<li><a class='scene-link' href='#scenes'>9:13 AM — A scene in Roland&#x27;s Doom, alone (1 line)</a></li>
+<li>9:14 AM — Entered Duskwood</li>
+<li>9:14 AM — Entered Roland&#x27;s Doom (Duskwood)</li>
+<li>9:14 AM — Entered Duskwood</li>
+<li>9:15 AM — Entered Roland&#x27;s Doom (Duskwood)</li>
+<li>9:15 AM — Entered Duskwood</li>
+<li>9:16 AM — Entered Roland&#x27;s Doom (Duskwood)</li>
+<li>9:17 AM — Parted ways with Faustine</li>
+<li>9:17 AM — Entered Duskwood</li>
+<li>9:17 AM — Joined forces with Kamandra (Paladin)</li>
+<li>9:18 AM — Entered Roland&#x27;s Doom (Duskwood)</li>
+<li>9:19 AM — Entered Duskwood</li>
+<li>9:20 AM — Discovered The Rotting Orchard</li>
+<li>9:20 AM — Discovered The Rotting Orchard</li>
+<li>9:20 AM — Entered The Rotting Orchard (Duskwood)</li>
+<li>9:21 AM — Entered Duskwood</li>
+<li>9:22 AM — Entered The Yorgen Farmstead (Duskwood)</li>
+<li>9:22 AM — Discovered The Yorgen Farmstead</li>
+<li>9:22 AM — Discovered The Yorgen Farmstead</li>
+<li>9:22 AM — Entered The Rotting Orchard (Duskwood)</li>
+<li>9:22 AM — First Defias Night Runner slain</li>
+<li>9:22 AM — Entered The Yorgen Farmstead (Duskwood)</li>
+<li>9:22 AM — Entered The Rotting Orchard (Duskwood)</li>
+<li>9:22 AM — Entered The Yorgen Farmstead (Duskwood)</li>
+<li>9:23 AM — Entered Duskwood</li>
+<li>9:23 AM — Entered The Yorgen Farmstead (Duskwood)</li>
+<li>9:23 AM — 8/8 Nightbane Tainted One slain — &quot;Worgen in the Woods&quot;</li>
+<li>9:24 AM — Entered Duskwood</li>
+<li>9:24 AM — Parted ways with Meramera</li>
+<li>9:24 AM — Parted ways with Teleportal</li>
+<li>9:25 AM — Parted ways with Kamandra</li>
+<li>9:25 AM — Entered Darkshire (Duskwood)</li>
+<li>9:26 AM — Completed &quot;Worgen in the Woods&quot;</li>
+<li>9:26 AM — Accepted &quot;Worgen in the Woods&quot;</li>
+<li>9:26 AM — Bring Calor&#x27;s note to Jonathan Carevin. — &quot;Worgen in the Woods&quot;</li>
+<li>9:27 AM — Completed &quot;Worgen in the Woods&quot;</li>
+<li>9:27 AM — Looted Consecrated Wand (Uncommon)</li>
+<li>9:27 AM — Looted Cloak of the Faith (Uncommon)</li>
+<li>9:32 AM — Discovered Tranquil Gardens Cemetery</li>
+<li>9:32 AM — Discovered Tranquil Gardens Cemetery</li>
+<li>9:32 AM — Entered Tranquil Gardens Cemetery (Duskwood)</li>
+<li>9:34 AM — Looted Gleaming Claymore of Holy Wrath (Uncommon)</li>
+<li>9:34 AM — First Skeletal Mage slain</li>
+<li>9:35 AM — 6/6 Skeletal Mage slain — &quot;The Night Watch&quot;</li>
+<li>9:37 AM — 8/8 Skeletal Warrior slain — &quot;The Night Watch&quot;</li>
+<li>9:37 AM — Entered Duskwood</li>
+<li>9:37 AM — Entered Darkshire (Duskwood)</li>
+<li>9:37 AM — Entered Duskwood</li>
+<li>9:38 AM — Entered Darkshire (Duskwood)</li>
+<li>9:38 AM — Entered Darkshire Town Hall (Duskwood)</li>
+<li>9:39 AM — Entered Darkshire (Duskwood)</li>
+<li>9:39 AM — Completed &quot;The Night Watch&quot;</li>
+<li>9:40 AM — Accepted &quot;The Night Watch&quot;</li>
+<li>9:40 AM — Accepted &quot;Look to the Stars&quot;</li>
+<li>9:41 AM — Entered Duskwood</li>
+<li>9:41 AM — Joined forces with Friar (Priest)</li>
+<li>9:41 AM — First Skeletal Horror slain</li>
+<li>9:42 AM — Parted ways with Friar</li>
+<li><a class='scene-link' href='#scenes'>9:45 AM — A scene in Duskwood with Roxius Lightwell (2 lines)</a></li>
+<li>9:47 AM — 15/15 Skeletal Horror slain — &quot;The Night Watch&quot;</li>
+<li>9:47 AM — Entered Darkshire (Duskwood)</li>
+<li>9:48 AM — Entered Scarlet Raven Tavern (Duskwood)</li>
+<li><a class='scene-link' href='#scenes'>9:59 AM — Overheard in Scarlet Raven Tavern: Celcias Stormbringer, Larry Lockjaw and Andycapp Hotfries (3 lines)</a></li>
+<li>10:01 AM — Entered Darkshire (Duskwood)</li>
+<li>10:01 AM — Found the flight path at Darkshire</li>
+<li>10:02 AM — Flew from Darkshire to Lakeshire, Redridge</li>
+<li>10:02 AM — Entered Duskwood</li>
+<li>10:02 AM — Entered The Darkened Bank (Duskwood)</li>
+<li>10:02 AM — Entered Duskwood</li>
+<li>10:02 AM — Entered Three Corners (Redridge Mountains)</li>
+<li>10:02 AM — Entered Redridge Mountains</li>
+<li>10:03 AM — Entered Lake Everstill (Redridge Mountains)</li>
+<li>10:06 AM — Entered Lakeshire (Redridge Mountains)</li>
+<li>10:06 AM — Completed &quot;Messenger to Darkshire&quot;</li>
+<li>10:06 AM — Entered Lake Everstill (Redridge Mountains)</li>
+<li>10:07 AM — Entered Redridge Mountains</li>
+<li>10:14 AM — Flew from Redridge Mountains to Ironforge, Dun Morogh</li>
+<li>10:15 AM — Entered Three Corners (Redridge Mountains)</li>
+<li>10:15 AM — Entered Elwynn Forest</li>
+<li class='shot'><figure><img src='2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve/2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve-02.jpg' alt='Entered Elwynn Forest'><figcaption>10:15 AM — Entered Elwynn Forest</figcaption></figure></li>
+<li>10:15 AM — Entered Ridgepoint Tower (Elwynn Forest)</li>
+<li>10:15 AM — Entered Elwynn Forest</li>
+<li>10:15 AM — Entered Eastvale Logging Camp (Elwynn Forest)</li>
+<li>10:15 AM — Entered Elwynn Forest</li>
+<li>10:15 AM — Entered Tower of Azora (Elwynn Forest)</li>
+<li>10:16 AM — Entered Crystal Lake (Elwynn Forest)</li>
+<li>10:16 AM — Entered Goldshire (Elwynn Forest)</li>
+<li>10:16 AM — Entered Elwynn Forest</li>
+<li>10:16 AM — Entered Valley of Heroes (Stormwind City)</li>
+<li class='shot'><figure><img src='2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve/2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve-03.jpg' alt='Entered Stormwind City'><figcaption>10:16 AM — Entered Stormwind City</figcaption></figure></li>
+<li>10:16 AM — Entered Elwynn Forest</li>
+<li>10:17 AM — Entered Crystal Lake (Elwynn Forest)</li>
+<li>10:17 AM — Entered Northshire Vineyards (Elwynn Forest)</li>
+<li>10:17 AM — Entered Northshire Valley (Elwynn Forest)</li>
+<li>10:17 AM — Entered Elwynn Forest</li>
+<li>10:17 AM — Entered Burning Steppes</li>
+<li class='shot'><figure><img src='2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve/2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve-04.jpg' alt='Entered Burning Steppes'><figcaption>10:17 AM — Entered Burning Steppes</figcaption></figure></li>
+<li>10:17 AM — Entered Draco&#x27;dar (Burning Steppes)</li>
+<li>10:18 AM — Entered Blackrock Mountain (Burning Steppes)</li>
+<li>10:18 AM — Entered Burning Steppes</li>
+<li>10:18 AM — Entered Blackrock Stronghold (Burning Steppes)</li>
+<li>10:18 AM — Entered Burning Steppes</li>
+<li>10:18 AM — Entered The Sea of Cinders (Searing Gorge)</li>
+<li class='shot'><figure><img src='2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve/2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve-05.jpg' alt='Entered Searing Gorge'><figcaption>10:18 AM — Entered Searing Gorge</figcaption></figure></li>
+<li>10:19 AM — Entered The Cauldron (Searing Gorge)</li>
+<li>10:19 AM — Entered Searing Gorge</li>
+<li>10:19 AM — Entered Firewatch Ridge (Searing Gorge)</li>
+<li>10:19 AM — Entered Searing Gorge</li>
+<li>10:19 AM — Entered Dun Morogh</li>
+<li class='shot'><figure><img src='2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve/2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve-06.jpg' alt='Entered Dun Morogh'><figcaption>10:19 AM — Entered Dun Morogh</figcaption></figure></li>
+<li>10:19 AM — Entered The Tundrid Hills (Dun Morogh)</li>
+<li>10:19 AM — Entered Dun Morogh</li>
+<li>10:20 AM — Entered Kharanos (Dun Morogh)</li>
+<li>10:20 AM — Entered Dun Morogh</li>
+<li>10:20 AM — Entered Gates of Ironforge (Dun Morogh)</li>
+<li>10:20 AM — Entered Ironforge</li>
+<li class='shot'><figure><img src='2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve/2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve-07.jpg' alt='Entered Ironforge'><figcaption>10:20 AM — Entered Ironforge</figcaption></figure></li>
+<li>10:20 AM — Entered The Great Forge (Ironforge)</li>
+<li>10:22 AM — Entered The Military Ward (Ironforge)</li>
+<li>10:22 AM — Entered Hall of Arms (Ironforge)</li>
+<li>10:23 AM — Learned |cff71d5ff|Hspell:14302:0|h[Immolation Trap (Rank 2)]|h|r</li>
+<li>10:23 AM — Learned Immolation Trap</li>
+<li>10:23 AM — Learned Rapid Fire</li>
+<li>10:23 AM — Learned Serpent Sting</li>
+<li>10:23 AM — Learned Track Elementals</li>
+<li>10:23 AM — Learned Aimed Shot</li>
+<li>10:23 AM — Learned Arcane Shot</li>
+<li>10:23 AM — Learned Aspect of the Hawk</li>
+<li>10:23 AM — Learned Frost Trap</li>
+<li>10:23 AM — Learned |cff71d5ff|Hspell:3661:0|h[Mend Pet (Rank 3)]|h|r</li>
+<li>10:23 AM — Learned Mend Pet</li>
+</ul></details><a class='totop' href='#top'>↑ Back to top</a>
+<div class='pager bottom'><a class='prev' href='2026-11-14-rambleon-birdsong-camwow-us2-realm-3-pve.html'>← Chapter 8 — Scarlet Raven Tavern</a></div>
+<footer>Recorded by Rambleon · session night-2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve</footer></body></html>
