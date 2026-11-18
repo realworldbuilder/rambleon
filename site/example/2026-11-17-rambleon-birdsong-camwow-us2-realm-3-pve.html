@@ -1,0 +1,328 @@
+<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Chapter 10 — Western Strand — Rambleon Birdsong</title>
+<link rel='preconnect' href='https://fonts.gstatic.com' crossorigin><link href='https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap' rel='stylesheet'><style>
+:root{--ink:#2b1d0e;--soft:#6b5233;--faint:#8a7250;--gold:#b08d4c;--line:#c9b48a;--paper:#f5ecd8;--card:#efe3c6;--link:#7a4f14}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{max-width:720px;margin:0 auto;padding:0 20px 40px;font:17px/1.6 Georgia,'Times New Roman',serif;color:var(--ink);background:var(--paper)}
+a{color:var(--link)}a:hover{color:#5a3510}
+nav.top{display:flex;align-items:center;gap:18px;padding:14px 0;margin:0 0 32px;border-bottom:1px solid var(--line);font-size:15px}
+nav.top .brand{font:700 18px/1 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;text-decoration:none;margin-right:auto}
+nav.top a:not(.brand){color:var(--soft);text-decoration:none}nav.top a:not(.brand):hover{color:var(--link);text-decoration:underline}
+h1{font:700 36px/1.2 Cinzel,Georgia,serif;margin:0 0 6px;letter-spacing:1px;color:#5a3510;text-shadow:0 1px 0 #fff6e0,0 2px 6px rgba(176,141,76,.35)}
+h1::after{content:'';display:block;width:120px;height:2px;margin-top:8px;background:linear-gradient(90deg,var(--gold),rgba(176,141,76,0))}
+h2{font-size:22px;margin:36px 0 8px;border-bottom:1px solid var(--line);padding-bottom:4px}
+.meta{color:var(--soft);margin-bottom:16px}
+.jump{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 24px;font-size:14px;letter-spacing:.5px;text-transform:uppercase}
+.jump a{color:var(--soft);text-decoration:none;border-bottom:1px solid transparent}.jump a:hover{color:var(--link);border-color:var(--gold)}
+.pager{display:flex;justify-content:space-between;gap:16px;margin:8px 0 24px;font-size:15px}
+.pager a{text-decoration:none;max-width:48%}.pager a:hover{text-decoration:underline}.pager .next{margin-left:auto;text-align:right}
+.pager.bottom{margin:40px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.recap{white-space:pre-line;background:var(--card);border-left:4px solid var(--gold);padding:12px 16px;margin:20px 0}
+.journal p{margin:0 0 14px}ul{padding-left:22px}li{margin:3px 0}figure{margin:24px 0}figure img{width:100%;border:1px solid var(--line);border-radius:4px}
+figcaption{font-size:14px;color:var(--soft);margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 16px;margin:12px 0}
+.stat b{display:block;font-size:24px}.stat span{font-size:13px;color:var(--soft);text-transform:uppercase;letter-spacing:1px}
+footer{margin-top:48px;font-size:13px;color:var(--faint)}
+figure.hero{margin:0 0 28px}li.shot{list-style:none;margin:10px 0 18px -22px}li.shot figure{margin:0}
+details.journey summary{cursor:pointer;color:var(--soft);font-size:14px;margin:0 0 8px;user-select:none}details.journey summary:hover{color:var(--link)}
+.totop{display:block;margin:12px 0 0;font-size:14px;text-decoration:none;color:var(--soft)}.totop:hover{color:var(--link)}
+.quests{background:var(--card);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:12px 0}
+.quests .tabs{display:flex;gap:4px;padding:6px 8px 0;border-bottom:1px solid var(--line);background:rgba(90,53,16,.05)}
+.quests .tabs button{font:inherit;font-size:15px;padding:8px 12px;border:0;border-bottom:2px solid transparent;background:none;color:var(--soft);cursor:pointer;margin-bottom:-1px}
+.quests .tabs button:hover{color:var(--link)}.quests .tabs button[aria-selected=true]{color:#5a3510;border-color:var(--gold);font-weight:bold}
+.quests .tabs .n{display:inline-block;min-width:22px;margin-left:6px;padding:1px 6px;border-radius:10px;background:rgba(90,53,16,.1);font-size:12px;font-weight:normal;color:var(--soft);text-align:center}
+.quests .pane{display:none;padding:6px 0 4px}.quests .pane.on{display:block}
+.quests table{width:100%;border-collapse:collapse;font-size:15px}
+.quests th,.quests td{text-align:left;padding:7px 14px;border-top:1px solid rgba(201,180,138,.5);vertical-align:top}
+.quests thead th{font:700 12px/1 Cinzel,Georgia,serif;letter-spacing:1.5px;color:#5a3510;border-top:0;padding-top:10px}
+.quests tr.zone th{font:700 15px/1.3 Cinzel,Georgia,serif;color:#5a3510;background:rgba(90,53,16,.06);letter-spacing:.5px}
+.quests td.where,.quests td.lv,.quests td.since{color:var(--soft);white-space:nowrap}.quests td.lv{text-align:right}
+.quests .caveat{font-size:13px;color:var(--faint);margin:0;padding:8px 14px 6px;border-top:1px solid rgba(201,180,138,.5)}
+@media(max-width:520px){.quests .tabs button{padding:8px 8px;font-size:14px}.quests th,.quests td{padding:6px 10px}.quests td.where{white-space:normal}}
+.chapters{list-style:none;padding:0;margin:0}.chapters li{margin:0 0 12px}
+.card{display:flex;gap:16px;align-items:center;padding:12px;background:var(--card);border:1px solid var(--line);border-radius:6px;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.card:hover{transform:translateY(-1px);box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.card .thumb,.card .noshot{flex:none;width:128px;height:72px;border:1px solid var(--line);border-radius:3px}
+.card .thumb{object-fit:cover}.card .noshot{background:linear-gradient(135deg,#e6d6b0,#d9c497)}
+.card .body{min-width:0}.card .n{font-size:12px;color:var(--faint);text-transform:uppercase;letter-spacing:1px}
+.card .t{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510;margin:2px 0 4px}
+.card .m{color:var(--soft);font-size:14px}
+.roster{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:0 0 8px}
+.char{display:block;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:6px;text-decoration:none;color:inherit}
+.char:hover{box-shadow:0 3px 12px rgba(90,53,16,.15);color:inherit}
+.char .cn{display:block;font:700 19px/1.25 Cinzel,Georgia,serif;color:#5a3510}
+.char .cl{display:block;font-size:15px;color:var(--ink)}.char .cm{display:block;font-size:13px;color:var(--faint)}
+.who{scroll-margin-top:12px}.who h2{font:700 26px/1.2 Cinzel,Georgia,serif;letter-spacing:.5px;color:#5a3510;margin:44px 0 4px;padding-bottom:6px}
+@media(max-width:520px){nav.top{gap:12px;font-size:14px}h1{font-size:28px}.card{align-items:flex-start}.card .thumb,.card .noshot{width:88px;height:56px}.stats{grid-template-columns:repeat(2,1fr)}}
+.scene{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px 16px 8px;margin:12px 0}
+.scene-head{font:700 13px/1.6 Cinzel,Georgia,serif;letter-spacing:1px;color:#5a3510;margin:0 0 8px}
+.scene-head .when{display:inline-block;min-width:72px;margin-right:10px;font:15px/1.6 Georgia,'Times New Roman',serif;color:var(--soft);letter-spacing:0}
+details.scene summary.scene-head{cursor:pointer;margin:0;user-select:none}details.scene[open] summary.scene-head{margin-bottom:8px}
+.scene p{margin:4px 0;font-size:16px;line-height:1.5}.scene p b{color:#5a3510}
+.scene p.emote{font-style:italic;color:var(--soft)}.scene p.me{border-left:3px solid var(--gold);padding-left:10px;margin-left:-13px}
+.scene p.ooc{color:var(--faint)}.scene p.ooc b{color:var(--faint)}.scene .ch{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--faint);margin-right:4px}
+a.scene-link{color:var(--soft);text-decoration:none;font-style:italic}a.scene-link:hover{color:var(--link);text-decoration:underline}
+</style></head><body id='top'>
+<nav class='top'><a class='brand' href='index.html'>Rambleon</a><a href='index.html#rambleon-birdsong-camwow-us2-realm-3-pve'>All chapters</a><a href='season-rambleon-birdsong-camwow-us2-realm-3-pve.html'>The season</a><a href='guide-rambleon-birdsong-camwow-us2-realm-3-pve.html'>Route guide</a><a href='../'>About Rambleon</a></nav>
+<h1>Chapter 10 — Western Strand</h1>
+<div class='meta'>Rambleon Birdsong · November 17, 2026 · 2h 50m in Azeroth</div>
+<div class='jump'><a href='#recap'>Recap</a><a href='#quests'>Quests</a><a href='#scenes'>Scenes</a><a href='#journey'>Journey</a></div>
+<div class='pager'><a class='prev' href='2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve.html'>← Chapter 9 — Royal Library</a></div>
+<figure class='hero'><img src='2026-11-17-rambleon-birdsong-camwow-us2-realm-3-pve/2026-11-17-rambleon-birdsong-camwow-us2-realm-3-pve-01.jpg' alt='Entered Hillsbrad Foothills'><figcaption>8:46 PM — Entered Hillsbrad Foothills</figcaption></figure>
+<div class='recap' id='recap'>2h 50m in Azeroth tonight.
+0 levels.
+7 quests.
+31 places.
+187 enemies slain.
+2 deaths.
+9 travelling companions.
+Ramble on.</div>
+<div class='stats'><div class='stat'><b>7</b><span>Quests</span></div><div class='stat'><b>31</b><span>Places</span></div><div class='stat'><b>187</b><span>Enemies slain</span></div><div class='stat'><b>8</b><span>Loot</span></div><div class='stat'><b>2</b><span>Deaths</span></div><div class='stat'><b>9</b><span>People</span></div><div class='stat'><b>35,777</b><span>XP</span></div><div class='stat'><b>18</b><span>Lines of roleplay</span></div></div>
+<h2 id='quests'>Quests</h2><div class='quests'><div class='tabs' role='tablist'><button role='tab' aria-selected='true' data-pane='done'>Turned in<span class='n'>7</span></button><button role='tab' aria-selected='false' data-pane='open'>Still open<span class='n'>6</span></button><button role='tab' aria-selected='false' data-pane='carried'>Carrying<span class='n'>31</span></button></div><div class='pane on' id='qpane-done' role='tabpanel'><table><thead><tr><th>Quest</th><th>Turned in at</th><th>Lv</th></tr></thead><tbody><tr class='zone'><th colspan='3'>Stormwind City</th></tr><tr><td class='quest'>The Head of the Beast</td><td class='where'>SI:7</td><td class='lv'>31</td></tr><tr><td class='quest'>Brotherhood&#x27;s End</td><td class='where'>Cathedral Square</td><td class='lv'>31</td></tr><tr><td class='quest'>An Audience with the King</td><td class='where'>Stormwind Keep</td><td class='lv'>31</td></tr><tr class='zone'><th colspan='3'>Hillsbrad Foothills</th></tr><tr><td class='quest'>Southshore</td><td class='where'>Southshore</td><td class='lv'>31</td></tr><tr class='zone'><th colspan='3'>Wetlands</th></tr><tr><td class='quest'>Death to the Dragonmaw</td><td class='where'></td><td class='lv'>31</td></tr><tr><td class='quest'>Forced Disarmament</td><td class='where'>Menethil Keep</td><td class='lv'>31</td></tr><tr><td class='quest'>The Cursed Crew</td><td class='where'>Menethil Harbor</td><td class='lv'>31</td></tr></tbody></table></div><div class='pane' id='qpane-open' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th></tr></thead><tbody><tr><td class='quest'>Preserving Knowledge</td><td class='where'>Southshore</td></tr><tr><td class='quest'>James Hyal</td><td class='where'>Deepwater Tavern</td></tr><tr><td class='quest'>Craftsman&#x27;s Writ: Elixir of Lesser Agility</td><td class='where'>Dragonmaw Retreat</td></tr><tr><td class='quest'>Stopping the Cycle</td><td class='where'>Wetlands</td></tr><tr><td class='quest'>Lifting the Curse</td><td class='where'>Menethil Harbor</td></tr><tr><td class='quest'>Costly Menace</td><td class='where'>Southshore</td></tr></tbody></table></div><div class='pane' id='qpane-carried' role='tabpanel'><table><thead><tr><th>Quest</th><th>Picked up at</th><th>Since</th></tr></thead><tbody><tr><td class='quest'>The Tower of Althalaxx</td><td class='where'>Maestra&#x27;s Post</td><td class='since'>Chapter 1</td></tr><tr><td class='quest'>WANTED: Gath&#x27;Ilzogg</td><td class='where'>Lakeshire</td><td class='since'>Chapter 2</td></tr><tr><td class='quest'>WANTED: Incinerator Gar&#x27;im</td><td class='where'>Lakeshire</td><td class='since'>Chapter 2</td></tr><tr><td class='quest'>Claiming Arathi Basin</td><td class='where'>Stormwind Keep</td><td class='since'>Chapter 3</td></tr><tr><td class='quest'>Culling the Threat</td><td class='where'>Astranaar</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>Blackfathom Villainy</td><td class='where'>The Pool of Ask&#x27;ar</td><td class='since'>Chapter 5</td></tr><tr><td class='quest'>Raene&#x27;s Cleansing</td><td class='where'>Moonwell</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Forsaken Diseases</td><td class='where'>Forest Song</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Vengeful Trail</td><td class='where'>Forest Song</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Mythology of the Titans</td><td class='where'>The Library</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Data Rescue</td><td class='where'>Tinker Town</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Essential Artificials</td><td class='where'>Tinker Town</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>Gnogaine</td><td class='where'>Kharanos</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Hermit</td><td class='where'>Darkshire</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Legend of Stalvan</td><td class='where'>Darkshire Town Hall</td><td class='since'>Chapter 8</td></tr><tr><td class='quest'>The Night Watch</td><td class='where'>Darkshire</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Look to the Stars</td><td class='where'>Darkshire</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>The Brassbolts Brothers</td><td class='where'>Hall of Arms</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Fiora Longears</td><td class='where'>Menethil Keep</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Down the Coast</td><td class='where'>Southshore</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Talk of the Town</td><td class='where'>Southshore</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Soothing Turtle Bisque</td><td class='where'>Southshore</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Brewer&#x27;s Trade</td><td class='where'>Southshore</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Crushridge Bounty</td><td class='where'>Southshore</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Bartolo&#x27;s Yeti Fur Cloak</td><td class='where'>Southshore</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Hints of a New Plague?</td><td class='where'>Southshore</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Ironband Wants You!</td><td class='where'>The Library</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Reclaimers&#x27; Business in Desolace</td><td class='where'>Hall of Explorers</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>Darkspear Islands Clash</td><td class='where'>Hall of Arms</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>A Fine Mess</td><td class='where'>The Dormitory</td><td class='since'>Chapter 9</td></tr><tr><td class='quest'>The Perenolde Tiara</td><td class='where'>Petitioner&#x27;s Chamber</td><td class='since'>Chapter 9</td></tr></tbody></table><p class='caveat'>As far as Rambleon knows: a quest picked up before it was installed, or abandoned before it recorded that, is not here.</p></div></div><script>(function(){var tabs=document.querySelectorAll('.quests [role=tab]');tabs.forEach(function(t){t.addEventListener('click',function(){tabs.forEach(function(o){o.setAttribute('aria-selected',o===t)});document.querySelectorAll('.quests .pane').forEach(function(p){p.classList.toggle('on',p.id==='qpane-'+t.dataset.pane)})})})})();</script>
+<h2 id='scenes'>Scenes</h2><div class='scene'><div class='scene-head'><span class='when'>8:54 PM</span>Overheard in Wetlands: Cassidy Darkstarr, Thunder Clapman, Silent Slaghter and 3 others</div><p class='say'><b>Cassidy Darkstarr</b> “anyone got boar meat or wolf meat?”</p><p class='say'><b>Thunder Clapman</b> “I have completed more than 240 quests. Somehow, everyone still has one more favour to ask.”</p><p class='say'><b>Silent Slaghter</b> “get that basic fire outta here”</p><p class='say'><b>Cassidy Darkstarr</b> “anyone got wolf, eggs or boar meat?”</p><p class='say'><b>Silent Slaghter</b> “i got eggs”</p><p class='say'><b>Maverick Moneymaker</b> “i dont”</p><p class='say'><b>Cassidy Darkstarr</b> “can I have em?”</p><p class='yell'><b>Balingrin Windomere</b> <i>yells</i> “some of us are trying to sleep FFS”</p><p class='say'><b>Cassidy Darkstarr</b> “lol”</p><p class='yell'><b>Judgé Mentàl</b> <i>yells</i> “5 men one tent”</p><p class='say'><b>Silent Slaghter</b> “help im stuck”</p><p class='say'><b>Judgé Mentàl</b> “i got you step bro”</p><p class='say'><b>Silent Slaghter</b> “lol”</p></div><div class='scene'><div class='scene-head'><span class='when'>9:28 PM</span>A scene in Wetlands with Maranos Othmar</div><p class='say me'><b>Rambleon Birdsong</b> “shall we?”</p><p class='say'><b>Maranos Othmar</b> “plz”</p></div>
+<h2 id='journey'>The Journey</h2><details class='journey' open><summary>244 moments, in order · fold</summary><ul>
+<li>8:35 PM — Began the adventure</li>
+<li>8:35 PM — Entered Trade District (Stormwind City)</li>
+<li>8:36 PM — Entered The Canals (Stormwind City)</li>
+<li>8:37 PM — Entered Old Town (Stormwind City)</li>
+<li>8:37 PM — Entered SI:7 (Stormwind City)</li>
+<li>8:38 PM — Completed &quot;The Head of the Beast&quot;</li>
+<li>8:38 PM — Accepted &quot;Brotherhood&#x27;s End&quot;</li>
+<li>8:38 PM — Entered Old Town (Stormwind City)</li>
+<li>8:39 PM — Entered The Canals (Stormwind City)</li>
+<li>8:40 PM — Entered Cathedral Square (Stormwind City)</li>
+<li>8:40 PM — Completed &quot;Brotherhood&#x27;s End&quot;</li>
+<li>8:40 PM — Accepted &quot;An Audience with the King&quot;</li>
+<li>8:40 PM — Deliver Baros Alexston&#x27;s report on the Defias Brotherhood to King Varian Wrynn in Stormwind Keep. — &quot;An Audience with the King&quot;</li>
+<li>8:40 PM — Entered The Canals (Stormwind City)</li>
+<li>8:42 PM — Entered Old Town (Stormwind City)</li>
+<li>8:43 PM — Entered The Canals (Stormwind City)</li>
+<li>8:43 PM — Entered Stormwind Keep (Stormwind City)</li>
+<li>8:43 PM — Completed &quot;An Audience with the King&quot;</li>
+<li>8:43 PM — Looted Seal of Wrynn (Rare)</li>
+<li>8:44 PM — Entered The Canals (Stormwind City)</li>
+<li>8:44 PM — Entered Dwarven District (Stormwind City)</li>
+<li>8:44 PM — Entered The Canals (Stormwind City)</li>
+<li>8:45 PM — Entered Old Town (Stormwind City)</li>
+<li>8:46 PM — Hearthed home to Southshore</li>
+<li>8:46 PM — Joined forces with Cassidy (Druid)</li>
+<li>8:46 PM — Entered Southshore (Hillsbrad Foothills)</li>
+<li>8:47 PM — Completed &quot;Southshore&quot;</li>
+<li>8:47 PM — Accepted &quot;Preserving Knowledge&quot;</li>
+<li>8:47 PM — Flew from Southshore to Menethil Harbor, Wetlands</li>
+<li>8:47 PM — Entered Eastern Strand (Hillsbrad Foothills)</li>
+<li>8:48 PM — Entered The Great Sea (Hillsbrad Foothills)</li>
+<li>8:48 PM — Entered The Great Sea (Wetlands)</li>
+<li class='shot'><figure><img src='2026-11-17-rambleon-birdsong-camwow-us2-realm-3-pve/2026-11-17-rambleon-birdsong-camwow-us2-realm-3-pve-02.jpg' alt='Entered Wetlands'><figcaption>8:48 PM — Entered Wetlands</figcaption></figure></li>
+<li>8:48 PM — Entered Baradin Bay (Wetlands)</li>
+<li>8:49 PM — Entered Menethil Harbor (Wetlands)</li>
+<li>8:50 PM — Entered Deepwater Tavern (Wetlands)</li>
+<li>8:51 PM — Accepted &quot;James Hyal&quot;</li>
+<li>8:51 PM — Entered Menethil Harbor (Wetlands)</li>
+<li>8:53 PM — Entered Menethil Bay (Wetlands)</li>
+<li>8:53 PM — Entered Wetlands</li>
+<li><a class='scene-link' href='#scenes'>8:54 PM — Overheard in Wetlands: Cassidy Darkstarr, Thunder Clapman, Silent Slaghter and 3 others (13 lines)</a></li>
+<li>8:58 PM — Entered Bluegill Marsh (Wetlands)</li>
+<li>8:58 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>8:59 PM — Entered Wetlands</li>
+<li>9:00 PM — Entered Angerfang Encampment (Wetlands)</li>
+<li>9:00 PM — First Dragonmaw Raider slain</li>
+<li>9:02 PM — First Dragonmaw Swamprunner slain</li>
+<li>9:03 PM — First Dragonmaw Bonewarder slain</li>
+<li>9:04 PM — First Skeleton slain</li>
+<li>9:04 PM — Looted Sage&#x27;s Mantle of the Channeler (Uncommon)</li>
+<li>9:08 PM — Looted Emblazoned Gloves (Uncommon)</li>
+<li>9:08 PM — First Dragonmaw Centurion slain</li>
+<li>9:09 PM — First Dragonmaw Shadowwarder slain</li>
+<li>9:10 PM — Looted Banded Bracers of Stamina (Uncommon)</li>
+<li>9:13 PM — First Garneg Charskull (rare) slain</li>
+<li>9:14 PM — Looted Sage&#x27;s Sash of Stamina (Uncommon)</li>
+<li>9:15 PM — Entered Wetlands</li>
+<li>9:16 PM — Abandoned &quot;Blisters on the Land&quot;</li>
+<li>9:20 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:21 PM — Entered Wetlands</li>
+<li>9:21 PM — Joined forces with Vaowyn (Priest)</li>
+<li>9:22 PM — Entered Dragonmaw Retreat (Wetlands)</li>
+<li>9:22 PM — Entered Mosshide Fen (Wetlands)</li>
+<li>9:23 PM — Entered Wetlands</li>
+<li>9:23 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:23 PM — Entered Wetlands</li>
+<li>9:24 PM — Entered Angerfang Encampment (Wetlands)</li>
+<li>9:25 PM — Entered Wetlands</li>
+<li>9:25 PM — Entered Angerfang Encampment (Wetlands)</li>
+<li>9:26 PM — Entered Wetlands</li>
+<li>9:27 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:27 PM — Entered Wetlands</li>
+<li>9:27 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:27 PM — First Dragonmaw Soulbinder (elite) slain</li>
+<li>9:28 PM — First Dragonmaw Reclaimer (elite) slain</li>
+<li>9:28 PM — Entered Wetlands</li>
+<li><a class='scene-link' href='#scenes'>9:28 PM — A scene in Wetlands with Maranos Othmar (2 lines)</a></li>
+<li>9:28 PM — Joined forces with Tyler (Paladin)</li>
+<li>9:28 PM — Joined forces with Maranos (Warrior)</li>
+<li>9:28 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:28 PM — Entered Wetlands</li>
+<li>9:29 PM — First Maddened Rotclaw slain</li>
+<li>9:29 PM — Joined forces with Lilith (Druid)</li>
+<li>9:29 PM — First Dragonmaw Infiltrator (elite) slain</li>
+<li>9:30 PM — Entered Dragonmaw Retreat (Wetlands)</li>
+<li>9:31 PM — First Succubus Minion slain</li>
+<li>9:31 PM — Parted ways with Lilith</li>
+<li>9:33 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:33 PM — Parted ways with Maranos</li>
+<li>9:34 PM — Entered Dragonmaw Retreat (Wetlands)</li>
+<li>9:35 PM — Parted ways with Cassidy</li>
+<li>9:35 PM — Parted ways with Vaowyn</li>
+<li>9:35 PM — Parted ways with Tyler</li>
+<li>9:35 PM — Joined forces with Neilson (Shaman)</li>
+<li>9:35 PM — Joined forces with Lilith (Druid)</li>
+<li>9:35 PM — Joined forces with Chew (Druid)</li>
+<li>9:36 PM — Joined forces with Tyler (Paladin)</li>
+<li>9:37 PM — Looted Sealed Journeyman&#x27;s Writ (Rare)</li>
+<li>9:37 PM — Looted Craftsman&#x27;s Writ: Elixir of Lesser Agility (Rare)</li>
+<li>9:37 PM — Accepted &quot;Craftsman&#x27;s Writ: Elixir of Lesser Agility&quot;</li>
+<li>9:37 PM — 1/1 Craftsman&#x27;s Writ: Elixir of Lesser Agility — &quot;Craftsman&#x27;s Writ: Elixir of Lesser Agility&quot;</li>
+<li>9:37 PM — First Crimson Whelp slain</li>
+<li>9:38 PM — 8/8 Dragonmaw Reclaimer slain — &quot;Death to the Dragonmaw&quot;</li>
+<li>9:41 PM — Looted Double Link Tunic (Rare)</li>
+<li>9:43 PM — Parted ways with Lilith</li>
+<li>9:43 PM — 5/5 Dragonmaw Soulbinder slain — &quot;Death to the Dragonmaw&quot;</li>
+<li>9:43 PM — Parted ways with Chew</li>
+<li>9:44 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:44 PM — Parted ways with Tyler</li>
+<li>9:45 PM — Parted ways with Neilson</li>
+<li>9:52 PM — First Flamesnorting Whelp slain</li>
+<li>9:53 PM — Entered Dragonmaw Retreat (Wetlands)</li>
+<li>9:53 PM — Entered Wetlands</li>
+<li>9:54 PM — Entered Mosshide Fen (Wetlands)</li>
+<li>9:55 PM — Entered Wetlands</li>
+<li>9:55 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:55 PM — Entered Wetlands</li>
+<li>9:55 PM — Entered The Green Belt (Wetlands)</li>
+<li>9:55 PM — Entered Wetlands</li>
+<li>9:55 PM — Completed &quot;Death to the Dragonmaw&quot;</li>
+<li>9:56 PM — Accepted &quot;Stopping the Cycle&quot;</li>
+<li>9:58 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>9:59 PM — Joined forces with Cassidy (Druid)</li>
+<li>9:59 PM — Joined forces with Vaowyn (Priest)</li>
+<li>10:00 PM — Entered Wetlands</li>
+<li>10:01 PM — Entered Ironbeard&#x27;s Tomb (Wetlands)</li>
+<li>10:01 PM — Entered Wetlands</li>
+<li>10:01 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:01 PM — Entered Wetlands</li>
+<li>10:02 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:02 PM — Entered Direforge Hill (Wetlands)</li>
+<li>10:02 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:02 PM — Entered Direforge Hill (Wetlands)</li>
+<li>10:02 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:02 PM — Entered Direforge Hill (Wetlands)</li>
+<li>10:02 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:02 PM — Entered Direforge Hill (Wetlands)</li>
+<li>10:03 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:03 PM — Entered Raptor Ridge (Wetlands)</li>
+<li>10:03 PM — First Highland Razormaw slain</li>
+<li>10:04 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:05 PM — Entered Wetlands</li>
+<li>10:06 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:06 PM — Entered Wetlands</li>
+<li>10:06 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:06 PM — Entered Wetlands</li>
+<li>10:06 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:06 PM — Entered Wetlands</li>
+<li>10:07 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:08 PM — Joined forces with Scáthach (Hunter)</li>
+<li>10:08 PM — Joined forces with Dagall (Hunter)</li>
+<li>10:08 PM — Entered Wetlands</li>
+<li>10:08 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:09 PM — Entered Dragonmaw Retreat (Wetlands)</li>
+<li>10:20 PM — 30/30 Dragonmaw Armaments — &quot;Forced Disarmament&quot;</li>
+<li>10:23 PM — Entered Dragonmaw Gates (Wetlands)</li>
+<li>10:30 PM — Slain by Succubus Minion in Dragonmaw Gates</li>
+<li>10:30 PM — Entered Wetlands</li>
+<li>10:30 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:30 PM — Entered Wetlands</li>
+<li>10:31 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:31 PM — Parted ways with Vaowyn</li>
+<li>10:32 PM — Entered Dragonmaw Retreat (Wetlands)</li>
+<li>10:33 PM — Entered Dragonmaw Gates (Wetlands)</li>
+<li>10:33 PM — Back among the living</li>
+<li>10:35 PM — First Ados (elite) slain</li>
+<li>10:35 PM — Slain by Dragonmaw Infiltrator (elite) in Dragonmaw Gates</li>
+<li>10:35 PM — Entered Wetlands</li>
+<li>10:35 PM — Entered The Green Belt (Wetlands)</li>
+<li>10:35 PM — Back among the living</li>
+<li>10:35 PM — Entered Dragonmaw Gates (Wetlands)</li>
+<li>10:39 PM — Hearthed home to Southshore</li>
+<li>10:39 PM — Entered Southshore (Hillsbrad Foothills)</li>
+<li>10:40 PM — Flew from Southshore to Menethil Harbor, Wetlands</li>
+<li>10:40 PM — Entered Eastern Strand (Hillsbrad Foothills)</li>
+<li>10:40 PM — Entered The Great Sea (Hillsbrad Foothills)</li>
+<li>10:40 PM — Entered The Great Sea (Wetlands)</li>
+<li>10:41 PM — Entered Baradin Bay (Wetlands)</li>
+<li>10:41 PM — Parted ways with Cassidy</li>
+<li>10:41 PM — Parted ways with Scáthach</li>
+<li>10:41 PM — Parted ways with Dagall</li>
+<li>10:41 PM — Entered Menethil Harbor (Wetlands)</li>
+<li>10:42 PM — Entered Menethil Keep (Wetlands)</li>
+<li>10:43 PM — Completed &quot;Forced Disarmament&quot;</li>
+<li>10:43 PM — Entered Menethil Harbor (Wetlands)</li>
+<li>10:44 PM — Entered Deepwater Tavern (Wetlands)</li>
+<li>10:45 PM — Entered Menethil Harbor (Wetlands)</li>
+<li>10:45 PM — Entered Menethil Bay (Wetlands)</li>
+<li>10:45 PM — Entered Wetlands</li>
+<li>10:46 PM — Entered Baradin Bay (Wetlands)</li>
+<li>10:46 PM — Entered Wetlands</li>
+<li>10:46 PM — Entered Bluegill Marsh (Wetlands)</li>
+<li>10:47 PM — Entered The Lost Fleet (Wetlands)</li>
+<li>10:47 PM — Discovered The Lost Fleet</li>
+<li>10:47 PM — Discovered The Lost Fleet</li>
+<li>10:47 PM — Joined forces with Cassidy (Druid)</li>
+<li>10:47 PM — First Cursed Sailor slain</li>
+<li>10:49 PM — First Cursed Marine slain</li>
+<li>10:53 PM — 5/5 Cursed Marine slain — &quot;The Cursed Crew&quot;</li>
+<li>10:55 PM — 13/13 Cursed Sailor slain — &quot;The Cursed Crew&quot;</li>
+<li>10:57 PM — First First Mate Snellig slain</li>
+<li>10:57 PM — 1/1 Snellig&#x27;s Snuffbox — &quot;The Cursed Crew&quot;</li>
+<li>10:57 PM — Entered Bluegill Marsh (Wetlands)</li>
+<li>10:57 PM — Entered The Lost Fleet (Wetlands)</li>
+<li>10:57 PM — Entered Bluegill Marsh (Wetlands)</li>
+<li>10:58 PM — Entered The Lost Fleet (Wetlands)</li>
+<li>10:58 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>10:58 PM — Entered The Lost Fleet (Wetlands)</li>
+<li>10:58 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>10:58 PM — Entered The Lost Fleet (Wetlands)</li>
+<li>10:58 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>10:58 PM — Entered Baradin Bay (Wetlands)</li>
+<li>10:58 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>10:58 PM — Entered Baradin Bay (Wetlands)</li>
+<li>10:58 PM — First Giant Wetlands Crocolisk slain</li>
+<li>10:58 PM — First Bluegill Raider slain</li>
+<li>11:00 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>11:00 PM — Entered Baradin Bay (Wetlands)</li>
+<li>11:05 PM — Entered The Drowned Reef (Arathi Highlands)</li>
+<li class='shot'><figure><img src='2026-11-17-rambleon-birdsong-camwow-us2-realm-3-pve/2026-11-17-rambleon-birdsong-camwow-us2-realm-3-pve-03.jpg' alt='Entered Arathi Highlands'><figcaption>11:05 PM — Entered Arathi Highlands</figcaption></figure></li>
+<li>11:05 PM — Discovered The Drowned Reef</li>
+<li>11:06 PM — Entered Baradin Bay (Wetlands)</li>
+<li>11:06 PM — Entered The Drowned Reef (Arathi Highlands)</li>
+<li>11:07 PM — Entered Baradin Bay (Wetlands)</li>
+<li>11:08 PM — Entered Saltspray Glen (Wetlands)</li>
+<li>11:08 PM — Entered Baradin Bay (Wetlands)</li>
+<li>11:08 PM — Entered Saltspray Glen (Wetlands)</li>
+<li>11:08 PM — Entered Baradin Bay (Wetlands)</li>
+<li>11:08 PM — Entered Sundown Marsh (Wetlands)</li>
+<li>11:14 PM — Entered Bluegill Marsh (Wetlands)</li>
+<li>11:15 PM — Entered Wetlands</li>
+<li>11:15 PM — Entered Menethil Bay (Wetlands)</li>
+<li>11:17 PM — Entered Menethil Harbor (Wetlands)</li>
+<li>11:17 PM — Completed &quot;The Cursed Crew&quot;</li>
+<li>11:17 PM — Accepted &quot;Lifting the Curse&quot;</li>
+<li>11:18 PM — Flew from Menethil Harbor to Southshore, Hillsbrad</li>
+<li>11:18 PM — Entered Baradin Bay (Wetlands)</li>
+<li>11:19 PM — Entered The Great Sea (Wetlands)</li>
+<li>11:19 PM — Entered The Great Sea (Hillsbrad Foothills)</li>
+<li>11:20 PM — Entered Eastern Strand (Hillsbrad Foothills)</li>
+<li>11:20 PM — Entered Western Strand (Hillsbrad Foothills)</li>
+<li>11:20 PM — Entered Southshore (Hillsbrad Foothills)</li>
+<li>11:21 PM — Accepted &quot;Costly Menace&quot;</li>
+</ul></details><a class='totop' href='#top'>↑ Back to top</a>
+<div class='pager bottom'><a class='prev' href='2026-11-15-rambleon-birdsong-camwow-us2-realm-3-pve.html'>← Chapter 9 — Royal Library</a></div>
+<footer>Recorded by Rambleon · session night-2026-11-17-rambleon-birdsong-camwow-us2-realm-3-pve</footer></body></html>
